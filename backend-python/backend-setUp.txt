@@ -1,0 +1,25 @@
+1: SETTING UP BACKEND 
+
+- make a backend directory: mkdir backend-python
+- Work inside backend directory: cd backend-python
+- create virtual environment: python3 -m venv venv
+- activate virtual environment: source venv/bin/activate
+- install necessary dependencies: pip3 install Flask 
+- to deactivate virtual environment, simply run: deactivate
+
+2: INSTALLING DEPENDENCIES
+
+- run command to install common dependencies: pip install fastapi uvicorn sqlalchemy psycopg2-binary pydantic bcrypt jwt python-multipart python-dotenv mariadb pymysql
+- create a dependencies file to log installed dependencies: pip freeze > dependencies.txt
+- when necessary simply run this command to install all dependencies from the file: pip install -r requirements.txt
+
+3: BACKEND STRUCTURE 
+
+- make files: touch main.py models.py database.py 
+- database.py: manages database connection
+- models.py: defines database tables
+- main.py: Entry point for running the backend (Server)
+
+- make more files: touch .env .gitignore
+- .env: to store environment variables securely
+- .gitignore: prevents pushing certain files to cloud (security purposes)
