@@ -17,13 +17,13 @@ CREATE TABLE items (
     name VARCHAR(255) NOT NULL,
     category VARCHAR(100),
     quantity INT NOT NULL DEFAULT 0, -- current stock level
-    restock_threshold INT DEFAULT 5,  -- alerts when stock is low ( 5 for now)
+    restock_threshold INT DEFAULT 5,  -- alerts when stock is low (5 for now)
     user_id INT,  -- tracks which admin added the item
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL  -- f admin is removed, set to NULL
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL  -- if admin is removed, set to NULL
 );
 
--- transactions table ((Logs inventory changes when any users take/add items)
+-- transactions table (Logs inventory changes when any users take/add items)
 CREATE TABLE transactions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     item_id INT, -- the item being taken/added
@@ -42,7 +42,7 @@ CREATE TABLE orders (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- when that order was generated
 );
 
--- 📦 order items table (Tracks individual items within an order when order is generated)
+-- order items table (Tracks individual items within an order when order is generated)
 CREATE TABLE order_items (
     id INT AUTO_INCREMENT PRIMARY KEY,
     order_id INT,  -- links to the order this item belongs to
