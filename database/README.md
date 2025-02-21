@@ -69,7 +69,42 @@ MariaDB [(none)]> SHOW DATABASES;
 5 rows in set (0.001 sec)
 ```
 
-## **4. Applying database schema** (TBD)
-- `schema.sql` will setup initial db structure
+## **4. Connect MariaDB to VSCode**
+Each developer should set up a database connection in VS Code
 
+**1. Install MySQL Tools extension in VScode**
 
+**2. Go to the "Database" sidebar (left side in VS Code)**
+
+**3. Add a connection:** This is how I set mine up:
+![Adding connection](adding_connection.png)
+
+**4. Click 'save' and 'connect'**
+
+If successful, you should see the inventory database with tables in the VS Code sidebar.
+Here is mine:
+![database setup in vscode](db_vscode_img.png)
+
+## **5. Check database connection is active and working**
+### **1. Open a Query for Any Table:**
+1. Go to the `Database` sidebar on VSCode if not there already
+
+2. Hover over any table (like items)
+
+3. Go to the right of it and click on the paper icon (reads: "**Open Query**")
+
+4. A new tab should open where you can write SQL commands
+
+### **2. Run a basic query:**
+1. Type this command in the new query tab:
+```sh
+DESCRIBE users;
+```
+(replace `users` with any table name like `items` or `transactions`)
+
+2. **Run the query:**
+- right click anywhere in the query tab and select "**Run current SQL**" 
+- OR press **Ctrl + Enter** (Windows/Linux)
+- OR press **Cmd + Enter** (Mac)
+
+If successful, a popup should show up at the bottom with a table (this should work even if there is no data in the table)

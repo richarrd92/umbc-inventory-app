@@ -46,7 +46,7 @@ CREATE TABLE orders (
 CREATE TABLE order_items (
     id INT AUTO_INCREMENT PRIMARY KEY,
     order_id INT,  -- links to the order this item belongs to
-    item_id INT,  -- the item being ordered
+    item_id INT,  -- the item being
     suggested_quantity INT NOT NULL,  -- initial suggested amount
     final_quantity INT NOT NULL,  -- editable quantity (admin updates this)
     supplier VARCHAR(255),  -- supplier name (if known)
