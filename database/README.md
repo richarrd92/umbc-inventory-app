@@ -5,6 +5,7 @@ Each developer runs **their own local instance** of MariaDB, meaning:
 - Everyone installs MariaDB on their own machine.
 - The database schema (`schema.sql`) must be applied manually.
 - each developer is responsible for maintaining their local database.
+- Example test data can be loaded using `example.sql` (TBD)
 
 ---
 
@@ -26,10 +27,6 @@ brew services start mariadb
 ### **Start Mariadb:**
 ```sh
 sudo service mariadb start
-```
-### **stop Mariadb:**
-```sh
-sudo service mariadb stop
 ```
 ### **check if running:**
 ```sh
