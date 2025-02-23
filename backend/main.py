@@ -23,7 +23,7 @@ app.add_middleware(
 @app.get("/")
 def read_root():
     """Returns a welcome message."""
-    return {"message": "Welcome to the umbc inventory app database!"}
+    return {"message": "Welcome to the UMBC Inventory App Home Root API"}
 
 
 # Run the FastAPI app when executed directly
