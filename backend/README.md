@@ -1,5 +1,5 @@
 # Backend Server Setup Guide
-This guide provides instructions for setting up and running the backend server for this project. The backend is implemented using Python using Flask framework.
+This guide provides instructions for setting up and running the backend server for this project. The backend is implemented using Python using FastAPI framework.
 
 ## Backend Structure
 To maintain a clean structure, files are organized as follows:
@@ -22,10 +22,9 @@ backend_project/
 Before starting, ensure you have the following installed:
 - **Python3** (recommended: latest stable version)
 - **Virtual environment (`venv`) module:** `python3.12 -m venv venv`
-- **Generate dependencies.txt** `pip freeze > dependencies.txt`
 - **Install dependencies from dependencies.txt** `pip install -r dependencies.txt`
 
-**Note:** Python 3.13 is an unstable, and many third-party packages (like uvicorn) may not yet support it. Using Python 3.12 for the virtual environment ensures better compatibility. T
+**Note:** Python 3.13 is unstable, and many third-party packages (like uvicorn) may not yet support it. Using Python 3.12 for the virtual environment ensures better compatibility.
 
 ## Setup Instructions
 
@@ -35,7 +34,8 @@ Before starting, ensure you have the following installed:
 - If this is your first time setting up the backend, install the required dependencies, in terminal run: `pip install -r dependencies.txt`
 - Ensure that the .env file exists in the backend directory. If not, create it and add the database connection string: `echo 'DATABASE_STRING="mysql+pymysql://<DB_USER>:<DB_PASSWORD>@<DB_HOST>/<DB_NAME>"' >> .env`
 - Replace <DB_USER>, <DB_PASSWORD>, <DB_HOST>, and <DB_NAME> with the appropriate credentials.
-- Once all dependencies are installed, start the backend server by running: `python3 main.py`
+- Initialize the database tables before running the backend by executing: `python3 database.py`
+- Once all dependencies are installed and the database is set up, start the backend server by running: `python3 main.py`
 - Access API at: http://127.0.0.1:8000
 
 ## Key Libraries and Their Purpose:

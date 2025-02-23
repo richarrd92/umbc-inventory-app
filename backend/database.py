@@ -12,6 +12,15 @@ load_dotenv()
 # This keeps credentials secure and avoids hardcoding database details in the source code
 DATABASE_URL = os.getenv("DATABASE_STRING")
 
+# ================================
+# ERROR HANDLING REQUIRED - WILL IMPLEMENT LATER
+# - Ensure DATABASE_URL is not None or empty  
+# - Validate that DATABASE_URL follows the expected format  
+# - Log meaningful error messages if validation fails  eg {"message" : "Make sure .env is created."}
+# - Exit the program gracefully if an invalid or missing connection string is detected 
+# ================================
+
+
 # Create a database engine
 # The engine manages the connection and interacts with the database
 engine = create_engine(DATABASE_URL)
