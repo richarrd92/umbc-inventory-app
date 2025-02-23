@@ -33,6 +33,8 @@ Before starting, ensure you have the following installed:
 - Create a new virtual environment with Python 3.12 explicitly: `python3.12 -m venv venv`
 - To activate the virtual environment, in terminal run: `source venv/bin/activate`
 - If this is your first time setting up the backend, install the required dependencies, in terminal run: `pip install -r dependencies.txt`
+- Ensure that the .env file exists in the backend directory. If not, create it and add the database connection string: `echo 'DATABASE_STRING="mysql+pymysql://<DB_USER>:<DB_PASSWORD>@<DB_HOST>/<DB_NAME>"' >> .env`
+- Replace <DB_USER>, <DB_PASSWORD>, <DB_HOST>, and <DB_NAME> with the appropriate credentials.
 - Once all dependencies are installed, start the backend server by running: `python3 main.py`
 - Access API at: http://127.0.0.1:8000
 
