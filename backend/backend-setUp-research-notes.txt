@@ -9,9 +9,9 @@
 
 2: INSTALLING DEPENDENCIES
 
-- run command to install common dependencies: pip install fastapi uvicorn sqlalchemy psycopg2-binary pydantic bcrypt jwt python-multipart python-dotenv mariadb pymysql
+- run command to install common dependencies (all not listed): pip install fastapi uvicorn sqlalchemy psycopg2-binary pydantic bcrypt jwt python-multipart python-dotenv mariadb pymysql
 - create a dependencies file to log installed dependencies: pip freeze > dependencies.txt
-- when necessary simply run this command to install all dependencies from the file: pip install -r requirements.txt
+- when necessary simply run this command to install all dependencies from the file: pip install -r dependencies.txt
 
 3: BACKEND STRUCTURE 
 
