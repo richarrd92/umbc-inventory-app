@@ -1,3 +1,0 @@
-testing first commit 
-
-new content under branch - REIA-25-Project-Setup
