@@ -23,8 +23,18 @@ brew install mariadb
 brew services start mariadb
 ```
 
-## **2. Starting and stopping the database**
-### **Start Mariadb:**
+### **Windows (using MSI installer)**
+(Please update Windows instructions if needed)
+1. Download MariaDB for Windows: https://mariadb.org/download/?t=mariadb&p=mariadb&r=11.7.2&os=windows&cpu=x86_64&pkg=msi&mirror=acorn#entry-header
+2. Run the installer and follow these steps:
+    - set a **root password** (you will need this later)
+    - select "**Add to PATH**" so you can run MariaDB from Command Prompt
+    - choose "**Start MariaDB as a Windows Service**" recommended if you want the database to start up and run in the background when you start your computer
+3. Click "Finish" to complete the installation
+
+## **2. Starting the database**
+### Ubuntu/WSL
+#### **Start Mariadb:**
 ```sh
 sudo service mariadb start
 ```
@@ -32,10 +42,22 @@ sudo service mariadb start
 ```sh
 sudo service mariadb status
 ```
+### Windows
+#### ** Start MariaDB:**
+1. Open Command Prompt and run:
+```sh
+net start MariaDB
+```
+#### **check if running:**
+```sh
+mysqladmin -u root -p ping
+```
 
 ## **3. Setting up the `inventory` database**
 Each developer must create the database **locally**.
 ### **1. Open mariadb:**
+#### Ubuntu/WSL/MacOS
+(For Windows type this is Command Prompt)
 ```sh
 mysql -u root -p
 ```
