@@ -2,4 +2,4 @@
 __pycache__/
 venv
 .env
-backend-setUp-research-notes.txt
+.vscode/
