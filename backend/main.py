@@ -1,29 +1,32 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware  # Import CORS middleware
-from sqlalchemy.orm import Session
-from models import Item, User, Transaction, Order, OrderItem # Import model tables
-from database import get_db
-import bcrypt # type: ignore 
-
+from routes import items, users # Import route modules
 
 # Initialize FastAPI application
 app = FastAPI()
 
-# Enable CORS - offers protection of api routes (waiting on the front-end developer)
+# Enable CORS - offers protection of api routes ***** (waiting on the Front-end side) *****
+# Helps connect the frontend and backend APIs 
+# Frontend and backend will be hosted on different domains or port 
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:###"],  # Adjust to frontend URL (### -> PORT NUMBER)
-    allow_credentials=True,
+    allow_credentials=True, # Allows frontend requests to include credentials like cookies, authentication tokens, or session data.
     allow_methods=["*"],  # Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
     allow_headers=["*"],  # Allow all headers
 )
+
+# Register API routes
+app.include_router(items.router) 
+app.include_router(users.router)
 
 
 # Landing page (http://127.0.0.1:8000/)
 @app.get("/")
 def read_root():
     """Returns a welcome message."""
-    return {"message": "Welcome to the UMBC Inventory App Home Root API"}
+    return {"Welcome to the UMBC Inventory App Home Root API"}
 
 
 # Run the FastAPI app when executed directly

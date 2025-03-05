@@ -1,6 +1,4 @@
-# Import necessary libraries
 from sqlalchemy import create_engine, text  # Database engine and raw SQL execution 
-# from sqlalchemy.ext.declarative import declarative_base  # ORM base class ---> Depreciated function
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker  # Session management 
 from dotenv import load_dotenv  # Load environment variables from .env file 
