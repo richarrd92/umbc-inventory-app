@@ -27,6 +27,8 @@ backend/
 │── dependencies.txt
 │── .env
 │── /venv
+│── /tests
+│   ├── user-endpoints.json
 ```
 
 ### File Descriptions
@@ -54,6 +56,7 @@ backend/
 - `dependencies.txt`: Lists all dependencies
 - `.env`: Stores environment variables securely (e.g., database URL)
 - `/venv`: Virtual environment for dependency management
+- `/tests`: Directory for endpoint test files
 
 ### Prerequisites
 
