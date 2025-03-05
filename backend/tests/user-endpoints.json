@@ -1,0 +1,109 @@
+{
+  "info": {
+    "_postman_id": "67ad4c0a-1a28-4af4-a57e-780f09b5dd46",
+    "name": "user-endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "40597922",
+    "_collection_link": "https://umbc-inventory-app.postman.co/workspace/4f5ee7e8-180d-4bd2-877e-1d5d075d3486/collection/40597922-67ad4c0a-1a28-4af4-a57e-780f09b5dd46?action=share&source=collection_link&creator=40597922"
+  },
+  "item": [
+    {
+      "name": "users",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://127.0.0.1:8000/users",
+          "protocol": "http",
+          "host": ["127", "0", "0", "1"],
+          "port": "8000",
+          "path": ["users"]
+        },
+        "description": "The endpoint retrieves a list of users.\n\n### Response\n\nThe response is a JSON array containing user objects with the following properties:\n\n- `username` (string): The username of the user.\n    \n- `name` (string): The name of the user.\n    \n- `role` (string): The role of the user.\n    \n- `id` (integer): The unique identifier of the user.\n    \n- `created_at` (string): The timestamp indicating when the user was created.\n    \n\nExample:\n\n``` json\n[\n    {\n        \"username\": \"\",\n        \"name\": \"\",\n        \"role\": \"\",\n        \"id\": 0,\n        \"created_at\": \"\"\n    }\n]\n\n ```"
+      },
+      "response": []
+    },
+    {
+      "name": "user",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://127.0.0.1:8000/users/2",
+          "protocol": "http",
+          "host": ["127", "0", "0", "1"],
+          "port": "8000",
+          "path": ["users", "2"]
+        },
+        "description": "This endpoint retrieves the details of a specific user with the ID 2. The response of this request is a JSON schema representing the user's details."
+      },
+      "response": []
+    },
+    {
+      "name": "user",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"newly-added-user\",\n  \"name\": \"mr. no-name\",\n  \"password\": \"password123\",\n  \"role\": \"admin\"\n}\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/users/",
+          "protocol": "http",
+          "host": ["127", "0", "0", "1"],
+          "port": "8000",
+          "path": ["users", ""]
+        },
+        "description": "The HTTP POST request to create a new user can be made to the endpoint [http://127.0.0.1:8000/users/](http://127.0.0.1:8000/users/). The request should include a JSON payload in the raw request body type with the following parameters:\n\n- username (string): The username of the new user.\n    \n- name (string): The name of the new user.\n    \n- password (string): The password for the new user.\n    \n- role (string): The role of the new user, e.g., admin, user, etc.\n    \n\nThe response of this request can be documented as a JSON schema:\n\n``` json\n{\n  \"username\": \"newly-added-user\",\n  \"name\": \"mr. no-name\",\n  \"password\": \"password123\",\n  \"role\": \"admin\"\n}\n\n ```"
+      },
+      "response": []
+    },
+    {
+      "name": "update-user",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "   {\n        \"username\": \"username_updated\",\n        \"name\": \"updated_user\",\n        \"role\": \"admin\",\n        \"password\": \"password123-new\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/users/9",
+          "protocol": "http",
+          "host": ["127", "0", "0", "1"],
+          "port": "8000",
+          "path": ["users", "9"]
+        },
+        "description": "The HTTP PUT request is used to update user information at the specified endpoint. The request should include a JSON payload in the raw request body, containing the updated user details such as username, name, role, and password.\n\n### Response\n\nThe response of this request is a JSON schema representing the updated user information. The schema will define the structure of the response data, including the data types and properties of the updated user object."
+      },
+      "response": []
+    },
+    {
+      "name": "delete-user",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://127.0.0.1:8000/users/9",
+          "protocol": "http",
+          "host": ["127", "0", "0", "1"],
+          "port": "8000",
+          "path": ["users", "9"]
+        },
+        "description": "This endpoint sends an HTTP DELETE request to remove the user with the ID 9 from the server.\n\nThe response of this request is a JSON schema, which will define the structure and data types of the response object returned by the server."
+      },
+      "response": []
+    }
+  ]
+}
