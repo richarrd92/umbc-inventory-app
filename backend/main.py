@@ -11,7 +11,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:###"],  # Adjust to frontend URL (### -> PORT NUMBER)
+    allow_origins=["http://localhost:5173"],  # Adjust to frontend URL (### -> PORT NUMBER)
     allow_credentials=True, # Allows frontend requests to include credentials like cookies, authentication tokens, or session data.
     allow_methods=["*"],  # Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
     allow_headers=["*"],  # Allow all headers

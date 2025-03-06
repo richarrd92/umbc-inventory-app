@@ -14,7 +14,7 @@ const Table = () => {
                             Quantity In Stock
                         </th>
                         <th scope='col' className='px-6 py-3'>
-                            
+                            Restock Threshold
                         </th>
                     </tr>
                 </thead>
