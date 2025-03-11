@@ -8,7 +8,7 @@ CREATE TABLE users (
     name VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL DEFAULT '1234',  -- default password for dummy login
     role ENUM('student', 'admin') NOT NULL,  -- defines what the user can do
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP NULL DEFAULT NULL -- added for soft delete instead of full removal
 );
 
@@ -42,6 +42,7 @@ CREATE TABLE transactions (
 CREATE TABLE orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- when that order was generated
+    deleted_at TIMESTAMP NULL DEFAULT NULL -- added for soft delete instead of full removal
 );
 
 -- order items table (Tracks individual items within an order when order is generated)
@@ -53,6 +54,7 @@ CREATE TABLE order_items (
     final_quantity INT NOT NULL,  -- editable quantity (admin updates this)
     supplier VARCHAR(255),  -- supplier name (if known)
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL DEFAULT NULL, -- added for soft delete instead of full removal
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,  -- delete order items if order is deleted
     FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE SET NULL -- Updated: Retains historical order data even if item is deleted
 );
