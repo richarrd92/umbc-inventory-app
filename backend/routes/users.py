@@ -12,10 +12,10 @@ router = APIRouter()
 @router.get("/users", response_model=List[UserResponse])
 def get_users(db: Session = Depends(get_db)):
     """
-    This endpoint retrieves all users from the database.
+    This endpoint retrieves all active users from the database.
     It queries the 'User' table and returns the list of users.
     """
-    return db.query(User).all()
+    return db.query(User).filter(User.deleted_at == None).all()
 
 # Get a User by ID
 @router.get("/users/{id}", response_model=UserResponse)
@@ -95,13 +95,15 @@ def update_user(id: int, user: UserCreate, db: Session = Depends(get_db)):
 @router.delete("/users/{id}")
 def delete_user(id: int, db: Session = Depends(get_db)):
     """
-    This endpoint deletes a user from the database by their ID.
-    It filters the 'User' table by the given ID and deletes the user if found.
-    If the user is not found, it raises a 404 error.
+    This endpoint marks a user as deleted instead of fully removing them
+    It updates the 'deleted_at' timestamp instead of performing a hard delete
     """
     user = db.query(User).filter(User.id == id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    db.delete(user)
+
+    # Soft delete: set deleted_at timestamp
+    user.deleted_at = datetime.utcnow()
     db.commit()
-    return {"message": "User deleted successfully"}
+    
+    return {"message": "User soft deleted successfully"}
