@@ -41,7 +41,7 @@ CREATE TABLE transactions (
 -- orders table (stores table of orders generated for restocking inventory)
 CREATE TABLE orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- when that order was generated
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- when that order was generated
     deleted_at TIMESTAMP NULL DEFAULT NULL -- added for soft delete instead of full removal
 );
 
