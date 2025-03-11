@@ -10,10 +10,10 @@ router = APIRouter(prefix="/items", tags=["Items"])
 @router.get("/", response_model=list[ItemResponse])
 def get_items(db: Session = Depends(get_db)):
     """
-    This endpoint retrieves all items from the database.
+    This endpoint retrieves all active items from the database.
     It queries the database and returns the list of items as a response.
     """
-    return db.query(models.Item).all()
+    return db.query(models.Item).filter(models.Item.deleted_at == None).all()
 
 # Get a single item by ID
 @router.get("/{item_id}", response_model=ItemResponse)

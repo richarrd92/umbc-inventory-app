@@ -28,6 +28,7 @@ class UserCreate(UserBase):
 class UserResponse(UserBase):
     id: int
     created_at: datetime
+    deleted_at: Optional[datetime] = None  # add soft delete tracking
 
     class Config:
         from_attributes = True  # Enables ORM mode for SQLAlchemy models
