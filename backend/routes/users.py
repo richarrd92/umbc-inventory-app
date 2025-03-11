@@ -5,8 +5,9 @@ from models import User
 from schemas import UserResponse, UserCreate
 from typing import List
 from sqlalchemy.exc import IntegrityError # Validates crud operations
+from datetime import datetime 
 
-router = APIRouter()
+router = APIRouter(prefix="/users", tags=["Users"])
 
 # Get All Users
 @router.get("/users", response_model=List[UserResponse])
