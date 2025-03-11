@@ -1,6 +1,6 @@
 ### Frontend With Vite + React and Tailwind CSS
 
-This guide will provide instructions for setting up and running the frontend for our Retriever's Essentials Inventory App. The frontend has been created using Vite + React and Tailwind CSS. Vite and React act as the scaffolding to 
+This guide will provide instructions for setting up and running the frontend for our Retriever's Essentials Inventory App. The frontend has been created using Vite + React and Tailwind CSS. Vite and React act as the scaffolding to
 
 ```
 
@@ -108,6 +108,7 @@ npm -v # Should print "10.9.2".
 5. If the database tables are not initialized already, before running the backend, run: `ipython3 database.py` or `python3 database.py`
 6. Run the file main.py in the backend by running: `ipython3 main.py` or `python3 main.py`
 7. Once the database server is initialized, if this is your first time running the frontend, run `npm install` in the frontend terminal to install the required dependencies.
-8. (This might not be required) To install Tailwind CSS, run the command: `npm install tailwindcss @tailwindcss/vite`
-9. To run the frontend, run `npm run dev` if you are developing, else run `npm run build` and `npm preview` .
-10. If you used `npm run dev`, enter o after Vite starts up to open the frontend at https://localhost:5173 (the port number might be different for your machine), otherwise the frontend will open automatically at https://localhost:5173
+8. To install Axios, which is required for our API calls to the backend, run the command: `npm install axios`
+9. To install Tailwind CSS, run the command: `npm install tailwindcss @tailwindcss/vite`
+10. To run the frontend, run `npm run dev` if you are developing, else run `npm run build` and `npm preview` .
+11. If you used `npm run dev`, enter o after Vite starts up to open the frontend at https://localhost:5173 (the port number might be different for your machine), otherwise the frontend will open automatically at https://localhost:5173
