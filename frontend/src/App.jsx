@@ -37,7 +37,7 @@ function App() {
 
   return (
     <>
-      <h1 className='text-3xl font-bold underline'>Welcome to Retriever Essentials!</h1>
+      <h1 className='text-3xl font-bold underline'>Welcome to Retriever&apos;s Essentials!</h1>
       <div className="main-page">
         <br></br>
         <button className='bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow' onClick={toggleUsers}>
@@ -47,6 +47,7 @@ function App() {
           Show Items
         </button>
       </div>
+      <br></br>
       <div id='table-container'>
         { showUsers &&
           <table className='border-separate border-spacing-2 border'>
