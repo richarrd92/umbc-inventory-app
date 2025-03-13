@@ -52,15 +52,17 @@ function App() {
         { showUsers &&
           <table className='border-separate border-spacing-2 border'>
           <thead>
-            <th>
-              Name
-            </th>
-            <th>
-              Username
-            </th>
-            <th>
-              User Role
-            </th>
+            <tr>
+              <th>
+                Name
+              </th>
+              <th>
+                Username
+              </th>
+              <th>
+                User Role
+              </th>
+            </tr>
           </thead>
           <tbody>
               {
@@ -87,15 +89,17 @@ function App() {
        { showItems && 
           <table className='border-separate border-spacing-2 border'>
             <thead>
-              <th>
-                Item Name
-              </th>
-              <th>
-                Quantity
-              </th>
-              <th>
-                Restock Threshold
-              </th>
+              <tr>
+                <th>
+                  Item Name
+                </th>
+                <th>
+                  Quantity
+                </th>
+                <th>
+                  Restock Threshold
+                </th>
+              </tr>
             </thead>
             <tbody>
                 {
