@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from typing import Optional
 from enum import Enum
 from datetime import datetime
 
@@ -28,6 +29,7 @@ class UserCreate(UserBase):
 class UserResponse(UserBase):
     id: int
     created_at: datetime
+    deleted_at: Optional[datetime] = None  # add soft delete tracking
 
     class Config:
         from_attributes = True  # Enables ORM mode for SQLAlchemy models
