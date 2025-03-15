@@ -6,12 +6,13 @@ from datetime import datetime
 class ItemBase(BaseModel):
     name: str 
     category: Optional[str] = None
-    quantity: int
-    restock_threshold: int
+    quantity: int = 0  # Ensures default matches DB (NOT NULL DEFAULT 0)
+    restock_threshold: int = 5  # Matches DB default (DEFAULT 5)
 
 # schema for creating an item
 class ItemCreate(ItemBase):
-    pass  # inherits all attributes from ItemBase 
+    user_id: Optional[int] = None  # Ensure user_id is part of the schema
+    # inherits all attributes from ItemBase 
 
 # schema for returning an item
 class ItemResponse(ItemBase):
@@ -22,3 +23,10 @@ class ItemResponse(ItemBase):
 
     class Config:
         from_attributes = True  # This allows ORM mode
+
+# schema for updating an item
+class ItemUpdate(ItemBase):
+    pass  # inherits all attributes from ItemBase 
+
+    class Config:
+        from_attributes = True
