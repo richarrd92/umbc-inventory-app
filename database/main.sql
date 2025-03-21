@@ -46,6 +46,7 @@ CREATE TABLE transactions (
     transaction_type ENUM('IN', 'OUT') NOT NULL,  -- 'IN' = added, 'OUT' = taken
     notes TEXT NULL,  -- optional notes about transaction
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL DEFAULT NULL, -- Marks when the transaction was "deleted"
     FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE SET NULL, -- Updated: keeps transaction history even if item is removed
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL -- Updated: retains historical user transactions
 );
