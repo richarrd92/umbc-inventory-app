@@ -37,7 +37,7 @@ class UserResponse(UserBase):
 # Schema for updating user
 # user can update 0 to any field necassary
 class UserUpdate(BaseModel):
-    username: str | None = Field(None, max_length=50)
-    name: str | None = Field(None, max_length=255)
-    password: str | None = Field(None, min_length=4, max_length=255)
-    role: UserRole | None = None
+    name: Optional[str] = None
+    username: Optional[str] = None
+    role: Optional[str] = None
+    password: Optional[str] = None

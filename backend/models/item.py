@@ -13,6 +13,8 @@ class Item(Base):
     restock_threshold = Column(Integer, default=5)  # Stock level that triggers restocking alerts
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True)  # Admin who added the item
     created_at = Column(TIMESTAMP, server_default=func.current_timestamp())  # Timestamp when the item was added
+    deleted_at = Column(TIMESTAMP, nullable=True)
+
 
     # Define relationships
     added_by = relationship("User", back_populates="items_added")  # Admin who added the item

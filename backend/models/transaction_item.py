@@ -11,7 +11,9 @@ class TransactionItem(Base):
     item_id = Column(Integer, ForeignKey("items.id"), nullable=False)
     quantity = Column(Integer, nullable=False)
     created_at = Column(TIMESTAMP, server_default=func.current_timestamp())
+    deleted_at = Column(TIMESTAMP, nullable=True)
+
 
     # Relationships
-    transaction = relationship("Transaction", back_populates="items")  # Parent transaction
+    transaction = relationship("Transaction", back_populates="transaction_items")  # Parent transaction
     item = relationship("Item")  # Reference to the item taken or added

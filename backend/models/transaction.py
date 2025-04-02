@@ -11,7 +11,8 @@ class Transaction(Base):
     transaction_type = Column(Enum('IN', 'OUT', name='transaction_types'), nullable=False)
     notes = Column(Text, nullable=True)
     created_at = Column(TIMESTAMP, server_default=func.current_timestamp())
+    deleted_at = Column(TIMESTAMP, nullable=True)
 
     # Relationships
     user = relationship("User", back_populates="transactions")  # Who made the transaction
-    items = relationship("TransactionItem", back_populates="transaction", cascade="all, delete")  # All items in this transaction
+    transaction_items = relationship("TransactionItem", back_populates="transaction", cascade="all, delete")

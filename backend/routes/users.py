@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from database import get_db
 from models import User
-from schemas import UserResponse, UserCreate
+from schemas import UserResponse, UserCreate, UserUpdate
 from typing import List
 from sqlalchemy.exc import IntegrityError # Validates crud operations
 from datetime import datetime 
@@ -75,30 +75,23 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
 
 # Update a User
 @router.put("/{id}", response_model=UserResponse)
-def update_user(id: int, user: UserCreate, db: Session = Depends(get_db)):
+def update_user(id: int, user: UserUpdate, db: Session = Depends(get_db)):
     """
-    This endpoint updates an existing user in the database using the provided data.
-    It checks if the user exists, and if so, updates their details and returns the updated user.
-    If the user doesn't exist, it raises a 404 error.
+    This endpoint partially updates an existing user in the database.
+    It only updates the fields provided in the request body.
     """
-    db_user = db.query(User).filter(User.id == id).first()
+    db_user = db.query(User).filter(User.id == id, User.deleted_at == None).first()
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
-    
-    # Update the user attributes with the data from the request body (UserCreate schema)
-    db_user.username = user.username
-    db_user.name = user.name
-    db_user.password = user.password
-    db_user.role = user.role
-    
-    # Commit the changes to the database
+
+    # Only update fields that were provided in the request
+    for key, value in user.dict(exclude_unset=True).items():
+        setattr(db_user, key, value)
+
     db.commit()
-    
-    # Refresh to get the updated user with id and created_at
     db.refresh(db_user)
-    
-    # Return the updated user as a response (using UserResponse schema)
-    return db_user  
+
+    return db_user
 
 # Delete a User
 @router.delete("/{id}")
