@@ -16,5 +16,5 @@ class Item(Base):
 
     # Define relationships
     added_by = relationship("User", back_populates="items_added")  # Admin who added the item
-    transactions = relationship("Transaction", back_populates="item", cascade="all, delete")  # Transactions involving this item
+    transaction_items = relationship("TransactionItem", back_populates="item", cascade="all, delete")  # Items used in transactions
     order_items = relationship("OrderItem", back_populates="item", cascade="all, delete")  # Order items associated with this item
