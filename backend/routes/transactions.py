@@ -32,6 +32,7 @@ def get_transaction(transaction_id: int, db: Session = Depends(get_db)):
 
     return transaction
 
+# create a transaction
 @router.post("/", response_model=TransactionResponse)
 def create_transaction(transaction: TransactionCreate, db: Session = Depends(get_db)):
     try:
@@ -45,20 +46,41 @@ def create_transaction(transaction: TransactionCreate, db: Session = Depends(get
         db.commit()
         db.refresh(new_transaction)
 
-        # Create associated transaction items
-        items = [
-            models.TransactionItem(
+        # create associated transaction items and adjust inventory
+        items = []
+        for item_data in transaction.transaction_items:
+            # Fetch the corresponding item
+            item = db.query(models.Item).filter(models.Item.id == item_data.item_id).first()
+            if not item:
+                raise HTTPException(status_code=404, detail=f"Item with ID {item_data.item_id} not found")
+
+            # OUT transaction: subtract from inventory
+            if transaction.transaction_type == "OUT":
+                if item.quantity < item_data.quantity:
+                    raise HTTPException(
+                        status_code=400,
+                        detail=f"Not enough stock for item ID {item_data.item_id}. Available: {item.quantity}, Requested: {item_data.quantity}"
+                    )
+                item.quantity -= item_data.quantity
+
+            # IN transaction: add to inventory
+            elif transaction.transaction_type == "IN":
+                item.quantity += item_data.quantity
+
+            # Create transaction item
+            ti = models.TransactionItem(
                 transaction_id=new_transaction.id,
-                item_id=item.item_id,
-                quantity=item.quantity,
+                item_id=item_data.item_id,
+                quantity=item_data.quantity,
             )
-            for item in transaction.transaction_items
-        ]
+            items.append(ti)
+
         db.add_all(items)
         db.commit()
         db.refresh(new_transaction)
 
         return new_transaction
+
     except IntegrityError:
         db.rollback()
         raise HTTPException(status_code=400, detail="Database integrity error.")
@@ -67,30 +89,46 @@ def create_transaction(transaction: TransactionCreate, db: Session = Depends(get
         raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
 
 
+
 # restore a deleted transaction
 @router.put("/{transaction_id}/restore")
 def restore_transaction(transaction_id: int, db: Session = Depends(get_db)):
     """
-    Restores a previously soft-deleted transaction.
+    Restores a previously soft-deleted transaction and adjusts inventory.
     """
     transaction = db.query(models.Transaction).filter(models.Transaction.id == transaction_id).first()
     
     if not transaction:
         raise HTTPException(status_code=404, detail="Transaction not found")
-
     if transaction.deleted_at is None:
         raise HTTPException(status_code=400, detail="Transaction is not deleted")
 
-    transaction.deleted_at = None  # Restore transaction
-    db.commit()
+    # Re-adjust inventory based on transaction type
+    for t_item in transaction.transaction_items:
+        item = db.query(models.Item).filter(models.Item.id == t_item.item_id).first()
+        if not item:
+            continue
 
+        if transaction.transaction_type == "OUT":
+            if item.quantity < t_item.quantity:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Cannot restore. Item ID {item.id} would drop below 0 stock."
+                )
+            item.quantity -= t_item.quantity
+        elif transaction.transaction_type == "IN":
+            item.quantity += t_item.quantity
+
+    transaction.deleted_at = None
+    db.commit()
     return {"message": "Transaction restored successfully"}
+
 
 # Update a transaction
 @router.put("/{transaction_id}", response_model=TransactionResponse)
 def update_transaction(transaction_id: int, transaction_data: TransactionUpdate, db: Session = Depends(get_db)):
     """
-    Updates an existing transaction (if not deleted).
+    Updates an existing transaction (if not deleted). Adjusts inventory if transaction type changes.
     """
     transaction = db.query(models.Transaction).filter(
         models.Transaction.id == transaction_id,
@@ -100,12 +138,37 @@ def update_transaction(transaction_id: int, transaction_data: TransactionUpdate,
     if not transaction:
         raise HTTPException(status_code=404, detail="Transaction not found or deleted")
 
-    for key, value in transaction_data.dict(exclude_unset=True).items():
-        setattr(transaction, key, value)
+    # If transaction type is changing -->reverse old one and apply the new one
+    if transaction_data.transaction_type and transaction_data.transaction_type != transaction.transaction_type:
+        for t_item in transaction.items:
+            item = db.query(models.Item).filter(models.Item.id == t_item.item_id).first()
+            if not item:
+                continue
+
+            # undo previous effect
+            if transaction.transaction_type == "OUT":
+                item.quantity += t_item.quantity
+            elif transaction.transaction_type == "IN":
+                if item.quantity < t_item.quantity:
+                    raise HTTPException(
+                        status_code=400,
+                        detail=f"Cannot update. Changing to 'OUT' would drop stock of item ID {item.id} below 0."
+                    )
+                item.quantity -= t_item.quantity
+
+        # apply new type
+        for key, value in transaction_data.dict(exclude_unset=True).items():
+            setattr(transaction, key, value)
+
+    else:
+        # If type didn’t change, just update the other metadata
+        for key, value in transaction_data.dict(exclude_unset=True).items():
+            setattr(transaction, key, value)
 
     db.commit()
     db.refresh(transaction)
     return transaction
+
 
 # Delete a transaction
 @router.delete("/{transaction_id}")

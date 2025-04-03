@@ -35,6 +35,7 @@ class OrderResponse(OrderBase):
     id: int
     created_at: datetime
     deleted_at: Optional[datetime] = None  # soft delete tracking
+    submitted: bool  
     order_items: List[OrderItemResponse]  # nested order items
 
     class Config:
