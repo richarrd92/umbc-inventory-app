@@ -26,7 +26,10 @@ class ItemResponse(ItemBase):
 
 # schema for updating an item
 class ItemUpdate(ItemBase):
-    pass  # inherits all attributes from ItemBase 
-
+    # pass  # inherits all attributes from ItemBase 
+    name: Optional[str] = None
+    category: Optional[str] = None
+    quantity: Optional[int] = None
+    restock_threshold: Optional[int] = None
     class Config:
         from_attributes = True
