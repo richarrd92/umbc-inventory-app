@@ -16,5 +16,5 @@ class User(Base):
     deleted_at = Column(TIMESTAMP, nullable=True)  # Soft delete timestamp
 
     # Define relationships
-    items_added = relationship("Item", back_populates="added_by", cascade="all, delete-orphan")  # Keep items, but make FKs null
+    items_added = relationship("Item", back_populates="added_by", passive_deletes=True)  # Keep items, but make FKs null
     transactions = relationship("Transaction", back_populates="user", passive_deletes=True)  # User's transactions - keep transaction history
