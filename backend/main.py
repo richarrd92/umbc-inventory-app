@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware  # Import CORS middleware
-from routes import items, users # Import route modules
+from routes import items, users, orders, transactions # Import route modules
 
 # Initialize FastAPI application
 app = FastAPI()
@@ -20,6 +20,9 @@ app.add_middleware(
 # Register API routes
 app.include_router(items.router) 
 app.include_router(users.router)
+app.include_router(orders.router)
+app.include_router(transactions.router) 
+
 
 
 # Landing page (http://127.0.0.1:8000/)

@@ -1,0 +1,148 @@
+{
+	"info": {
+		"_postman_id": "4a73c07e-a5f8-45e0-8402-14218c238372",
+		"name": "item-endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40597922",
+		"_collection_link": "https://umbc-inventory-app.postman.co/workspace/4f5ee7e8-180d-4bd2-877e-1d5d075d3486/collection/40597922-4a73c07e-a5f8-45e0-8402-14218c238372?action=share&source=collection_link&creator=40597922"
+	},
+	"item": [
+		{
+			"name": "items",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/items",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"items"
+					]
+				},
+				"description": "This endpoint makes an HTTP GET request to retrieve a list of items. The response of this request is documented as a JSON schema below:\n\n``` json\n{\n  \"type\": \"array\",\n  \"items\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"id\": {\n        \"type\": \"integer\"\n      },\n      \"name\": {\n        \"type\": \"string\"\n      },\n      \"description\": {\n        \"type\": \"string\"\n      }\n    }\n  }\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "item",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/items/3",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"items",
+						"3"
+					]
+				},
+				"description": "This endpoint makes an HTTP GET request to retrieve the details of a specific item with the ID 3. The response of this request is documented as a JSON schema."
+			},
+			"response": []
+		},
+		{
+			"name": "item",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Granola Bar Premium\",\n  \"category\": \"light Snacks\",\n  \"quantity\": 50,\n  \"restock_threshold\": 10,\n  \"user_id\": 2\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/items/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"items",
+						""
+					]
+				},
+				"description": "The HTTP POST request is used to create a new item. The request should be sent to [http://127.0.0.1:8000/items/](http://127.0.0.1:8000/items/) with the following payload in the raw request body type:\n\n``` json\n{\n    \"name\": \"string\",\n    \"category\": \"string\",\n    \"quantity\": \"number\",\n    \"restock_threshold\": \"number\",\n    \"user_id\": \"number\"\n}\n\n ```\n\nThe response of this request can be documented as a JSON schema as follows:\n\n``` json\n{\n    \"type\": \"object\",\n    \"properties\": {\n        \"id\": {\n            \"type\": \"number\"\n        },\n        \"name\": {\n            \"type\": \"string\"\n        },\n        \"category\": {\n            \"type\": \"string\"\n        },\n        \"quantity\": {\n            \"type\": \"number\"\n        },\n        \"restock_threshold\": {\n            \"type\": \"number\"\n        },\n        \"user_id\": {\n            \"type\": \"number\"\n        }\n    }\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "update-item",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \n \"name\": \"Granola Bar Premium\",\n \"quantity\": 12,\n \"restock_threshold\": 8\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/items/8",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"items",
+						"8"
+					]
+				},
+				"description": "This endpoint allows updating an item with the specified ID. The request should be sent as an HTTP PUT to the specified URL with the item ID in the endpoint. The request body should be in raw JSON format and include the fields \"name\", \"quantity\", and \"restock_threshold\" to update the item details.\n\n### Response\n\nThe response of this request can be documented as a JSON schema as follows:\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"id\": {\n      \"type\": \"integer\"\n    },\n    \"name\": {\n      \"type\": \"string\"\n    },\n    \"quantity\": {\n      \"type\": \"integer\"\n    },\n    \"restock_threshold\": {\n      \"type\": \"integer\"\n    }\n  }\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "delete-item",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/items/9",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"items",
+						"9"
+					]
+				},
+				"description": "The HTTP DELETE request is used to delete the item with the ID 9. Upon successful deletion, the response will conform to the JSON schema defined for the response."
+			},
+			"response": []
+		}
+	]
+}
