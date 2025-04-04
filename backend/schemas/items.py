@@ -25,11 +25,12 @@ class ItemResponse(ItemBase):
         from_attributes = True  # This allows ORM mode
 
 # schema for updating an item
-class ItemUpdate(ItemBase):
-    # pass  # inherits all attributes from ItemBase 
+class ItemUpdate(BaseModel):
     name: Optional[str] = None
     category: Optional[str] = None
     quantity: Optional[int] = None
     restock_threshold: Optional[int] = None
+    user_id: Optional[int] = None
+
     class Config:
         from_attributes = True

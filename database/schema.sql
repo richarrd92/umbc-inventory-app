@@ -28,19 +28,30 @@ CREATE TABLE items (
 -- transactions table (Logs inventory changes when any users take/add items)
 CREATE TABLE transactions (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    item_id INT, -- the item being taken/added
     user_id INT,  -- who did the transaction (either students or admins)
-    quantity INT NOT NULL, -- the amount being taken/added
     transaction_type ENUM('IN', 'OUT') NOT NULL,  -- 'IN' = added, 'OUT' = taken
-    notes TEXT NULL,  -- optional notes about transaction
+    notes TEXT NULL,  -- optional notes about the checkout
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE SET NULL, -- Updated: keeps transaction history even if item is removed
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL -- Updated: retains historical user transactions
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+-- transaction items table (tracks individual items within a student transaction/checkout)
+CREATE TABLE transaction_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    transaction_id INT,  -- links to the transaction this item belongs to
+    item_id INT,  -- the item being withdrawn
+    quantity INT NOT NULL,  -- how many of this item were taken
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
+    FOREIGN KEY (transaction_id) REFERENCES transactions(id) ON DELETE CASCADE,  -- if a transaction is deleted, its items go too
+    FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE SET NULL  -- keep item name even if item is deleted later
 );
 
 -- orders table (stores table of orders generated for restocking inventory)
 CREATE TABLE orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    submitted BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- when that order was generated
     deleted_at TIMESTAMP NULL DEFAULT NULL -- added for soft delete instead of full removal
 );

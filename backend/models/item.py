@@ -17,5 +17,5 @@ class Item(Base):
 
     # Define relationships
     added_by = relationship("User", back_populates="items_added")  # Admin who added the item
-    transactions = relationship("Transaction", back_populates="item", passive_deletes=True) # Transactions involving this item - no cascade to keep history
+    transaction_items = relationship("TransactionItem", back_populates="item", passive_deletes=True) # Transactions involving this item - no cascade to keep history
     order_items = relationship("OrderItem", back_populates="item", passive_deletes=True) # Order items associated with this item - keep order history

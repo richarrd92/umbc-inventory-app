@@ -1,3 +1,4 @@
+
 -- This file is for inserting example data into the inventory database.
 
 USE inventory;
@@ -18,13 +19,18 @@ INSERT INTO items (name, category, quantity, restock_threshold, user_id) VALUES
     ('Granola Bars', 'Food', 75, 15, 2),
     ('Salads', 'Food', 25, 5, 1);
 
--- insert test transactions (IN = added, OUT = taken)
-INSERT INTO transactions (item_id, user_id, quantity, transaction_type, notes) VALUES
-    (1, 3, 1, 'OUT', 'Sandwich given to student'),
-    (2, 4, 1, 'OUT', 'Fruit pack given to student'),
-    (3, 5, 2, 'OUT', 'Bottled water distributed'),
-    (4, 3, 3, 'OUT', 'Granola bars provided for snack'),
-    (5, 4, 1, 'OUT', 'Salad given for lunch');
+-- insert test transactions (create a checkout group)
+INSERT INTO transactions (user_id, transaction_type, notes) VALUES
+    (3, 'OUT', 'Charlie took snacks and drinks'),
+    (4, 'OUT', 'Diana picked up food items');
+
+-- insert transaction items (link to transaction_id and item_id)
+INSERT INTO transaction_items (transaction_id, item_id, quantity) VALUES
+    (1, 1, 1),  -- Sandwich
+    (1, 3, 1),  -- Bottled Water
+    (1, 4, 2),  -- Granola Bars
+    (2, 2, 1),  -- Fruit Pack
+    (2, 5, 1);  -- Salad
 
 -- insert test orders (you must create an order before order_items)
 INSERT INTO orders (created_at) VALUES
@@ -42,5 +48,6 @@ INSERT INTO order_items (order_id, item_id, suggested_quantity, final_quantity, 
 SELECT * FROM users;
 SELECT * FROM items;
 SELECT * FROM transactions;
+SELECT * FROM transaction_items;
 SELECT * FROM orders;
 SELECT * FROM order_items;
