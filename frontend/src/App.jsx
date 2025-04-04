@@ -1,11 +1,11 @@
-import './App.css'
+import AppRoutes from "./routes";
 
 function App() {
   return (
-    <div>
-      <h1>Retriever Essentials Inventory App</h1>
+    <div className="App">
+      <AppRoutes />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

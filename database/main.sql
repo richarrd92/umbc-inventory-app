@@ -78,11 +78,11 @@ USE inventory;
 
 -- insert test users (admins & students) 
 INSERT INTO users (username, name, password, role) VALUES
-    ('admin1', 'Alice Johnson', 'password123', 'admin'),
-    ('admin2', 'Bob Smith', 'securepass', 'admin'),
-    ('s12345', 'Charlie Brown', 'studentpass', 'student'),
-    ('s67890', 'Diana Prince', 'wonderwoman', 'student'),
-    ('s11223', 'Ethan Hunt', 'mi6agent', 'student');
+    ('admin1', 'Alice Johnson', '$2b$12$aPoomzd32szKwxrwRdX7puecpHgdSY0LiBP4t5GfIWcziRnn01jFK', 'admin'),
+    ('admin2', 'Bob Smith', '$2b$12$9NJwjbrCvEvWPQXH8/eS.Oa9Uae9VxNpq2GST8Py6CabUAnh/C4/C', 'admin'),
+    ('s12345', 'Charlie Brown', '$2b$12$KW9ZfnTnZ.GkWo8ZV8kLyOmocbl0xyQdHbocF7TYPSmX1kA2OXnc2', 'student'),
+    ('s67890', 'Diana Prince', '$2b$12$iWbOYQjErFWtB1Wx7V6z0u.1wSCqFP2k9.zcDL9Z6T4VRmt0ySI/u', 'student'),
+    ('s11223', 'Ethan Hunt', '$2b$12$SfAGmCQqBFmo7Bj1sSO9dOFuZ1fVz//Qfs24dmZBQSjDCaZXAMw/e', 'student');
 
 -- insert test inventory items (must link to an admin ID)
 INSERT INTO items (name, category, quantity, restock_threshold, user_id) VALUES
