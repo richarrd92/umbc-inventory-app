@@ -33,7 +33,7 @@ const Header = () => {
             <li><a href="https://my.umbc.edu">myUMBC</a></li>
           </ul>
         </nav>
-        <h1 className="retriever-title">Retriever Essentials Inventory</h1>
+        {/* <h1 className="retriever-title">Retriever Essentials Inventory</h1> */}
       </div>
     </header>
   );

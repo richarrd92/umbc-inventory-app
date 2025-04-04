@@ -1,11 +1,13 @@
 import React from "react";
 import Header from "../components/Header";
+import SubHeader from '../components/SubHeader';
 import { Link } from "react-router-dom";
 
 const HomePage = () => {
   return (
     <div>
       <Header />
+      <SubHeader />
 
       <main style={{ padding: "2rem", textAlign: "center" }}>
         <h1 style={{ fontSize: "2rem" }}>
