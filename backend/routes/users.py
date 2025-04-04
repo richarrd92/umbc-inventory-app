@@ -60,7 +60,7 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
             username=user.username,
             name=user.name,
             # password=user.password,
-            password=hashed_password,
+            password=hashed_password, # password encryption
             role=user.role
         )
         
@@ -101,7 +101,7 @@ def update_user(id: int, user: UserCreate, db: Session = Depends(get_db)):
     db_user.username = user.username
     db_user.name = user.name
     # db_user.password = user.password
-    db_user.password = hashed_password
+    db_user.password = hashed_password # password encryption
     db_user.role = user.role
     
     # Commit the changes to the database

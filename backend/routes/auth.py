@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from models import User
 from schemas import LoginRequest, LoginResponse
 from database import get_db
-from passlib.context import CryptContext
+from passlib.context import CryptContext # type: ignore
 
 # Initialize password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -32,3 +32,13 @@ def login_user(login: LoginRequest, db: Session = Depends(get_db)):
     
     # Return token and role
     return {"token": f"mock-token-{user.username}", "role": user.role}
+
+
+# Logout Route  
+@router.post("/logout")
+def logout_user():
+    """
+    This endpoint handles user logout.
+    It requires the frontend to delete the stored token in their localStorage or cookies.
+    """
+    return {"message": "User logged out successfully. Please clear the token on the client-side."}
