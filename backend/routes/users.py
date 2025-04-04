@@ -24,7 +24,7 @@ def get_users(db: Session = Depends(get_db)):
     This endpoint retrieves all active users from the database.
     It queries the 'User' table and returns the list of users.
     """
-    return db.query(User).filter(User.deleted_at.is_(None)).all()  # Use of `is_` instead of `==`
+    return db.query(User).filter(User.deleted_at.is_(None)).all()
 
 # Get a User by ID
 @router.get("/{id}", response_model=UserResponse)
@@ -75,11 +75,7 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
 
 # Update a User
 @router.put("/{id}", response_model=UserResponse)
-<<<<<<< HEAD
 def update_user(id: int, user: UserUpdate, db: Session = Depends(get_db)):
-=======
-def update_user(id: int, user: UserCreate, db: Session = Depends(get_db)):
->>>>>>> origin/main
     """
     This endpoint partially updates an existing user in the database.
     It only updates the fields provided in the request body.
@@ -112,8 +108,4 @@ def delete_user(id: int, db: Session = Depends(get_db)):
     user.deleted_at = datetime.utcnow()
     db.commit()
     
-<<<<<<< HEAD
     return {"message": "User soft deleted successfully"}
-=======
-    return {"message": "User soft deleted successfully"}
->>>>>>> origin/main

@@ -143,7 +143,7 @@ def update_transaction(transaction_id: int, transaction_data: TransactionUpdate,
 
     # If transaction type is changing -->reverse old one and apply the new one
     if transaction_data.transaction_type and transaction_data.transaction_type != transaction.transaction_type:
-        for t_item in transaction.items:
+        for t_item in transaction.transaction_items:
             item = db.query(models.Item).filter(models.Item.id == t_item.item_id).first()
             if not item:
                 continue

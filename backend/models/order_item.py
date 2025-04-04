@@ -13,12 +13,7 @@ class OrderItem(Base):
     final_quantity = Column(Integer, nullable=False)  # Final approved quantity (admin can modify)
     supplier = Column(String(255), nullable=True)  # Supplier name (if available)
     created_at = Column(TIMESTAMP, server_default=func.current_timestamp())  # Timestamp when the order item was created
-<<<<<<< HEAD
-    deleted_at = Column(TIMESTAMP, nullable=True)
-
-=======
     deleted_at = Column(TIMESTAMP, nullable=True) # soft delete timestamp
->>>>>>> origin/main
 
     # Define relationships
     order = relationship("Order", back_populates="order_items")  # Reference to the related order
