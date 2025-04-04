@@ -2,13 +2,15 @@
 import { useState } from "react";
 import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
+import LogoutButton from "../components/LogoutButton";
 
 export default function AdminDashboard() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState("");
-  const { user } = useAuth();
+  const { user } = useAuth(); // Get authenticated user
 
+  // Handle form submission to add item
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -21,7 +23,7 @@ export default function AdminDashboard() {
         },
         {
           headers: {
-            Authorization: `Bearer ${user.token}`,
+            Authorization: `Bearer ${user.token}`, // Send auth token
           },
         }
       );
@@ -38,6 +40,10 @@ export default function AdminDashboard() {
   return (
     <div>
       <h2>Admin Dashboard</h2>
+      {/* Logout Button */}
+      {/* <button onClick={LogoutButton}>Logout</button> */}
+      <LogoutButton />
+      {/* Item submission form */}
       <form onSubmit={handleSubmit}>
         <label>Item Name:</label>
         <br />
@@ -67,6 +73,7 @@ export default function AdminDashboard() {
         />
         <br />
 
+        {/* Submit button */}
         <button type="submit">Add Item</button>
       </form>
     </div>

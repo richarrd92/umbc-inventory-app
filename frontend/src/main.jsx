@@ -1,18 +1,21 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
-import App from "./App";
-import { AuthProvider } from "./contexts/AuthContext";
-import { CartProvider } from "./contexts/CartContext";
+import { BrowserRouter } from "react-router-dom"; // Provides routing for the app
+import App from "./App"; // Provides routing for the app
+import { AuthProvider } from "./contexts/AuthContext"; // Auth context for managing user state
+import { CartProvider } from "./contexts/CartContext"; // Cart context for managing cart state
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
+    <AuthProvider>
+      {/* Provides user state to all components */}
+      <BrowserRouter>
         <CartProvider>
-          <App />
+          {" "}
+          {/* Provides cart state to all components */}
+          <App /> {/* Main app component */}
         </CartProvider>
-      </AuthProvider>
-    </BrowserRouter>
+      </BrowserRouter>
+    </AuthProvider>
   </React.StrictMode>
 );
