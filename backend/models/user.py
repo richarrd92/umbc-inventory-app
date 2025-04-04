@@ -13,7 +13,8 @@ class User(Base):
     password = Column(String(255), nullable=False, default='1234')  # Default password for initial login
     role = Column(Enum('student', 'admin', name='user_roles'), nullable=False)  # User role (defines access rights)
     created_at = Column(TIMESTAMP, server_default=func.current_timestamp())  # Timestamp when the user was created
+    deleted_at = Column(TIMESTAMP, nullable=True)  # Soft delete timestamp
 
     # Define relationships
-    items_added = relationship("Item", back_populates="added_by", cascade="all, delete")  # Items added by the admin
-    transactions = relationship("Transaction", back_populates="user", cascade="all, delete")  # User's transactions
+    items_added = relationship("Item", back_populates="added_by", passive_deletes=True)  # Keep items, but make FKs null
+    transactions = relationship("Transaction", back_populates="user", passive_deletes=True)  # User's transactions - keep transaction history

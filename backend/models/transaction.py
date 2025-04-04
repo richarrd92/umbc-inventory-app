@@ -7,13 +7,14 @@ class Transaction(Base):
     __tablename__ = "transactions"  # Table name in the database
 
     id = Column(Integer, primary_key=True, autoincrement=True)  # Unique identifier for each transaction
-    item_id = Column(Integer, ForeignKey("items.id"), nullable=False)  # The item involved in the transaction
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)  # User who performed the transaction
+    item_id = Column(Integer, ForeignKey("items.id", ondelete="SET NULL"), nullable=True)  # The item involved in the transaction - keep transaction history
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)  # User who performed the transaction - keep transaction history
     quantity = Column(Integer, nullable=False)  # Quantity of the item taken or added
     transaction_type = Column(Enum('IN', 'OUT', name='transaction_types'), nullable=False)  # 'IN' = added, 'OUT' = taken
     notes = Column(Text, nullable=True)  # Optional notes about the transaction
     created_at = Column(TIMESTAMP, server_default=func.current_timestamp())  # Timestamp when the transaction occurred
+    deleted_at = Column(TIMESTAMP, nullable=True)  # Soft delete timestamp
     
     # Define relationships
-    item = relationship("Item", back_populates="transactions")  # Reference to the related item
-    user = relationship("User", back_populates="transactions")  # Reference to the user who made the transaction
+    item = relationship("Item", back_populates="transactions", passive_deletes=True)  # Reference to the related item
+    user = relationship("User", back_populates="transactions", passive_deletes=True)  # Reference to the user who made the transaction

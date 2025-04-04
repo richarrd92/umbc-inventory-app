@@ -5,20 +5,29 @@ from models import User
 from schemas import UserResponse, UserCreate
 from typing import List
 from sqlalchemy.exc import IntegrityError # Validates crud operations
+from datetime import datetime 
 
-router = APIRouter()
+router = APIRouter(prefix="/users", tags=["Users"]) 
+
+# # Debug 
+# @router.get("/")
+# def test():
+#     return {"message": "Working"}
+
+
+# Use "/" instead of "/users" because the router is already prefixed with "/users"
 
 # Get All Users
-@router.get("/users", response_model=List[UserResponse])
+@router.get("/", response_model=List[UserResponse]) 
 def get_users(db: Session = Depends(get_db)):
     """
-    This endpoint retrieves all users from the database.
+    This endpoint retrieves all active users from the database.
     It queries the 'User' table and returns the list of users.
     """
-    return db.query(User).all()
+    return db.query(User).filter(User.deleted_at.is_(None)).all()  # Use of `is_` instead of `==`
 
 # Get a User by ID
-@router.get("/users/{id}", response_model=UserResponse)
+@router.get("/{id}", response_model=UserResponse)
 def get_user(id: int, db: Session = Depends(get_db)):
     """
     This endpoint retrieves a user from the database by their ID.
@@ -31,7 +40,7 @@ def get_user(id: int, db: Session = Depends(get_db)):
     return user
 
 # Create a User
-@router.post("/users", response_model=UserResponse)
+@router.post("/", response_model=UserResponse)
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
     """
     This endpoint creates a new user in the database using the provided data --> must be in json format (raw).
@@ -65,7 +74,7 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
         )
 
 # Update a User
-@router.put("/users/{id}", response_model=UserResponse)
+@router.put("/{id}", response_model=UserResponse)
 def update_user(id: int, user: UserCreate, db: Session = Depends(get_db)):
     """
     This endpoint updates an existing user in the database using the provided data.
@@ -92,16 +101,18 @@ def update_user(id: int, user: UserCreate, db: Session = Depends(get_db)):
     return db_user  
 
 # Delete a User
-@router.delete("/users/{id}")
+@router.delete("/{id}")
 def delete_user(id: int, db: Session = Depends(get_db)):
     """
-    This endpoint deletes a user from the database by their ID.
-    It filters the 'User' table by the given ID and deletes the user if found.
-    If the user is not found, it raises a 404 error.
+    This endpoint marks a user as deleted instead of fully removing them
+    It updates the 'deleted_at' timestamp instead of performing a hard delete
     """
     user = db.query(User).filter(User.id == id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    db.delete(user)
+
+    # Soft delete: set deleted_at timestamp
+    user.deleted_at = datetime.utcnow()
     db.commit()
-    return {"message": "User deleted successfully"}
+    
+    return {"message": "User soft deleted successfully"}

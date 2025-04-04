@@ -4,6 +4,10 @@ This guide provides instructions for setting up and running the backend server f
 
 ```
 backend/
+│── /alembic
+│── |── /versions
+│   ├── env.py
+│   ├── script.py.mako
 │── /models
 │   ├── __init__.py
 │   ├── user.py
@@ -26,6 +30,7 @@ backend/
 │── main.py
 │── dependencies.txt
 │── .env
+│── alembic.ini
 │── /venv
 │── /tests
 │   ├── user-endpoints.json
@@ -55,7 +60,9 @@ backend/
   - `order.py`: Contains schemas for order-related endpoints.
 - `dependencies.txt`: Lists all dependencies
 - `.env`: Stores environment variables securely (e.g., database URL)
+- `alembic.ini`: Configuration file for Alembic, a database migration tool
 - `/venv`: Virtual environment for dependency management
+- `/alembic`: Directory for database migration scripts
 - `/tests`: Directory for endpoint test files
 
 ### Prerequisites
@@ -65,6 +72,8 @@ Before starting, ensure you have the following installed:
 - **Python3** (recommended: latest stable version)
 - **Virtual environment (`venv`) module:** `python3.12 -m venv venv`
 - **Install dependencies from dependencies.txt** `pip install -r dependencies.txt`
+pip freeze > dependencies.txt
+
 
 **Note:** Python 3.13 is unstable, and many third-party packages (like uvicorn) may not yet support it. Using Python 3.12 for the virtual environment ensures better compatibility.
 
