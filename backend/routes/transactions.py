@@ -35,6 +35,9 @@ def get_transaction(transaction_id: int, db: Session = Depends(get_db)):
 # create a transaction
 @router.post("/", response_model=TransactionResponse)
 def create_transaction(transaction: TransactionCreate, db: Session = Depends(get_db)):
+    """
+    Creates a new transaction in the database.
+    """
     try:
         # Create the transaction
         new_transaction = models.Transaction(
@@ -168,7 +171,6 @@ def update_transaction(transaction_id: int, transaction_data: TransactionUpdate,
     db.commit()
     db.refresh(transaction)
     return transaction
-
 
 # Delete a transaction
 @router.delete("/{transaction_id}")

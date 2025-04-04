@@ -6,13 +6,14 @@ from database import Base # Base for model inheritance
 class Transaction(Base):
     __tablename__ = "transactions"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    transaction_type = Column(Enum('IN', 'OUT', name='transaction_types'), nullable=False)
-    notes = Column(Text, nullable=True)
-    created_at = Column(TIMESTAMP, server_default=func.current_timestamp())
-    deleted_at = Column(TIMESTAMP, nullable=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)  # Unique identifier for each transaction
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)  # User who performed the transaction - keep transaction history
+    transaction_type = Column(Enum('IN', 'OUT', name='transaction_types'), nullable=False)  # 'IN' = added, 'OUT' = taken
+    notes = Column(Text, nullable=True)  # Optional notes about the transaction
+    created_at = Column(TIMESTAMP, server_default=func.current_timestamp())  # Timestamp when the transaction occurred
+    deleted_at = Column(TIMESTAMP, nullable=True)  # Soft delete timestamp
 
-    # Relationships
-    user = relationship("User", back_populates="transactions")  # Who made the transaction
-    transaction_items = relationship("TransactionItem", back_populates="transaction", cascade="all, delete")
+
+    # Define relationships
+    user = relationship("User", back_populates="transactions", passive_deletes=True)  # Reference to the user who made the transaction
+    transaction_items = relationship("TransactionItem", back_populates="transaction", cascade="all, delete-orphan")

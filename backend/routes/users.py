@@ -75,7 +75,11 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
 
 # Update a User
 @router.put("/{id}", response_model=UserResponse)
+<<<<<<< HEAD
 def update_user(id: int, user: UserUpdate, db: Session = Depends(get_db)):
+=======
+def update_user(id: int, user: UserCreate, db: Session = Depends(get_db)):
+>>>>>>> origin/main
     """
     This endpoint partially updates an existing user in the database.
     It only updates the fields provided in the request body.
@@ -108,4 +112,8 @@ def delete_user(id: int, db: Session = Depends(get_db)):
     user.deleted_at = datetime.utcnow()
     db.commit()
     
+<<<<<<< HEAD
     return {"message": "User soft deleted successfully"}
+=======
+    return {"message": "User soft deleted successfully"}
+>>>>>>> origin/main

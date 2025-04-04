@@ -11,6 +11,7 @@ from sqlalchemy import func, desc
 
 router = APIRouter(prefix="/orders", tags=["Orders"])
 
+# generate order
 @router.post("/", response_model=OrderResponse, status_code=status.HTTP_201_CREATED)
 def create_order(db: Session = Depends(get_db)):
     """
