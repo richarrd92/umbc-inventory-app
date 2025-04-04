@@ -1,13 +1,2 @@
 @import "tailwindcss";
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
 
-#table-container {
-  display: flex;
-  flex-direction: column;
-  align-content: center;
-}
