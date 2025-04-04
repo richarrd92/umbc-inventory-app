@@ -74,7 +74,7 @@ def update_item(item_id: int, item: ItemUpdate, db: Session = Depends(get_db)):
     This endpoint updates an existing item in the database.
     It takes the item ID and the updated item data as input.
     """
-    db_item = db.query(models.Item).filter(models.Item.id == item_id, models.Item.deleted_at == None).first()
+    db_item = db.query(models.Item).filter(models.Item.id == item_id).first()
     if not db_item:
         raise HTTPException(status_code=404, detail="Item not found")
 
