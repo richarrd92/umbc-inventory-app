@@ -3,9 +3,9 @@
 This project uses **MariaDB** for database management.  
 Each developer runs **their own local instance** of MariaDB, meaning:
 - Everyone installs MariaDB on their own machine.
-- The database schema (`schema.sql`) must be applied manually.
+- The database schema (`main.sql`) must be applied manually.
 - each developer is responsible for maintaining their local database.
-- Example test data can be loaded using `example.sql` (TBD)
+- Optional: Example test data can be loaded using `example.sql`
 
 ---
 
@@ -53,7 +53,7 @@ net start MariaDB
 mysqladmin -u root -p ping
 ```
 
-## **3. Setting up the `inventory` database**
+## **3. Setting up  or resetting the `inventory` database**
 Each developer must create the database **locally**.
 ### **1. Open mariadb:**
 #### Ubuntu/WSL/MacOS
@@ -67,7 +67,17 @@ Output should show something like:
 MariaDB [(none)]>
 ```
 
-### **2. Create `inventory` database:**
+### Resetting (all platforms)
+If you've pulled schema updates from Git (like new tables), run this to reset the database:
+```sh
+mysql -u root -p inventory < database/main.sql
+```
+Replace `inventory` with your database name if different.
+
+**Reminder**: this will wipe any exisiting data and replace it with whatever is in updated `main.sql`.
+
+
+### **2. Create `inventory` database (first time only):**
 ```sh
 CREATE DATABASE inventory;
 SHOW DATABASES;

@@ -1,32 +1,45 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 
-# Base schema (shared attributes)
-class TransactionBase(BaseModel):
+# transaction items nested inside transactions
+class TransactionItemBase(BaseModel):
     item_id: int
-    user_id: Optional[int] = None
     quantity: int
+
+class TransactionItemCreate(TransactionItemBase):
+    pass
+
+class TransactionItemResponse(TransactionItemBase):
+    id: int
+    created_at: datetime
+    deleted_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+# Base schema for the transaction
+class TransactionBase(BaseModel):
+    user_id: Optional[int] = None
     transaction_type: str  # 'IN' or 'OUT'
     notes: Optional[str] = None
 
-# Schema for creating a transaction
+# Creating a transaction with nested items
 class TransactionCreate(TransactionBase):
-    pass  # Inherits all attributes from TransactionBase
+    transaction_items: List[TransactionItemCreate]
 
-# Schema for updating a transaction
+# Updating transaction metadata only
 class TransactionUpdate(BaseModel):
-    item_id: Optional[int] = None
     user_id: Optional[int] = None
-    quantity: Optional[int] = None
     transaction_type: Optional[str] = None
     notes: Optional[str] = None
 
-# Schema for returning a transaction
+# Returning a transaction with its nested items
 class TransactionResponse(TransactionBase):
     id: int
     created_at: datetime
-    deleted_at: Optional[datetime] = None  # Soft delete tracking
+    deleted_at: Optional[datetime] = None
+    transaction_items: List[TransactionItemResponse]
 
     class Config:
-        from_attributes = True  # Enables ORM mode
+        from_attributes = True

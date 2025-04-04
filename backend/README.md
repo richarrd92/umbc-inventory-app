@@ -15,8 +15,9 @@ backend/
 │   ├── item.py
 │   ├── transaction.py
 │   ├── order.py
+    ├── order_item.py
+    ├── transaction_item.py
 │── /routes
-│   ├── __init__.py
 │   ├── users.py
 │   ├── items.py
 │   ├── transactions.py
@@ -51,7 +52,10 @@ backend/
   - `user.py`: Defines the `User` model, including attributes like ID, name, username, password etc.
   - `item.py`: Defines the `Item` model, including attributes like ID, name, category, quantity etc.
   - `transaction.py`: Defines the `Transaction` model, which tracks item purchases, linking users and items.
-  - `order.py`: Defines the `Order` model, managing user orders and their associated transactions.
+  - `transaction_item.py`: Defines the `TransactionItem` model, which represents each item+quantity involved in a transaction.
+  - `order.py`: Defines the `Order` model, which manages incoming orders of supplies to restock inventory.
+  - `order_item.py`: Defines the `OrderItem` model, representing specific items in an order, including suggested and final quantities and supplier info
+
 - `routes/`: Contains API route files.
   - `__init__.py`: Enables this directory to be recognized as a module, allowing for structured route imports.
   - `users.py`: Handles user-related operations like registration, authentication, and profile management.

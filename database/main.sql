@@ -6,6 +6,7 @@ USE inventory;
 SET FOREIGN_KEY_CHECKS = 0; -- Temporarily disables foreign key constraints to avoid dependency errors.
 DROP TABLE IF EXISTS order_items;
 DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS transaction_items;
 DROP TABLE IF EXISTS transactions;
 DROP TABLE IF EXISTS items;
 DROP TABLE IF EXISTS users;
@@ -37,23 +38,33 @@ CREATE TABLE items (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL  -- Updated: prevents full deletion of related data
 );
 
--- transactions table (Logs inventory changes when any users take/add items)
+-- transactions table (logs the checkout event)
 CREATE TABLE transactions (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    item_id INT, -- the item being taken/added
-    user_id INT,  -- who did the transaction (either students or admins)
-    quantity INT NOT NULL, -- the amount being taken/added
-    transaction_type ENUM('IN', 'OUT') NOT NULL,  -- 'IN' = added, 'OUT' = taken
-    notes TEXT NULL,  -- optional notes about transaction
+    id INT AUTO_INCREMENT PRIMARY KEY, -- unique ID for the transaction
+    user_id INT, -- the user (student/admin) who made the transaction
+    transaction_type ENUM('IN', 'OUT') NOT NULL, -- OUT = item taken (student), IN = item added (admin/restock)
+    notes TEXT NULL, -- optional notes (e.g., "picked up snacks")
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL DEFAULT NULL, -- Marks when the transaction was "deleted"
-    FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE SET NULL, -- Updated: keeps transaction history even if item is removed
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL -- Updated: retains historical user transactions
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL -- keeps transaction if user is deleted
+);
+
+-- transaction items table (logs each item in a transaction)
+CREATE TABLE transaction_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    transaction_id INT, -- links back to the parent transaction
+    item_id INT, -- the item being checked out
+    quantity INT NOT NULL, -- how many of that item were taken or added
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
+    FOREIGN KEY (transaction_id) REFERENCES transactions(id) ON DELETE CASCADE, -- delete items if parent transaction is deleted
+    FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE SET NULL -- keep historical data even if item is removed
 );
 
 -- orders table (stores table of orders generated for restocking inventory)
 CREATE TABLE orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    submitted BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- when that order was generated
     deleted_at TIMESTAMP NULL DEFAULT NULL -- added for soft delete instead of full removal
 );
@@ -92,13 +103,18 @@ INSERT INTO items (name, category, quantity, restock_threshold, user_id) VALUES
     ('Granola Bars', 'Food', 75, 15, 2),
     ('Salads', 'Food', 25, 5, 1);
 
--- insert test transactions (IN = added, OUT = taken)
-INSERT INTO transactions (item_id, user_id, quantity, transaction_type, notes) VALUES
-    (1, 3, 1, 'OUT', 'Sandwich given to student'),
-    (2, 4, 1, 'OUT', 'Fruit pack given to student'),
-    (3, 5, 2, 'OUT', 'Bottled water distributed'),
-    (4, 3, 3, 'OUT', 'Granola bars provided for snack'),
-    (5, 4, 1, 'OUT', 'Salad given for lunch');
+-- insert test transactions (checkout event)
+INSERT INTO transactions (user_id, transaction_type, notes) VALUES
+    (3, 'OUT', 'Charlie took snacks and drinks'),
+    (4, 'OUT', 'Diana picked up food items');
+
+-- insert transaction items (must reference an existing transaction and item)
+INSERT INTO transaction_items (transaction_id, item_id, quantity) VALUES
+    (1, 1, 1),  -- Sandwich
+    (1, 3, 1),  -- Bottled Water
+    (1, 4, 2),  -- Granola Bars
+    (2, 2, 1),  -- Fruit Pack
+    (2, 5, 1);  -- Salad
 
 -- insert test orders (you must create an order before order_items)
 INSERT INTO orders (created_at) VALUES
@@ -116,5 +132,6 @@ INSERT INTO order_items (order_id, item_id, suggested_quantity, final_quantity, 
 SELECT * FROM users;
 SELECT * FROM items;
 SELECT * FROM transactions;
+SELECT * FROM transaction_items;
 SELECT * FROM orders;
 SELECT * FROM order_items;

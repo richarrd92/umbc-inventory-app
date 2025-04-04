@@ -25,7 +25,6 @@ app.include_router(transactions.router)
 app.include_router(auth.router) 
 
 
-
 # Landing page (http://127.0.0.1:8000/)
 @app.get("/")
 def read_root():
