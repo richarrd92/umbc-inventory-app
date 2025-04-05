@@ -13,7 +13,7 @@ export default function AdminRoutes() {
   useEffect(() => {
     if (window.location.pathname === "/logout") {
       logout(); // Trigger logout when on the /logout route
-      navigate("/login"); // Redirect to login after logout
+      navigate("/"); // Redirect to login after logout
     }
   }, [logout, navigate]); // The dependencies ensure that logout is only called when necessary
 

@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+
+/* Login Form Styling */
+.login-section {
+  background-color: #f9fafb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.login-wrapper {
+  width: 100%;
+  max-width: 480px;
+}
+
+.login-card {
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  box-shadow: 0 0 0 2px #e5e7eb, 0 2px 10px rgba(0, 0, 0, 0.05);
+  width: 100%;
+}
+
+.login-card-inner {
+  padding: 5rem;
+}
+
+.login-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #111827;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.login-error {
+  font-size: 0.875rem;
+  color: #ef4444;
+  margin-bottom: 1rem;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-size: 1rem;
+  font-weight: 900;
+  color: #374151;
+  margin-bottom: 0.rem;
+}
+
+.form-group input {
+  padding: 0.625rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  color: #111827;
+  background-color: #f9fafb;
+  outline: none;
+}
+
+.form-group input:focus {
+  border-color: #fcb415;
+  box-shadow: 0 0 0 2px #fcb41533;
+}
+
+.login-button {
+  background-color: #fcb415;
+  color: #000000;
+  padding: 0.625rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.login-button:hover {
+  background-color: #e5a900;
+}

@@ -1,14 +1,17 @@
-import React from 'react';
-import Header from './Header';
-import SubHeader from './SubHeader';
+import React from "react";
+import Header from "./Header";
+import Footer from "./Footer";
+import "./Layout.css";
+import SubHeader from "./SubHeader";
 
 const Layout = ({ children }) => {
   return (
-    <>
+    <div className="layout-container">
       <Header />
-      <SubHeader />
-      <main>{children}</main>
-    </>
+      <SubHeader title={"Retriever Essentials Inventory App"} />
+      <main >{children}</main>
+      <Footer />
+    </div>
   );
 };
 

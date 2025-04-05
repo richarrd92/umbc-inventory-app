@@ -8,7 +8,7 @@ export default function StudentRoutes() {
   const { user } = useAuth();
 
   // Redirect to login if no user or if the user is not a student
-  if (!user || user.role !== "student") return <Navigate to="/login" />;
+  if (!user || user.role !== "student") return <Navigate to="/" />;
 
   return (
     <Routes>

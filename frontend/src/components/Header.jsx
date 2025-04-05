@@ -21,8 +21,10 @@ const Header = () => {
           className="retriever-logo"
         />
       </div>
+      {/* moved the links to the footer */}
 
-      <div className="umbc-bottom-bar">
+      
+      {/* <div className="umbc-bottom-bar">
         <nav className="umbc-nav">
           <ul>
             <li><a href="https://www.facebook.com/umbcpage">Facebook</a></li>
@@ -34,7 +36,7 @@ const Header = () => {
           </ul>
         </nav>
         {/* <h1 className="retriever-title">Retriever Essentials Inventory</h1> */}
-      </div>
+      {/* </div> */} 
     </header>
   );
 };

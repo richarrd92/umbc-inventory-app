@@ -2,11 +2,16 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
 import LogoutButton from "../components/LogoutButton";
+import { FaShoppingCart } from "react-icons/fa"; // Importing cart icon
+import "./StudentDashboard.css";
+import "./Pagination.css";
 
 export default function StudentDashboard() {
   const [items, setItems] = useState([]);
-  const [quantities, setQuantities] = useState({});
   const { user } = useAuth();
+  const [quantities, setQuantities] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // Adjust the number of items per page
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -17,7 +22,7 @@ export default function StudentDashboard() {
 
       // Initialize quantity for each item to 0
       const initialQuantities = {};
-      res.data.forEach(item => {
+      res.data.forEach((item) => {
         initialQuantities[item.id] = 0;
       });
       setQuantities(initialQuantities);
@@ -25,8 +30,16 @@ export default function StudentDashboard() {
     fetchItems();
   }, [user.token]);
 
+  // Calculate the current items to be displayed based on the current page
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = items.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Calculate total pages dynamically
+  const totalPages = Math.ceil(items.length / itemsPerPage);
+
   const handleQuantityChange = (itemId, newQty) => {
-    setQuantities(prev => ({
+    setQuantities((prev) => ({
       ...prev,
       [itemId]: Math.max(0, newQty), // prevent negatives
     }));
@@ -43,32 +56,48 @@ export default function StudentDashboard() {
     alert("Checkout submitted! (Functionality coming soon)");
   };
 
-  return (
-    <div style={{ padding: "2rem" }}>
-      <h2>Available Items</h2>
-      <LogoutButton />
+  // Pagination controls
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
-      <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "1rem" }}>
+  return (
+    <div className="dashboard-container">
+      <div className="dashboard-header-container">
+        <h2 className="dashboard-header">Available Items</h2>
+        <FaShoppingCart className="cart-icon" />
+      </div>
+      <table className="table">
         <thead>
           <tr>
-            <th style={{ textAlign: "left", padding: "10px" }}>Item</th>
-            <th style={{ textAlign: "center", padding: "10px" }}>Available</th>
-            <th style={{ textAlign: "center", padding: "10px" }}>Checkout</th>
+            <th style={{ textAlign: "left", padding: "10px", width: "60%" }}>
+              Item
+            </th>
+            <th style={{ textAlign: "center", padding: "10px", width: "20%" }}>
+              Available
+            </th>
+            <th style={{ textAlign: "center", padding: "10px", width: "20%" }}>
+              Checkout
+            </th>
           </tr>
         </thead>
         <tbody>
-          {items.map(item => (
+          {currentItems.map((item) => (
             <tr key={item.id} style={{ borderBottom: "1px solid #ccc" }}>
-              <td style={{ padding: "10px" }}>{item.name}</td>
-              <td style={{ textAlign: "center" }}>{item.quantity}</td>
-              <td style={{ textAlign: "center" }}>
+              <td style={{ padding: "10px", width: "60%" }}>{item.name}</td>
+              <td style={{ textAlign: "center", width: "20%" }}>
+                {item.quantity}
+              </td>
+              <td style={{ textAlign: "center", width: "20%" }}>
                 <input
                   type="number"
                   min="0"
                   max={item.quantity}
                   value={quantities[item.id] || 0}
-                  onChange={(e) => handleQuantityChange(item.id, Number(e.target.value))}
-                  style={{ width: "60px", padding: "4px" }}
+                  onChange={(e) =>
+                    handleQuantityChange(item.id, Number(e.target.value))
+                  }
+                  style={{ width: "45px", padding: "2px" }}
                 />
               </td>
             </tr>
@@ -76,10 +105,33 @@ export default function StudentDashboard() {
         </tbody>
       </table>
 
-      <div style={{ display: "flex", justifyContent: "space-between", marginTop: "2rem" }}>
-        <button onClick={() => window.history.back()}>Go Back</button>
-        <button onClick={handleFinishCheckout} style={{ backgroundColor: "#ffb81c", padding: "0.5rem 1rem", fontWeight: "bold" }}>
-          Finish Checkout
+      {/* Pagination controls */}
+      <div className="pagination-container">
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+
+        {/* Display current page and total pages */}
+        <span className="page-info">
+          {currentPage} / {totalPages} 
+        </span>
+
+        {/* Next Button */}
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
+      </div>
+
+      <div className="button-container">
+        <LogoutButton />
+        <button className="finish-button" onClick={handleFinishCheckout}>
+          Check Out
         </button>
       </div>
     </div>
