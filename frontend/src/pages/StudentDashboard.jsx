@@ -27,7 +27,8 @@ export default function StudentDashboard() {
         headers: { Authorization: `Bearer ${user.token}` },
       });
 
-      setItems(res.data); // Update items
+      const availableItems = res.data.filter((item) => item.quantity > 0);
+      setItems(availableItems); // only show items with quantity > 0
 
       const initialStock = {};
       const initialQuantities = {};
