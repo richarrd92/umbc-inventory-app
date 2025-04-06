@@ -29,7 +29,7 @@ export default function StudentDashboard() {
 
       setItems(res.data); // Update items
 
-      const initialStock = {}; 
+      const initialStock = {};
       const initialQuantities = {};
 
       // Initialize stock and quantities
@@ -47,16 +47,17 @@ export default function StudentDashboard() {
   }, [user.token]);
 
   // Function to handle quantity changes
-  const handleQuantityChange = (itemId, newQty) => {
+  const handleQuantityChange = (itemId, inputValue) => {
     const item = items.find((i) => i.id === itemId);
     if (!item) return;
 
+    const parsedValue = parseInt(inputValue, 10);
+    const newQty = isNaN(parsedValue) ? 0 : Math.max(0, parsedValue);
     setQuantities((prev) => ({
       ...prev,
-      [itemId]: Math.max(0, newQty),
+      [itemId]: newQty,
     }));
 
-    // If quantity is 0, remove from cart
     if (newQty === 0) {
       removeFromCart(itemId);
     } else {
@@ -124,16 +125,34 @@ export default function StudentDashboard() {
                 {getAvailableStock(item.id)}
               </td>
               <td style={{ textAlign: "center", width: "20%" }}>
-                <input
-                  type="number"
-                  min="0"
-                  max={originalStock[item.id]}
-                  value={quantities[item.id] || 0}
-                  onChange={(e) =>
-                    handleQuantityChange(item.id, Number(e.target.value))
-                  }
-                  style={{ width: "45px", padding: "2px" }}
-                />
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "4px" }}>
+                  <button
+                    onClick={() =>
+                      handleQuantityChange(item.id, (quantities[item.id] || 0) - 1)
+                    }
+                    disabled={(quantities[item.id] || 0) <= 0}
+                    style={{ padding: "0 5px" }}
+                  >
+                    -
+                  </button>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    value={quantities[item.id] !== undefined ? quantities[item.id] : ""}
+                    onChange={(e) => handleQuantityChange(item.id, e.target.value)}
+                    style={{ width: "45px", textAlign: "center", padding: "2px" }}
+                  />
+                  <button
+                    onClick={() =>
+                      handleQuantityChange(item.id, (quantities[item.id] || 0) + 1)
+                    }
+                    disabled={(quantities[item.id] || 0) >= originalStock[item.id]}
+                    style={{ padding: "0 5px" }}
+                  >
+                    +
+                  </button>
+                </div>
               </td>
             </tr>
           ))}
