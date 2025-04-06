@@ -45,6 +45,11 @@ export default function StudentDashboard() {
     }));
   };
 
+  const totalCartItems = Object.values(quantities).reduce(
+    (sum, qty) => sum + qty,
+    0
+  );
+
   const handleFinishCheckout = () => {
     const selectedItems = Object.entries(quantities)
       .filter(([id, qty]) => qty > 0)
@@ -65,7 +70,12 @@ export default function StudentDashboard() {
     <div className="dashboard-container">
       <div className="dashboard-header-container">
         <h2 className="dashboard-header">Available Items</h2>
-        <FaShoppingCart className="cart-icon" />
+        <div className="cart-icon-container">
+          <FaShoppingCart className="cart-icon" />
+          {totalCartItems > 0 && (
+            <span className="cart-count">{totalCartItems}</span>
+          )}
+        </div>
       </div>
       <table className="table">
         <thead>
@@ -116,7 +126,7 @@ export default function StudentDashboard() {
 
         {/* Display current page and total pages */}
         <span className="page-info">
-          {currentPage} / {totalPages} 
+          {currentPage} / {totalPages}
         </span>
 
         {/* Next Button */}
