@@ -30,8 +30,10 @@ def login_user(login: LoginRequest, db: Session = Depends(get_db)):
     if not verify_password(login.password, user.password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password")
     
+    # print(f"User object: {user.username}, {user.name}, {user.password}, {user.role}")
+
     # Return token and role
-    return {"token": f"mock-token-{user.username}", "role": user.role}
+    return {"token": f"mock-token-{user.username}", "role": user.role, "id": user.id}
 
 
 # Logout Route  

@@ -14,15 +14,27 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form behavior
     setError(null); // Reset error state on new submission
-    console.log("Submitting login request with", { username, password }); // Log request data
+    console.log("Submitting login request with", { username, password }); 
     try {
       const res = await axios.post("http://localhost:8000/auth/login", {
         username,
         password,
       });
 
-      const { token, role } = res.data; // Get token + role from backend
-      login({ token, role }); // Save user info in auth context
+      // what's being returned from the backend
+      console.log("Login response:", res.data);
+
+      const { token, role, id } = res.data; // Get token, role, and id from response
+      console.log("Extracted data:", { token, role, id }); 
+
+      // Check if id is undefined
+      if (!id) {
+        console.error("User ID is missing from response!");
+        setError("User ID is missing in the response.");
+        return;
+      }
+
+      login({ token, role, id });
 
       // Redirect based on role
       if (role === "admin") navigate("/admin");

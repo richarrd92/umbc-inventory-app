@@ -12,6 +12,7 @@ export const AuthProvider = ({ children }) => {
 
   // Login function: stores user data in state and local storage
   const login = (data) => {
+    console.log("Logging in with data:", data); 
     setUser(data);
     localStorage.setItem("user", JSON.stringify(data));
   };
@@ -21,6 +22,7 @@ export const AuthProvider = ({ children }) => {
     console.log("Logging out...");
     setUser(null); // Clear user state
     localStorage.removeItem("user"); // Remove user data from localStorage
+    console.log("User in localStorage:", localStorage.getItem("user"));
   };
 
   return (

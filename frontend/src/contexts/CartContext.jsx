@@ -1,8 +1,10 @@
 // src/contexts/CartContext.jsx
 import { createContext, useContext, useState, useEffect } from "react";
 
+// Create cart context
 const CartContext = createContext();
 
+// CartProvider manages cart state
 export const CartProvider = ({ children }) => {
   // Initialize cart from local storage or as an empty array
   const [cart, setCart] = useState(() => {
@@ -18,12 +20,45 @@ export const CartProvider = ({ children }) => {
   const addToCart = (item) => {
     setCart((prev) => {
       const existingItem = prev.find((i) => i.id === item.id);
+
+      // If item is already in cart, update quantity
       if (existingItem) {
         return prev.map((i) =>
-          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+          i.id === item.id
+            ? {
+                ...i,
+                quantity:
+                  typeof item.quantity === "number"
+                    ? item.quantity
+                    : i.quantity + 1,
+              }
+            : i
         );
       }
-      return [...prev, { ...item, quantity: 1 }];
+
+      // If item is not in cart, add it
+      return [
+        ...prev,
+        {
+          ...item,
+          quantity: typeof item.quantity === "number" ? item.quantity : 1,
+        },
+      ];
+    });
+  };
+
+  // Add multiple items to the cart
+  const addItems = (newItems) => {
+
+    // Merge new items with existing items
+    setCart((prev) => {
+      const merged = [...prev];
+      newItems.forEach((newItem) => {
+        if (!merged.find((item) => item.id === newItem.id)) {
+          merged.push(newItem);
+        }
+      });
+      return merged;
     });
   };
 
@@ -34,12 +69,13 @@ export const CartProvider = ({ children }) => {
 
   // Decrease item quantity, remove if quantity is 1
   const decreaseQuantity = (itemId) => {
-    setCart((prev) =>
-      prev
-        .map((item) =>
-          item.id === itemId ? { ...item, quantity: item.quantity - 1 } : item
-        )
-        .filter((item) => item.quantity > 0)
+    setCart(
+      (prev) =>
+        prev
+          .map((item) =>
+            item.id === itemId ? { ...item, quantity: item.quantity - 1 } : item
+          )
+          .filter((item) => item.quantity > 0) // Remove item if quantity is 0
     );
   };
 
@@ -49,9 +85,17 @@ export const CartProvider = ({ children }) => {
     localStorage.removeItem("cart");
   };
 
+  // Render the cart context provider
   return (
     <CartContext.Provider
-      value={{ cart, addToCart, removeFromCart, decreaseQuantity, clearCart }}
+      value={{
+        cart,
+        addToCart,
+        removeFromCart,
+        decreaseQuantity,
+        clearCart,
+        addItems,
+      }}
     >
       {children}
     </CartContext.Provider>
