@@ -6,8 +6,12 @@ from schemas import UserResponse, UserCreate, UserUpdate
 from typing import List
 from sqlalchemy.exc import IntegrityError # Validates crud operations
 from datetime import datetime 
+from passlib.context import CryptContext # type: ignore
+
 
 router = APIRouter(prefix="/users", tags=["Users"]) 
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 
 # # Debug 
 # @router.get("/")
@@ -48,10 +52,15 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     """
     try:
         # Create a new user instance using the data from the request body (UserCreate schema)
+
+        # Hash the password before saving
+        hashed_password = pwd_context.hash(user.password)
+
         new_user = User(
             username=user.username,
             name=user.name,
-            password=user.password,
+            # password=user.password,
+            password=hashed_password, # password encryption
             role=user.role
         )
         
@@ -83,11 +92,18 @@ def update_user(id: int, user: UserUpdate, db: Session = Depends(get_db)):
     db_user = db.query(User).filter(User.id == id, User.deleted_at == None).first()
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
+    
+    # # Only update fields that were provided in the request
+    # for key, value in user.dict(exclude_unset=True).items():
+    #     setattr(db_user, key, value)
 
-    # Only update fields that were provided in the request
-    for key, value in user.dict(exclude_unset=True).items():
-        setattr(db_user, key, value)
-
+    # Update the user attributes with the data from the request body (UserCreate schema)
+    db_user.username = user.username
+    db_user.name = user.name
+    db_user.password = user.password
+    db_user.role = user.role
+    
+    # Commit the changes to the database
     db.commit()
     db.refresh(db_user)
 

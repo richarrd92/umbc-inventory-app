@@ -10,6 +10,7 @@ backend/
 │   ├── script.py.mako
 │── /models
 │   ├── __init__.py
+│   ├── auth.py
 │   ├── user.py
 │   ├── item.py
 │   ├── transaction.py
@@ -23,6 +24,7 @@ backend/
 │   ├── orders.py
 │── /schemas
 │   ├── __init__.py
+│   ├── auth.py
 │   ├── user.py
 │   ├── item.py
 │   ├── transaction.py
@@ -34,7 +36,10 @@ backend/
 │── alembic.ini
 │── /venv
 │── /tests
+│   ├── endpoint-documentation.md
 │   ├── user-endpoints.json
+│   ├── item-endpoints.json
+│   ├── transaction-endpoints.json
 ```
 
 ### File Descriptions
@@ -43,6 +48,7 @@ backend/
 - `main.py`: Entry point for running the backend. Initializes the FastAPI server, loads routes, and sets up middleware if needed.
 - `models/`: Contains database models representing different entities.
   - `__init__.py`: Marks this directory as a package, enabling imports between modules.
+  - `auth.py`: Defines the `Auth` model, including attributes like ID, username, password etc.
   - `user.py`: Defines the `User` model, including attributes like ID, name, username, password etc.
   - `item.py`: Defines the `Item` model, including attributes like ID, name, category, quantity etc.
   - `transaction.py`: Defines the `Transaction` model, which tracks item purchases, linking users and items.
@@ -58,6 +64,7 @@ backend/
   - `orders.py`: Provides endpoints for managing orders, including order creation and retrieval.
 - `schemas/`: Defines Pydantic models for data validation.
   - `__init__.py`: Ensures this directory is treated as a package, facilitating imports across the application.
+  - `auth.py`: Defines schemas for authentication-related API interactions.
   - `user.py`: Defines schemas for user-related API interactions.
   - `item.py`: Defines schemas for item-related API interactions.
   - `transaction.py`: Specifies validation rules for transaction-related data.

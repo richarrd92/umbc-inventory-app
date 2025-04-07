@@ -1,0 +1,49 @@
+/* Footer.css */
+
+.umbc-footer {
+  background-color: #000; /* UMBC black */
+  color: #fff;
+  padding: 2rem 0;
+  text-align: center;
+}
+
+.umbc-footer-top {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.umbc-footer-top .umbc-logo {
+  height: 40px;
+}
+
+.umbc-footer-top .retriever-logo {
+  height: 30px;
+}
+
+.umbc-footer-bottom {
+  margin-top: 1rem;
+}
+
+.umbc-footer-nav ul {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  list-style: none;
+  padding: 0;
+}
+
+.umbc-footer-nav a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.umbc-footer-nav a:hover {
+  text-decoration: underline;
+}
+
+.umbc-footer-copyright {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}

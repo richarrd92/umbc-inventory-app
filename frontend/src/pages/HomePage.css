@@ -1,0 +1,11 @@
+/* HomePage.css */
+
+.home-page {
+  font-family: "Roboto", sans-serif;
+  background-color: #f8f8f8;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
