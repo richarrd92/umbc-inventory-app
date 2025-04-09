@@ -50,37 +50,57 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     This endpoint creates a new user in the database using the provided data --> must be in json format (raw).
     It checks for any duplicate username errors and returns the created user.
     """
-    try:
-        # Create a new user instance using the data from the request body (UserCreate schema)
+    # try:
 
-        # Hash the password before saving
-        hashed_password = pwd_context.hash(user.password)
+    # Create a new user instance using the data from the request body (UserCreate schema)
 
-        new_user = User(
-            username=user.username,
-            name=user.name,
-            # password=user.password,
-            password=hashed_password, # password encryption
-            role=user.role
-        )
-        
-        # Add the new user to the database session and commit
-        db.add(new_user)
-        db.commit()
-        
-        # Refresh to get the newly created user with id and created_at
-        db.refresh(new_user)
-        
-        # Return the newly created user as a response (using UserResponse schema)
-        return new_user
+    # Hash the password before saving
+    # hashed_password = pwd_context.hash(user.password)
+
+
+    # Check if the user already exists (ignoring soft-deleted users)
+    existing_user = db.query(User).filter(
+        (User.email == user.email) | (User.firebase_uid == user.firebase_uid),
+        User.deleted_at == None  # Ensure the user is not soft deleted
+    ).first()
     
-    except IntegrityError as e:
-        # If there's a unique constraint violation (e.g., duplicate username)
-        db.rollback()  # Rollback the session to undo the transaction
+    # If the user already exists, raise an error
+    if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Username already exists"
+            detail="User with this email or Firebase UID already exists"
         )
+
+    # Create a new user instance
+    new_user = User(
+        # username=user.username,
+        firebase_uid=user.firebase_uid,
+        email=user.email,
+        name=user.name,
+        # password=user.password,
+        # password=hashed_password, # password encryption
+        role=user.role
+    )
+    
+    # Add the new user to the database session and commit
+    db.add(new_user)
+    db.commit()
+    
+    # Refresh to get the newly created user with id and created_at
+    db.refresh(new_user)
+    
+    # Return the newly created user as a response (using UserResponse schema)
+    return new_user
+
+    
+    # except IntegrityError as e:
+    #     # If there's a unique constraint violation (e.g., duplicate username)
+    #     db.rollback()  # Rollback the session to undo the transaction
+    #     raise HTTPException(
+    #         status_code=status.HTTP_400_BAD_REQUEST,
+    #         # detail="Username already exists"
+    #         detail="User with this email or Firebase UID already exists"
+    #     )
 
 # Update a User
 @router.put("/{id}", response_model=UserResponse)
@@ -97,12 +117,26 @@ def update_user(id: int, user: UserUpdate, db: Session = Depends(get_db)):
     # for key, value in user.dict(exclude_unset=True).items():
     #     setattr(db_user, key, value)
 
+
     # Update the user attributes with the data from the request body (UserCreate schema)
-    db_user.username = user.username
-    db_user.name = user.name
-    db_user.password = user.password
-    db_user.role = user.role
+    # db_user.username = user.username
+
+    # Update field(s) if provided
+    if user.firebase_uid:
+        db_user.firebase_uid = user.firebase_uid
+    if user.email:
+        db_user.email = user.email
+    if user.name:
+        db_user.name = user.name
+    if user.role:
+        db_user.role = user.role
     
+    # # Only hash and update the password if it's provided
+    if user.password:
+        # Hash the password before saving
+        hashed_password = pwd_context.hash(user.password)
+        db_user.password = hashed_password
+
     # Commit the changes to the database
     db.commit()
     db.refresh(db_user)

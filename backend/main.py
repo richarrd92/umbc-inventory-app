@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware  # Import CORS middleware
-from routes import items, users, orders, transactions, auth # Import route modules
+from routes import items, users, orders, transactions, firebase_auth as auth # Import route modules
 
 # Initialize FastAPI application
 app = FastAPI()

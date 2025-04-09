@@ -13,7 +13,9 @@ class UserRole(str, Enum):
 # attributes shared btn admins and students
 # calls userRole Enum
 class UserBase(BaseModel):
-    username: str = Field(..., max_length=50)
+    # username: str = Field(..., max_length=50)
+    firebase_uid: str = Field(..., max_length=255)  # Firebase UID
+    email: str = Field(..., max_length=255)  # User email
     name: str = Field(..., max_length=255)
     role: UserRole
 
@@ -21,7 +23,8 @@ class UserBase(BaseModel):
 # extends/inherites from UserBase
 # password must be minimum 4 in length
 class UserCreate(UserBase):
-    password: str = Field(..., min_length=4, max_length=255)
+    # password: str = Field(..., min_length=4, max_length=255)
+    pass
 
 # Schema for user response (excludes password)
 # extends/inherites from UserBase
@@ -38,6 +41,8 @@ class UserResponse(UserBase):
 # user can update 0 to any field necassary
 class UserUpdate(BaseModel):
     name: Optional[str] = None
-    username: Optional[str] = None
+    # username: Optional[str] = None
+    firebase_uid: Optional[str] = None  # Can be updated if necessary
+    email: Optional[str] = None  # Optional update for email
     role: Optional[str] = None
     password: Optional[str] = None
