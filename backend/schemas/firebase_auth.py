@@ -8,3 +8,5 @@ class LoginResponse(BaseModel):
     token: str   # Firebase ID token 
     role: str    # Role of the user (student/admin)
     id: int      # The user's database ID
+    name: str    # The user's name
+    email: str   # The user's email

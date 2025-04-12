@@ -1,6 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
-
-
 /* Login Form Styling */
 .login-section {
   background-color: #f9fafb;
@@ -10,68 +7,36 @@
   width: 100%;
 }
 
-.login-wrapper {
-  width: 100%;
-  max-width: 480px;
-}
-
 .login-card {
-  background-color: #ffffff;
+  background-color: rgba(0, 0, 0, 0.8);
   border-radius: 0.75rem;
   box-shadow: 0 0 0 2px #e5e7eb, 0 2px 10px rgba(0, 0, 0, 0.05);
+  max-width: 560px;
   width: 100%;
-}
-
-.login-card-inner {
-  padding: 5rem;
-}
-
-.login-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #111827;
-  margin-bottom: 1.5rem;
-  text-align: center;
-}
-
-.login-error {
-  font-size: 0.875rem;
-  color: #ef4444;
-  margin-bottom: 1rem;
-}
-
-.login-form {
+  height: 280px;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  align-items: center;
+  justify-content: center;
+  font-family: "Roboto", sans-serif;
+  position: relative;
+  z-index: 1;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+.flag-pattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.12;
+  z-index: -1; 
 }
 
-.form-group label {
-  font-size: 1rem;
-  font-weight: 900;
-  color: #374151;
-  margin-bottom: 0.rem;
-}
-
-.form-group input {
-  padding: 0.625rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  color: #111827;
-  background-color: #f9fafb;
-  outline: none;
-}
-
-.form-group input:focus {
-  border-color: #fcb415;
-  box-shadow: 0 0 0 2px #fcb41533;
+#login-card-umbc-logo {
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 1; 
 }
 
 .login-button {
@@ -84,8 +49,17 @@
   border: none;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  position: relative;
+  z-index: 1; 
 }
 
 .login-button:hover {
   background-color: #e5a900;
+}
+
+.login-error {
+  font-size: 0.875rem;
+  color: #ef4444;
+  margin-bottom: 1rem;
+  z-index: 1; 
 }

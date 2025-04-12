@@ -1,30 +1,34 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
-import LogoutButton from "../components/LogoutButton";
 import { FaShoppingCart } from "react-icons/fa";
 import "./StudentDashboard.css";
 import "./Pagination.css";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
+import Sidebar from "../components/Sidebar";
+import { FaBars } from "react-icons/fa";
 
 export default function StudentDashboard() {
   const [items, setItems] = useState([]);
   const [originalStock, setOriginalStock] = useState({}); // Track initial stock
   const [quantities, setQuantities] = useState({});
-  const { user } = useAuth();
+  const { currentUser } = useAuth();
   const navigate = useNavigate();
   const { cart, addToCart, removeFromCart, clearCart } = useCart(); // Cart context
   const [currentPage, setCurrentPage] = useState(1);
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const toggleSidebar = () => setSidebarOpen((prev) => !prev);
+
   const itemsPerPage = 5; // Number of items per page
-  console.log("User ID check from StudentDashboard:", user.id);
+  console.log("currentUser ID check from StudentDashboard:", currentUser.id);
 
   // Fetch items from the backend
   useEffect(() => {
     const fetchItems = async () => {
       const res = await axios.get("http://localhost:8000/items", {
-        headers: { Authorization: `Bearer ${user.token}` },
+        headers: { Authorization: `Bearer ${currentUser.token}` },
       });
 
       const availableItems = res.data.filter((item) => item.quantity > 0);
@@ -45,7 +49,7 @@ export default function StudentDashboard() {
     };
 
     fetchItems();
-  }, [user.token]);
+  }, [currentUser.token]);
 
   // Function to handle quantity changes
   const handleQuantityChange = (itemId, inputValue) => {
@@ -83,7 +87,8 @@ export default function StudentDashboard() {
       alert("Your cart is empty. Please add items before checking out.");
       return;
     }
-    navigate("/cart");
+    navigate("/dashboard/cart");
+    console.log("currentUser ID from handleCheckout:", currentUser.id);
   };
 
   // Pagination
@@ -93,110 +98,142 @@ export default function StudentDashboard() {
   const totalPages = Math.ceil(items.length / itemsPerPage);
 
   return (
-    <div className="dashboard-container">
-      <div className="dashboard-header-container">
-        <h2 className="dashboard-header">Available Items</h2>
-        <div className="cart-icon-container" onClick={handleCheckout}>
-          <FaShoppingCart className="cart-icon" />
-          {totalCartItems > 0 && (
-            <span className="cart-count">{totalCartItems}</span>
-          )}
+    <div className="main-content-wrapper">
+      <Sidebar
+        className={`sidebar ${sidebarOpen ? "open" : ""}`}
+        isOpen={sidebarOpen}
+        toggleSidebar={toggleSidebar}
+        user={currentUser}
+      />
+
+      {/* <div className="student-dashboard-content"> */}
+      <div className="dashboard-container">
+        <div className="dashboard-header-container">
+          {/* Left: Sidebar toggle */}
+          <div className="header-left">
+            <div className="sidebar-toggle-button" onClick={toggleSidebar}>
+              <FaBars size={24} />
+            </div>
+          </div>
+
+          {/* Center: Title */}
+          <div className="header-center">
+            <h2 className="dashboard-header">Available Items</h2>
+          </div>
+
+          {/* Right: Cart Icon */}
+          <div className="header-right">
+            <div className="cart-icon-container" onClick={handleCheckout}>
+              <FaShoppingCart className="cart-icon" />
+              {totalCartItems > 0 && (
+                <span className="cart-count">{totalCartItems}</span>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
 
-      <table className="table">
-        <thead>
-          <tr>
-            <th style={{ textAlign: "left", padding: "10px", width: "60%" }}>
-              Item
-            </th>
-            <th style={{ textAlign: "center", padding: "10px", width: "20%" }}>
-              Available
-            </th>
-            <th style={{ textAlign: "center", padding: "10px", width: "20%" }}>
-              Checkout
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentItems.map((item) => (
-            <tr key={item.id} style={{ borderBottom: "1px solid #ccc" }}>
-              <td style={{ padding: "10px", width: "60%" }}>{item.name}</td>
-              <td style={{ textAlign: "center", width: "20%" }}>
-                {getAvailableStock(item.id)}
-              </td>
-              <td style={{ textAlign: "center", width: "20%" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "4px" }}>
-                  <button
-                    onClick={() =>
-                      handleQuantityChange(item.id, (quantities[item.id] || 0) - 1)
-                    }
-                    disabled={(quantities[item.id] || 0) <= 0}
-                    style={{ padding: "0 5px" }}
-                  >
-                    -
-                  </button>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    value={quantities[item.id] !== undefined ? quantities[item.id] : ""}
-                    onChange={(e) => handleQuantityChange(item.id, e.target.value)}
-                    style={{ width: "45px", textAlign: "center", padding: "2px" }}
-                  />
-                  <button
-                    onClick={() =>
-                      handleQuantityChange(item.id, (quantities[item.id] || 0) + 1)
-                    }
-                    disabled={(quantities[item.id] || 0) >= originalStock[item.id]}
-                    style={{ padding: "0 5px" }}
-                  >
-                    +
-                  </button>
-                </div>
-              </td>
+        <table className="table">
+          <thead>
+            <tr>
+              <th style={{ textAlign: "left", padding: "10px", width: "60%" }}>
+                Item
+              </th>
+              <th
+                style={{ textAlign: "center", padding: "10px", width: "20%" }}
+              >
+                Available
+              </th>
+              <th
+                style={{ textAlign: "center", padding: "10px", width: "20%" }}
+              >
+                Checkout
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {currentItems.map((item) => (
+              <tr key={item.id} style={{ borderBottom: "1px solid #ccc" }}>
+                <td style={{ padding: "10px", width: "60%" }}>{item.name}</td>
+                <td style={{ textAlign: "center", width: "20%" }}>
+                  {getAvailableStock(item.id)}
+                </td>
+                <td style={{ textAlign: "center", width: "20%" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "4px",
+                    }}
+                  >
+                    <button
+                      onClick={() =>
+                        handleQuantityChange(
+                          item.id,
+                          (quantities[item.id] || 0) - 1
+                        )
+                      }
+                      disabled={(quantities[item.id] || 0) <= 0}
+                      style={{ padding: "0 5px" }}
+                    >
+                      -
+                    </button>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={
+                        quantities[item.id] !== undefined
+                          ? quantities[item.id]
+                          : ""
+                      }
+                      onChange={(e) =>
+                        handleQuantityChange(item.id, e.target.value)
+                      }
+                      style={{
+                        width: "45px",
+                        textAlign: "center",
+                        padding: "2px",
+                      }}
+                    />
+                    <button
+                      onClick={() =>
+                        handleQuantityChange(
+                          item.id,
+                          (quantities[item.id] || 0) + 1
+                        )
+                      }
+                      disabled={
+                        (quantities[item.id] || 0) >= originalStock[item.id]
+                      }
+                      style={{ padding: "0 5px" }}
+                    >
+                      +
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
-      <div className="pagination-container">
-        <button
-          onClick={() => setCurrentPage(currentPage - 1)}
-          disabled={currentPage === 1}
-        >
-          Previous
-        </button>
-
-        <span className="page-info">
-          {currentPage} / {totalPages}
-        </span>
-
-        <button
-          onClick={() => setCurrentPage(currentPage + 1)}
-          disabled={currentPage === totalPages}
-        >
-          Next
-        </button>
-      </div>
-
-      <div className="button-container">
-        <LogoutButton />
-        {/* <div style={{ margin: "20px 0" }}>
-          <label>
-            Notes:{" "}
-            <input
-              type="text"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="e.g. I grabbed snacks"
-              style={{ width: "300px", padding: "5px" }}
-            />
-          </label>
-        </div> */}
-        <button className="finish-button" onClick={handleCheckout}>
-          Check Out
-        </button>
+        <div className="pagination-container">
+          <button
+            onClick={() => setCurrentPage(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </button>
+          <span className="page-info">
+            {currentPage} / {totalPages}
+          </span>
+          <button
+            onClick={() => setCurrentPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   );

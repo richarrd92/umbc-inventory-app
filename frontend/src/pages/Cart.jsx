@@ -10,11 +10,10 @@ import "./Cart.css";
 export default function Cart() {
   const { cart, removeFromCart, clearCart, decreaseQuantity, addToCart } =
     useCart();
-  const { user } = useAuth();
+  const { currentUser } = useAuth();
   const navigate = useNavigate();
 
   const [availableStock, setAvailableStock] = useState({});
-  // const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
 
   // Fetch item availability for quantity limits
@@ -22,7 +21,7 @@ export default function Cart() {
     const fetchStock = async () => {
       try {
         const res = await axios.get("http://localhost:8000/items", {
-          headers: { Authorization: `Bearer ${user.token}` },
+          headers: { Authorization: `Bearer ${currentUser.token}` },
         });
 
         const stockMap = {}; // Map to store item IDs and quantities
@@ -36,7 +35,7 @@ export default function Cart() {
     };
 
     fetchStock();
-  }, [user.token]); // Dependency on user token
+  }, [currentUser.token]); // Dependency on currentUser token
 
   // Function to handle remove
   const handleRemove = (id) => {
@@ -67,11 +66,11 @@ export default function Cart() {
       return;
     }
 
-    console.log("User ID from handleOrder:", user.id);
+    console.log("currentUser ID from handleOrder:", currentUser.id);
 
     // Prepare the transaction payload
     const transactionPayload = {
-      user_id: user.id,
+      user_id: currentUser.id,
       transaction_type: "OUT", // 'OUT' for checkout (items are being removed from inventory)
       notes: "Enter any additional notes here", // Optional - should be documented by admin
       transaction_items: cart.map((item) => ({
@@ -88,7 +87,7 @@ export default function Cart() {
         transactionPayload,
         {
           headers: {
-            Authorization: `Bearer ${user.token}`,
+            Authorization: `Bearer ${currentUser.token}`,
             "Content-Type": "application/json",
           },
         }
@@ -117,7 +116,18 @@ export default function Cart() {
       <h2 className="cart-title">Your Cart</h2>
 
       {cart.length === 0 ? (
-        <p className="cart-empty">No items selected.</p>
+        <>
+          <p className="cart-empty">No items selected.</p>
+          <div className="cart-actions">
+            <button
+              className="dashboard-btn"
+              onClick={() => navigate("/dashboard")}
+            >
+              Back to Dashboard
+            </button>
+            <div style={{ width: "140px" }}></div>
+          </div>
+        </>
       ) : (
         <>
           <ul className="cart-list">
@@ -126,7 +136,10 @@ export default function Cart() {
               return (
                 <li key={item.id} className="cart-item">
                   <div className="item-info">
-                    {item.name} — Qty: {item.quantity}
+                    <div className="item-name">
+                      <span className="item-qty">{item.quantity}x</span>
+                      <span className="item-label">{item.name}</span>
+                    </div>
                   </div>
                   <div className="item-actions">
                     <button
@@ -162,7 +175,6 @@ export default function Cart() {
             >
               Back to Dashboard
             </button>
-
             <button
               onClick={handleOrder}
               className="order-btn"
@@ -173,15 +185,6 @@ export default function Cart() {
           </div>
         </>
       )}
-
-      {/* <div className="dashboard-btn-container">
-        <button
-          className="dashboard-btn"
-          onClick={() => navigate("/dashboard")}
-        >
-          Back to Dashboard
-        </button>
-      </div> */}
     </div>
   );
 }

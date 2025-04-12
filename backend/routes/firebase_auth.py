@@ -1,9 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from firebase_admin import auth  # type: ignore
+import firebase_admin # type: ignore
+from firebase_admin import auth, credentials, initialize_app  # type: ignore
 from sqlalchemy.orm import Session
 from models import User
 from database import get_db
 from schemas import LoginRequest, LoginResponse
+
+# Initialize Firebase Admin SDK
+# Ensure this only runs once, even if we import it multiple times
+if not firebase_admin._apps:
+    cred = credentials.Certificate("./secrets/umbc-inventory-app-firebase-adminsdk-fbsvc-ce7b900af3.json")  
+    initialize_app(cred)
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -29,8 +36,9 @@ def login_user(login: LoginRequest, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
-    # Return token and role
-    return {"token": login.id_token, "role": user.role, "id": user.id}
+    # Return token, role, id, name and email
+    return {"token": login.id_token, "role": user.role, "id": user.id, "name": user.name,
+    "email": user.email}
 
 # Logout Route
 @router.post("/logout")
