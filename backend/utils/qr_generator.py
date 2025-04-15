@@ -2,18 +2,18 @@ import qrcode
 import json
 from io import BytesIO
 
-def generate_order_qr(order_data: dict) -> bytes:
+def generate_order_qr(transaction_data: dict) -> bytes:
     """
-    Generate a QR code image (PNG bytes) that encodes the given order data in JSON format.
+    Generate a QR code image (PNG bytes) that encodes the given transaction data in JSON format.
 
     Args:
-        order_data (dict): The order data to encode in the QR code.
+        transaction_data (dict): The transaction data to encode in the QR code.
 
     Returns:
         bytes: The generated QR code as PNG image bytes.
     """
-    # Convert the order data to a JSON-formatted string.
-    json_data = json.dumps(order_data, indent=2)
+    # Convert the transaction data to a JSON-formatted string.
+    json_data = json.dumps(transaction_data, indent=2)
     
     # Create a QRCode object with a moderate error-correction level.
     qr = qrcode.QRCode(
