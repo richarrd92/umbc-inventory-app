@@ -73,10 +73,12 @@ export default function Login() {
         }
       }
 
-      const { token, role, id } = loginRes.data;
+      const { token, role, id, name, email } = loginRes.data;
+
 
       // Final login + redirect
-      login({ token, role, id });
+      login({ token, role, id, name, email });
+
 
       console.log("User logged in:", user);
       console.log("Current user role:", role);
