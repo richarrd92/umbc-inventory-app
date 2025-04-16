@@ -45,6 +45,11 @@ except OperationalError :
 
 # all other cases possibly not related to database connection url
 except Exception:
+    DATABASE_STRING = os.getenv("DATABASE_STRING")
+    print("DATABASE_STRING:", DATABASE_STRING)
+    import traceback
+    print("my message")
+    traceback.print_exc()
     print({"error message: " : "Unexpected error while connecting to the database."}, file=sys.stderr)
     sys.exit(1)  # Graceful exit
 

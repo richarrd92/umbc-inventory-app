@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from database import get_db
 import models
 from schemas import TransactionCreate, TransactionResponse, TransactionUpdate
 from datetime import datetime
+from utils.qr_generator import generate_order_qr
 
 router = APIRouter(prefix="/transactions", tags=["Transactions"])
 
@@ -187,3 +188,41 @@ def delete_transaction(transaction_id: int, db: Session = Depends(get_db)):
     db.commit()
     
     return {"message": "Transaction marked as deleted"}
+@router.get("/{transaction_id}/qr", summary="Generate QR Code for a Transactions", response_class=Response)
+def get_transaction_qr(transaction_id: int, db: Session = Depends(get_db)):
+    transaction = db.query(models.Transaction).filter(
+        models.Transaction.id == transaction_id,
+        models.Transaction.deleted_at == None
+    ).first()
+    
+    if not transaction:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+    
+    # Serialize the transaction data
+    try:
+        transaction_data = {
+            "id": transaction.id,
+            "user_id": transaction.user_id,
+            "transaction_type": transaction.transaction_type,
+            "notes": transaction.notes,
+            "created_at": transaction.created_at.isoformat() if transaction.created_at else None,
+            "transaction_items": [
+                {
+                    "item_id": ti.item_id,
+                    "quantity": ti.quantity,
+                    "created_at": ti.created_at.isoformat() if ti.created_at else None,
+                }
+                for ti in transaction.transaction_items
+            ]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error serializing transaction data: {e}")
+    
+    # Generate QR code image bytes
+    try:
+        qr_image_bytes = generate_order_qr(transaction_data)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error generating QR code: {e}")
+    
+    # Return the QR code as an image response (PNG)
+    return Response(content=qr_image_bytes, media_type="image/png")

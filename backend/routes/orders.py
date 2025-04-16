@@ -8,7 +8,6 @@ from datetime import datetime, timedelta
 from typing import List
 from sqlalchemy import func, desc
 
-
 router = APIRouter(prefix="/orders", tags=["Orders"])
 
 # generate order
