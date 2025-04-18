@@ -102,7 +102,10 @@ export default function Cart() {
 
       alert("Order placed successfully!");
       clearCart(); // Clear the cart after placing the order
-      navigate("/dashboard"); // Navigate back to the dashboard
+      // navigate("/dashboard"); // Navigate back to the dashboard
+      navigate(
+        `/${currentUser.role === "admin" ? "admin" : "student"}/dashboard`
+      );
     } catch (error) {
       console.error("Transaction failed:", error);
       alert("Failed to place order. Please try again.");
@@ -121,7 +124,13 @@ export default function Cart() {
           <div className="cart-actions">
             <button
               className="dashboard-btn"
-              onClick={() => navigate("/dashboard")}
+              onClick={() =>
+                navigate(
+                  `/${
+                    currentUser.role === "admin" ? "admin" : "student"
+                  }/dashboard`
+                )
+              }
             >
               Back to Dashboard
             </button>
@@ -171,7 +180,13 @@ export default function Cart() {
           <div className="cart-actions">
             <button
               className="dashboard-btn"
-              onClick={() => navigate("/dashboard")}
+              onClick={() =>
+                navigate(
+                  `/${
+                    currentUser.role === "admin" ? "admin" : "student"
+                  }/dashboard`
+                )
+              }
             >
               Back to Dashboard
             </button>

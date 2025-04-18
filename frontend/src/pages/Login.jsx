@@ -45,6 +45,7 @@ export default function Login() {
       } catch (err) {
         if (err.response?.status === 404) {
           // User doesn't exist, create the user
+          console.log("User doesn't exist, creating...");
           await axios.post("http://localhost:8000/users/", {
             firebase_uid: user.uid,
             email: user.email,
@@ -52,18 +53,23 @@ export default function Login() {
             role: "student", // Default role -> To be changed by admin if necessary
           });
 
+          console.log("User created...");
           // Retry login after registration
           loginRes = await axios.post("http://localhost:8000/auth/login", {
             id_token: idToken,
           });
+
+          console.log("User created, logged in:", user);
         } else if (
           err.response?.status === 400 &&
           err.response?.data?.detail === "User is soft deleted"
         ) {
           // If user exists but is soft deleted, restore them
+          console.log("User exists but is soft deleted, restoring...");
           const userId = err.response?.data?.user?.id; // user can be identified by either 
           await axios.put(`http://localhost:8000/users/${userId}/undelete`);
-
+        
+          console.log("User undeleted...");
           // Retry login after undeleting
           loginRes = await axios.post("http://localhost:8000/auth/login", {
             id_token: idToken,
@@ -83,7 +89,12 @@ export default function Login() {
       console.log("User logged in:", user);
       console.log("Current user role:", role);
 
-      navigate(role === "admin" ? "/admin" : "/dashboard");
+      console.log(
+        "Redirecting to:",
+        role === "admin" ? "/admin/dashboard" : "/student/dashboard"
+      );
+
+      navigate(role === "admin" ? "/admin/dashboard" : "/student/dashboard");
     } catch (err) {
       setError("Login failed. Please try again.");
       console.error(err);
