@@ -17,12 +17,15 @@ SET FOREIGN_KEY_CHECKS = 1; -- Re-enables foreign key constraints after tables a
 -- users table (stores both admins & students)
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL,  -- student ID (XX#####) or "admin"
+    -- username VARCHAR(50) UNIQUE NOT NULL,  -- student ID (XX#####) or "admin"
+    firebase_uid VARCHAR(255) UNIQUE NOT NULL,  -- Firebase UID (replaces username)
+    email VARCHAR(255) UNIQUE NOT NULL,  -- Store user email (from Firebase)
     name VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL DEFAULT '1234',  -- default password for dummy login
+    -- password VARCHAR(255) NOT NULL DEFAULT '1234',  -- default password for dummy login
     role ENUM('student', 'admin') NOT NULL,  -- defines what the user can do
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL DEFAULT NULL -- added for soft delete instead of full removal
+    deleted_at TIMESTAMP NULL DEFAULT NULL, -- added for soft delete instead of full removal
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- added to track updates
 );
 
 -- inventory items table (main table- current inventory in stock)
@@ -88,12 +91,12 @@ CREATE TABLE order_items (
 USE inventory;
 
 -- insert test users (admins & students) 
-INSERT INTO users (username, name, password, role) VALUES
-    ('admin1', 'Alice Johnson', '$2b$12$aPoomzd32szKwxrwRdX7puecpHgdSY0LiBP4t5GfIWcziRnn01jFK', 'admin'),
-    ('admin2', 'Bob Smith', '$2b$12$9NJwjbrCvEvWPQXH8/eS.Oa9Uae9VxNpq2GST8Py6CabUAnh/C4/C', 'admin'),
-    ('s12345', 'Charlie Brown', '$2b$12$KW9ZfnTnZ.GkWo8ZV8kLyOmocbl0xyQdHbocF7TYPSmX1kA2OXnc2', 'student'),
-    ('s67890', 'Diana Prince', '$2b$12$iWbOYQjErFWtB1Wx7V6z0u.1wSCqFP2k9.zcDL9Z6T4VRmt0ySI/u', 'student'),
-    ('s11223', 'Ethan Hunt', '$2b$12$SfAGmCQqBFmo7Bj1sSO9dOFuZ1fVz//Qfs24dmZBQSjDCaZXAMw/e', 'student');
+INSERT INTO users (firebase_uid, email, name, role) VALUES
+    ('firebase_admin1', 'alice.johnson@umbc.edu', 'Alice Johnson', 'admin'),
+    ('firebase_admin2', 'bob.smith@umbc.edu', 'Bob Smith', 'admin'),
+    ('firebase_s12345', 'charlie.brown@umbc.edu', 'Charlie Brown', 'student'),
+    ('firebase_s67890', 'diana.prince@umbc.edu', 'Diana Prince', 'student'),
+    ('firebase_s11223', 'ethan.hunt@umbc.edu', 'Ethan Hunt', 'student');
 
 -- insert test inventory items (must link to an admin ID)
 INSERT INTO items (name, category, quantity, restock_threshold, user_id) VALUES

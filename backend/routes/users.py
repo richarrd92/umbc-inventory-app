@@ -12,15 +12,6 @@ from passlib.context import CryptContext # type: ignore
 router = APIRouter(prefix="/users", tags=["Users"]) 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-
-# # Debug 
-# @router.get("/")
-# def test():
-#     return {"message": "Working"}
-
-
-# Use "/" instead of "/users" because the router is already prefixed with "/users"
-
 # Get All Users
 @router.get("/", response_model=List[UserResponse]) 
 def get_users(db: Session = Depends(get_db)):
@@ -50,37 +41,38 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     This endpoint creates a new user in the database using the provided data --> must be in json format (raw).
     It checks for any duplicate username errors and returns the created user.
     """
-    try:
-        # Create a new user instance using the data from the request body (UserCreate schema)
 
-        # Hash the password before saving
-        hashed_password = pwd_context.hash(user.password)
-
-        new_user = User(
-            username=user.username,
-            name=user.name,
-            # password=user.password,
-            password=hashed_password, # password encryption
-            role=user.role
-        )
-        
-        # Add the new user to the database session and commit
-        db.add(new_user)
-        db.commit()
-        
-        # Refresh to get the newly created user with id and created_at
-        db.refresh(new_user)
-        
-        # Return the newly created user as a response (using UserResponse schema)
-        return new_user
+    # Check if the user already exists (ignoring soft-deleted users)
+    existing_user = db.query(User).filter(
+        (User.email == user.email) | (User.firebase_uid == user.firebase_uid),
+        User.deleted_at == None  # Ensure the user is not soft deleted
+    ).first()
     
-    except IntegrityError as e:
-        # If there's a unique constraint violation (e.g., duplicate username)
-        db.rollback()  # Rollback the session to undo the transaction
+    # If the user already exists, raise an error
+    if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Username already exists"
+            detail="User with this email or Firebase UID already exists"
         )
+
+    # Create a new user instance
+    new_user = User(
+        # username=user.username,
+        firebase_uid=user.firebase_uid,
+        email=user.email,
+        name=user.name,
+        role=user.role
+    )
+    
+    # Add the new user to the database session and commit
+    db.add(new_user)
+    db.commit()
+    
+    # Refresh to get the newly created user with id and created_at
+    db.refresh(new_user)
+    
+    # Return the newly created user as a response (using UserResponse schema)
+    return new_user
 
 # Update a User
 @router.put("/{id}", response_model=UserResponse)
@@ -93,21 +85,48 @@ def update_user(id: int, user: UserUpdate, db: Session = Depends(get_db)):
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
     
-    # # Only update fields that were provided in the request
-    # for key, value in user.dict(exclude_unset=True).items():
-    #     setattr(db_user, key, value)
-
-    # Update the user attributes with the data from the request body (UserCreate schema)
-    db_user.username = user.username
-    db_user.name = user.name
-    db_user.password = user.password
-    db_user.role = user.role
+    # Update field(s) if provided
+    if user.firebase_uid:
+        db_user.firebase_uid = user.firebase_uid
+    if user.email:
+        db_user.email = user.email
+    if user.name:
+        db_user.name = user.name
+    if user.role:
+        db_user.role = user.role
     
+    # Only hash and update the password if it's provided
+    if user.password:
+        # Hash the password before saving
+        hashed_password = pwd_context.hash(user.password)
+        db_user.password = hashed_password
+
     # Commit the changes to the database
     db.commit()
     db.refresh(db_user)
 
     return db_user
+
+# restore a User (Restore Soft Deleted)
+@router.put("/{id}/restore", response_model=UserResponse)
+def restore_user(id: int, db: Session = Depends(get_db)):
+    """
+    This endpoint restores a soft-deleted user by setting the 'deleted_at' field to NULL.
+    """
+    user = db.query(User).filter(User.id == id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Check if the user is already not soft deleted
+    if user.deleted_at is None:
+        raise HTTPException(status_code=400, detail="User is not deleted")
+
+    # restore the user: Set 'deleted_at' to NULL
+    user.deleted_at = None
+    db.commit()
+    db.refresh(user)
+
+    return user
 
 # Delete a User
 @router.delete("/{id}")

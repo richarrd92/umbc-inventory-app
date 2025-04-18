@@ -3,85 +3,100 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import axios from "axios";
 import "./Login.css";
+import LoginCard from "../components/LoginCard";
+
+import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
+import { auth } from "../firebase/firebase";
 
 export default function Login() {
   const { login } = useAuth();
-  const [username, setUsername] = useState(""); // Store username input
-  const [password, setPassword] = useState(""); // Store password input
   const [error, setError] = useState(null); // Error message state
   const navigate = useNavigate(); // For redirecting after login
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form behavior
-    setError(null); // Reset error state on new submission
-    console.log("Submitting login request with", { username, password }); 
+  const handleGoogleLogin = async () => {
+    setError(null);
+    setLoading(true);
+    const provider = new GoogleAuthProvider();
+
     try {
-      const res = await axios.post("http://localhost:8000/auth/login", {
-        username,
-        password,
-      });
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
 
-      // what's being returned from the backend
-      console.log("Login response:", res.data);
-
-      const { token, role, id } = res.data; // Get token, role, and id from response
-      console.log("Extracted data:", { token, role, id }); 
-
-      // Check if id is undefined
-      if (!id) {
-        console.error("User ID is missing from response!");
-        setError("User ID is missing in the response.");
+      // Ensure only UMBC emails are allowed
+      if (!user.email.endsWith("@umbc.edu")) {
+        await signOut(auth);
+        setError("Only UMBC emails are allowed.");
+        setLoading(false);
         return;
       }
 
-      login({ token, role, id });
+      const idToken = await user.getIdToken();
+      localStorage.setItem("authData", JSON.stringify({ idToken }));
 
-      // Redirect based on role
-      if (role === "admin") navigate("/admin");
-      else navigate("/dashboard");
+      let loginRes;
+      try {
+        // First try login
+        loginRes = await axios.post("http://localhost:8000/auth/login", {
+          id_token: idToken,
+        });
+
+        // If the login request returns a 404, create the user
+      } catch (err) {
+        if (err.response?.status === 404) {
+          // User doesn't exist, create the user
+          await axios.post("http://localhost:8000/users/", {
+            firebase_uid: user.uid,
+            email: user.email,
+            name: user.displayName,
+            role: "student", // Default role -> To be changed by admin if necessary
+          });
+
+          // Retry login after registration
+          loginRes = await axios.post("http://localhost:8000/auth/login", {
+            id_token: idToken,
+          });
+        } else if (
+          err.response?.status === 400 &&
+          err.response?.data?.detail === "User is soft deleted"
+        ) {
+          // If user exists but is soft deleted, restore them
+          const userId = err.response?.data?.user?.id; // user can be identified by either 
+          await axios.put(`http://localhost:8000/users/${userId}/undelete`);
+
+          // Retry login after undeleting
+          loginRes = await axios.post("http://localhost:8000/auth/login", {
+            id_token: idToken,
+          });
+        } else {
+          throw err;
+        }
+      }
+
+      const { token, role, id, name, email } = loginRes.data;
+
+
+      // Final login + redirect
+      login({ token, role, id, name, email });
+
+
+      console.log("User logged in:", user);
+      console.log("Current user role:", role);
+
+      navigate(role === "admin" ? "/admin" : "/dashboard");
     } catch (err) {
-      setError("Invalid username or password."); // Show error message
-      console.error(err); // Log the error for debugging
+      setError("Login failed. Please try again.");
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <section className="login-section">
-      <div className="login-wrapper">
-        <div className="login-card">
-          <div className="login-card-inner">
-            <h2 className="login-title">Login</h2>
-            {error && <div className="login-error">{error}</div>}
-            <form onSubmit={handleSubmit} className="login-form">
-              <div className="form-group">
-                <label htmlFor="username">Username</label>
-                <input
-                  type="text"
-                  id="username"
-                  placeholder="Enter your username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="password">Password</label>
-                <input
-                  type="password"
-                  id="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-              <button type="submit" className="login-button">
-                Login
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </section>
+    <LoginCard
+      error={error}
+      loading={loading}
+      handleGoogleLogin={handleGoogleLogin}
+    />
   );
 }
