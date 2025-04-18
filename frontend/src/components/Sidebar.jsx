@@ -43,7 +43,28 @@ export default function Sidebar({ isOpen, toggleSidebar, user }) {
           ✖
         </button>
         <div className="sidebar-content">
-          <button className="sidebar-btn">Past Orders (coming soon)</button>
+          {/* Admin-only buttons */}
+          {currentUser.role === "admin" && (
+            <>
+              <button className="sidebar-btn">Add New Item</button>
+              <button className="sidebar-btn">Favorites Orders</button>
+              <button className="sidebar-btn">Past Transactions</button>
+              <button className="sidebar-btn">Analytics</button>
+              <button className="sidebar-btn">Generate Restock Order</button>
+              <button className="sidebar-btn">Past Restock Orders</button>
+              <button className="sidebar-btn">Transaction Report</button>
+              <button className="sidebar-btn">Export CV Report</button>
+              <button className="sidebar-btn">Report Issue</button>
+            </>
+          )}
+          {/* Student-only buttons */}
+          {currentUser.role === "student" && (
+            <>
+              <button className="sidebar-btn">Favorites Orders</button>
+              <button className="sidebar-btn">Past Transactions</button>
+              <button className="sidebar-btn">Report Issue</button>
+            </>
+          )}
           <LogoutButton />
         </div>
       </div>

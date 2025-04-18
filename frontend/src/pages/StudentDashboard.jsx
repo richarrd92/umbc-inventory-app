@@ -87,7 +87,7 @@ export default function StudentDashboard() {
       alert("Your cart is empty. Please add items before checking out.");
       return;
     }
-    navigate("/dashboard/cart");
+    navigate("/student/dashboard/cart");
     console.log("currentUser ID from handleCheckout:", currentUser.id);
   };
 

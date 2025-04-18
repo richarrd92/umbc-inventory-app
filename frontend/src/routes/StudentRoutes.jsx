@@ -1,4 +1,4 @@
-import { Routes, Route, Outlet } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import StudentDashboard from "../pages/StudentDashboard";
 import Cart from "../pages/Cart";
 

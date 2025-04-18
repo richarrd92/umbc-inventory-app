@@ -16,32 +16,37 @@ export default function AppRoutes() {
 
   // Redirect unauthenticated users to login page
   useEffect(() => {
+    // If there's no currentUser, exit the effect early
+    if (!currentUser) return;
+
     if (currentUser && !hasRedirected.current) {
       hasRedirected.current = true; // Ensure only one redirect happens
-      if (currentUser.role === "student") {
-        if (window.location.pathname !== "/dashboard") {
-          navigate("/dashboard", { replace: true });
-        }
-      } else if (currentUser.role === "admin") {
-        if (window.location.pathname !== "/admin") {
-          navigate("/admin", { replace: true });
-        }
+      if (
+        currentUser.role === "student" &&
+        window.location.pathname !== "/student/dashboard"
+      ) {
+        navigate("/student/dashboard", { replace: true });
+      } else if (
+        currentUser.role === "admin" &&
+        window.location.pathname !== "/admin/dashboard"
+      ) {
+        navigate("/admin/dashboard", { replace: true });
       }
     }
   }, [currentUser, navigate]);
 
-  console.log("Current user in AppRoutes:", currentUser);
+  console.log("****** Current user in AppRoutes:", currentUser);
 
   return (
     <Layout>
       <Routes>
         {/* Public routes */}
-        <Route path="/" element={<HomePage />} /> 
+        <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
 
         {/* Protected Routes */}
         <Route
-          path="/dashboard/*"
+          path="/student/dashboard/*"
           element={
             <PrivateRoute allowedRoles={["student"]}>
               <StudentRoutes />
@@ -49,7 +54,7 @@ export default function AppRoutes() {
           }
         />
         <Route
-          path="/admin"
+          path="/admin/dashboard/*"
           element={
             <PrivateRoute allowedRoles={["admin"]}>
               <AdminRoutes />
