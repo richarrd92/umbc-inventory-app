@@ -3,10 +3,13 @@ import LogoutButton from "./LogoutButton";
 import "./Sidebar.css";
 import { useAuth } from "../contexts/AuthContext";
 import { useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Sidebar({ isOpen, toggleSidebar, user }) {
   const { currentUser } = useAuth();
   const sidebarRef = useRef(); // Reference to the sidebar
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     // Function to handle clicks outside the sidebar
@@ -71,23 +74,119 @@ export default function Sidebar({ isOpen, toggleSidebar, user }) {
           {/* Admin-only buttons */}
           {currentUser.role === "admin" && (
             <>
-              <button className="sidebar-btn">Add New Item</button>
-              <button className="sidebar-btn">Favorites Orders</button>
-              <button className="sidebar-btn">Past Transactions</button>
-              <button className="sidebar-btn">Analytics</button>
-              <button className="sidebar-btn">Generate Restock Order</button>
-              <button className="sidebar-btn">Past Restock Orders</button>
-              <button className="sidebar-btn">Transaction Report</button>
-              <button className="sidebar-btn">Export CV Report</button>
-              <button className="sidebar-btn">Report Issue</button>
+              <button
+                className="sidebar-btn"
+                onClick={() => {
+                  navigate("/admin/add-item");
+                  toggleSidebar();
+                }}
+              >
+                Add New Item
+              </button>
+              <button
+                className="sidebar-btn"
+                onClick={() => {
+                  navigate("/admin/favorites");
+                  toggleSidebar();
+                }}
+              >
+                Favorites Orders
+              </button>
+              <button
+                className="sidebar-btn"
+                onClick={() => {
+                  navigate("/admin/transactions");
+                  toggleSidebar();
+                }}
+              >
+                Past Transactions
+              </button>
+              <button
+                className="sidebar-btn"
+                onClick={() => {
+                  navigate("/admin/analytics");
+                  toggleSidebar();
+                }}
+              >
+                Analytics
+              </button>
+              <button
+                className="sidebar-btn"
+                onClick={() => {
+                  navigate("/admin/restock");
+                  toggleSidebar();
+                }}
+              >
+                Generate Restock Order
+              </button>
+              <button
+                className="sidebar-btn"
+                onClick={() => {
+                  navigate("/admin/past-restocks");
+                  toggleSidebar();
+                }}
+              >
+                Past Restock Orders
+              </button>
+              <button
+                className="sidebar-btn"
+                onClick={() => {
+                  navigate("/admin/transaction-report");
+                  toggleSidebar();
+                }}
+              >
+                Transaction Report
+              </button>
+              <button
+                className="sidebar-btn"
+                onClick={() => {
+                  navigate("/admin/export-cv");
+                  toggleSidebar();
+                }}
+              >
+                Export CV Report
+              </button>
+              <button
+                className="sidebar-btn"
+                onClick={() => {
+                  navigate("/report-issue");
+                  toggleSidebar();
+                }}
+              >
+                Report Issue
+              </button>
             </>
           )}
           {/* Student-only buttons */}
           {currentUser.role === "student" && (
             <>
-              <button className="sidebar-btn">Favorites Orders</button>
-              <button className="sidebar-btn">Past Transactions</button>
-              <button className="sidebar-btn">Report Issue</button>
+              <button
+                className="sidebar-btn"
+                onClick={() => {
+                  navigate("/student/favorites");
+                  toggleSidebar();
+                }}
+              >
+                Favorites Orders
+              </button>
+              <button
+                className="sidebar-btn"
+                onClick={() => {
+                  navigate("/student/transactions");
+                  toggleSidebar();
+                }}
+              >
+                Past Transactions
+              </button>
+              <button
+                className="sidebar-btn"
+                onClick={() => {
+                  navigate("/report-issue");
+                  toggleSidebar();
+                }}
+              >
+                Report Issue
+              </button>
             </>
           )}
           <LogoutButton />
