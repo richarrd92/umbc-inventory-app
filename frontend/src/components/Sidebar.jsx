@@ -77,7 +77,7 @@ export default function Sidebar({ isOpen, toggleSidebar, user }) {
               <button
                 className="sidebar-btn"
                 onClick={() => {
-                  navigate("/admin/add-item");
+                  navigate("/admin/dashboard/add-item");
                   toggleSidebar();
                 }}
               >
@@ -86,7 +86,7 @@ export default function Sidebar({ isOpen, toggleSidebar, user }) {
               <button
                 className="sidebar-btn"
                 onClick={() => {
-                  navigate("/admin/favorites");
+                  navigate("/admin/dashboard/favorites");
                   toggleSidebar();
                 }}
               >
@@ -95,7 +95,7 @@ export default function Sidebar({ isOpen, toggleSidebar, user }) {
               <button
                 className="sidebar-btn"
                 onClick={() => {
-                  navigate("/admin/transactions");
+                  navigate("/admin/dashboard/transactions");
                   toggleSidebar();
                 }}
               >
@@ -104,7 +104,7 @@ export default function Sidebar({ isOpen, toggleSidebar, user }) {
               <button
                 className="sidebar-btn"
                 onClick={() => {
-                  navigate("/admin/analytics");
+                  navigate("/admin/dashboard/analytics");
                   toggleSidebar();
                 }}
               >
@@ -113,7 +113,7 @@ export default function Sidebar({ isOpen, toggleSidebar, user }) {
               <button
                 className="sidebar-btn"
                 onClick={() => {
-                  navigate("/admin/restock");
+                  navigate("/admin/dashboard/restock");
                   toggleSidebar();
                 }}
               >
@@ -122,7 +122,7 @@ export default function Sidebar({ isOpen, toggleSidebar, user }) {
               <button
                 className="sidebar-btn"
                 onClick={() => {
-                  navigate("/admin/past-restocks");
+                  navigate("/admin/dashboard/past-restocks");
                   toggleSidebar();
                 }}
               >
@@ -131,7 +131,7 @@ export default function Sidebar({ isOpen, toggleSidebar, user }) {
               <button
                 className="sidebar-btn"
                 onClick={() => {
-                  navigate("/admin/transaction-report");
+                  navigate("/admin/dashboard/transaction-report");
                   toggleSidebar();
                 }}
               >
@@ -140,7 +140,7 @@ export default function Sidebar({ isOpen, toggleSidebar, user }) {
               <button
                 className="sidebar-btn"
                 onClick={() => {
-                  navigate("/admin/export-cv");
+                  navigate("/admin/dashboard/export-cv");
                   toggleSidebar();
                 }}
               >
@@ -149,7 +149,7 @@ export default function Sidebar({ isOpen, toggleSidebar, user }) {
               <button
                 className="sidebar-btn"
                 onClick={() => {
-                  navigate("/report-issue");
+                  navigate("/admin/dashboard/report-issue");
                   toggleSidebar();
                 }}
               >
@@ -163,7 +163,7 @@ export default function Sidebar({ isOpen, toggleSidebar, user }) {
               <button
                 className="sidebar-btn"
                 onClick={() => {
-                  navigate("/student/favorites");
+                  navigate("/student/dashboard/favorites");
                   toggleSidebar();
                 }}
               >
@@ -172,7 +172,7 @@ export default function Sidebar({ isOpen, toggleSidebar, user }) {
               <button
                 className="sidebar-btn"
                 onClick={() => {
-                  navigate("/student/transactions");
+                  navigate("/student/dashboard/transactions");
                   toggleSidebar();
                 }}
               >
@@ -181,7 +181,7 @@ export default function Sidebar({ isOpen, toggleSidebar, user }) {
               <button
                 className="sidebar-btn"
                 onClick={() => {
-                  navigate("/report-issue");
+                  navigate("/pages/ReportIssuePage");
                   toggleSidebar();
                 }}
               >
