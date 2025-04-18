@@ -181,7 +181,7 @@ export default function Sidebar({ isOpen, toggleSidebar, user }) {
               <button
                 className="sidebar-btn"
                 onClick={() => {
-                  navigate("/pages/ReportIssuePage");
+                  navigate("/student/dashboard/report-issue");
                   toggleSidebar();
                 }}
               >
