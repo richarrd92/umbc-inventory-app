@@ -69,7 +69,10 @@ CREATE TABLE orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     submitted BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- when that order was generated
-    deleted_at TIMESTAMP NULL DEFAULT NULL -- added for soft delete instead of full removal
+    deleted_at TIMESTAMP NULL DEFAULT NULL, -- added for soft delete instead of full removal
+    created_by_id INT, -- NEW: associate order with a user (admin)
+    FOREIGN KEY (created_by_id) REFERENCES users(id) ON DELETE SET NULL -- track who created it
+
 );
 
 -- order items table (Tracks individual items within an order when order is generated)

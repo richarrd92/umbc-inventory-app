@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from models import User
 from database import get_db
 from schemas import LoginRequest, LoginResponse
+from fastapi import Request
 
 # Initialize Firebase Admin SDK
 # Ensure this only runs once, even if we import it multiple times
@@ -48,3 +49,23 @@ def logout_user():
     It requires the frontend to delete the stored token in their localStorage or cookies.
     """
     return {"message": "User logged out successfully. Please clear the token on the client-side."}
+
+
+def get_current_user(request: Request, db: Session = Depends(get_db)) -> User:
+    authorization = request.headers.get("Authorization")
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing or invalid token")
+
+    token = authorization.split(" ")[1]
+    try:
+        decoded_token = auth.verify_id_token(token)
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+    firebase_uid = decoded_token.get("uid")
+    user = db.query(User).filter(User.firebase_uid == firebase_uid).first()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return user

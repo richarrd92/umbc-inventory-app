@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
 from schemas.items import ItemResponse 
+from schemas.users import UserResponse
 
 # base schema for an order item
 class OrderItemBase(BaseModel):
@@ -39,7 +40,9 @@ class OrderResponse(OrderBase):
     created_at: datetime
     deleted_at: Optional[datetime] = None  # soft delete tracking
     submitted: bool  
-    order_items: List[OrderItemResponse]  # nested order items
+    order_items: List[OrderItemResponse] # nested order items
+    created_by_id: Optional[int] = None
+
 
     class Config:
         from_attributes = True
