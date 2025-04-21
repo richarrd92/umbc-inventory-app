@@ -13,14 +13,20 @@ export default function PastRestockPage() {
 
   useEffect(() => {
     const fetchOrders = async () => {
-      const res = await axios.get("http://localhost:8000/orders/", {
-        headers: { Authorization: `Bearer ${currentUser.token}` },
-      });
-      const sorted = res.data.sort(
-        (a, b) => new Date(b.created_at) - new Date(a.created_at)
-      );
-      setOrders(sorted);
+      try {
+        const res = await axios.get("http://localhost:8000/orders/", {
+          headers: { Authorization: `Bearer ${currentUser.token}` },
+        });
+
+        const sorted = res.data.sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        );
+        setOrders(sorted);
+      } catch (err) {
+        console.error("Failed to fetch orders", err);
+      }
     };
+
     fetchOrders();
   }, [currentUser.token]);
 
@@ -30,14 +36,18 @@ export default function PastRestockPage() {
     );
     if (!confirmed) return;
 
-    await axios.delete(`http://localhost:8000/orders/${id}`, {
-      headers: { Authorization: `Bearer ${currentUser.token}` },
-    });
+    try {
+      await axios.delete(`http://localhost:8000/orders/${id}`, {
+        headers: { Authorization: `Bearer ${currentUser.token}` },
+      });
 
-    setOrders((prev) => prev.filter((o) => o.id !== id));
-    setToastMsg(`Order #${id} successfully deleted.`);
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000);
+      setOrders((prev) => prev.filter((o) => o.id !== id));
+      setToastMsg(`Order #${id} successfully deleted.`);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    } catch (err) {
+      console.error("Failed to delete order", err);
+    }
   };
 
   return (
@@ -50,6 +60,7 @@ export default function PastRestockPage() {
             <th>Order ID</th>
             <th>Created At</th>
             <th>Submitted At</th>
+            <th>Created By</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -59,18 +70,25 @@ export default function PastRestockPage() {
               <td>{order.id}</td>
               <td>{new Date(order.created_at).toLocaleString()}</td>
               <td>
-                {order.submitted
+                {order.submitted && order.created_at
                   ? new Date(order.created_at).toLocaleString()
                   : "---"}
               </td>
+              <td>{order.created_by?.name || order.created_by?.email || "Unknown"}</td>
               <td>
                 {order.submitted ? (
-                  <button onClick={() => navigate(`/admin/dashboard/order/${order.id}`)}>
+                  <button
+                    onClick={() => navigate(`/admin/dashboard/order/${order.id}`)}
+                  >
                     View
                   </button>
                 ) : (
                   <>
-                    <button onClick={() => navigate(`/admin/dashboard/restock/${order.id}`)}>
+                    <button
+                      onClick={() =>
+                        navigate(`/admin/dashboard/restock/${order.id}`)
+                      }
+                    >
                       Continue
                     </button>
                     <button onClick={() => deleteOrder(order.id)}>Delete</button>

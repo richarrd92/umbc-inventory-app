@@ -42,7 +42,7 @@ class OrderResponse(OrderBase):
     submitted: bool  
     order_items: List[OrderItemResponse] # nested order items
     created_by_id: Optional[int] = None
-
+    created_by: Optional[UserResponse] = None 
 
     class Config:
         from_attributes = True
