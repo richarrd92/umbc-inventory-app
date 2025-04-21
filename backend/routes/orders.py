@@ -97,6 +97,15 @@ def create_order(db: Session = Depends(get_db)):
     db.add_all(order_items)
     db.commit()
     db.refresh(new_order)
+    for order_item in new_order.order_items:
+        order_item.item = db.query(Item).filter(Item.id == order_item.item_id).first()
+        order_item.withdrawn_7d = db.query(func.sum(TransactionItem.quantity)).join(Transaction).filter(
+            Transaction.transaction_type == "OUT",
+            TransactionItem.item_id == order_item.item_id,
+            Transaction.deleted_at == None,
+            TransactionItem.deleted_at == None,
+            Transaction.created_at >= seven_days_ago
+        ).scalar() or 0
 
     return new_order
 

@@ -1,0 +1,48 @@
+.generate-restock-container {
+    padding: 2rem;
+  }
+  
+  .restock-table {
+    width: 100%;
+    margin-top: 1rem;
+    border-collapse: collapse;
+  }
+  
+  .restock-table th, .restock-table td {
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: center;
+  }
+  
+  .submit-btn {
+    margin-top: 1rem;
+    padding: 10px 15px;
+    font-weight: bold;
+  }
+  
+  .error-msg {
+    color: red;
+    margin-top: 1rem;
+  }
+
+  .order-meta {
+    font-size: 0.95rem;
+    color: #444;
+    margin-bottom: 1rem;
+    font-style: italic;
+  }
+
+  .toast-notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #4caf50;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    z-index: 9999;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  

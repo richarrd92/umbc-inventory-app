@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
+from schemas.items import ItemResponse 
 
 # base schema for an order item
 class OrderItemBase(BaseModel):
@@ -18,6 +19,8 @@ class OrderItemResponse(OrderItemBase):
     id: int
     created_at: datetime
     deleted_at: Optional[datetime] = None  # soft delete tracking
+    withdrawn_7d: Optional[int] = None
+    item: Optional[ItemResponse] = None
 
     class Config:
         from_attributes = True
@@ -40,3 +43,5 @@ class OrderResponse(OrderBase):
 
     class Config:
         from_attributes = True
+
+OrderItemResponse.update_forward_refs()
