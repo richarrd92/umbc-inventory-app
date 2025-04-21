@@ -2,11 +2,12 @@ from fastapi import APIRouter, Depends, HTTPException, status, Body
 from sqlalchemy.orm import Session
 from database import get_db
 from models import Order, OrderItem, Item
-from schemas.orders import OrderCreate, OrderResponse
+from schemas.orders import OrderCreate, OrderResponse, OrderItemUpdate
 from models import Transaction, TransactionItem, User
 from datetime import datetime, timedelta
 from typing import List
 from sqlalchemy import func, desc
+from fastapi import Request
 
 
 router = APIRouter(prefix="/orders", tags=["Orders"])
@@ -172,3 +173,34 @@ def submit_order(order_id: int, db: Session = Depends(get_db)):
     print(f"[ORDER-SUBMIT] Order id={order.id} submitted at {order.created_at}")
 
     return order
+
+
+@router.put("/{order_id}/items")
+def update_order_items(order_id: int, updated_items: List[OrderItemUpdate], db: Session = Depends(get_db)):
+    """
+    Updates final quantities for each item in a draft order
+    Expects a list of { item_id: int, final_quantity: int }
+    """
+    order = db.query(Order).filter(Order.id == order_id, Order.deleted_at == None, Order.submitted == False).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Draft order not found")
+
+    for item_data in updated_items:
+        item_id = item_data.item_id
+        final_quantity = item_data.final_quantity
+
+
+        if item_id is None or final_quantity is None:
+            continue  # Skip incomplete entries
+
+        order_item = db.query(OrderItem).filter(
+            OrderItem.order_id == order_id,
+            OrderItem.item_id == item_id
+        ).first()
+
+        if order_item:
+            order_item.final_quantity = final_quantity
+
+    db.commit()
+    return {"message": "Order item quantities updated successfully"}
+

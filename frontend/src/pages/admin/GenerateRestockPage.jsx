@@ -47,20 +47,39 @@ export default function GenerateRestockPage() {
 
   const submitOrder = async () => {
     if (!order) return;
-
+  
     try {
+      // STEP 1: Update the final quantities first
+      const updatedItems = order.order_items.map((item) => ({
+        item_id: item.item_id,
+        final_quantity: item.final_quantity,
+      }));
+  
+      await axios.put(
+        `http://localhost:8000/orders/${order.id}/items`,
+        updatedItems,
+        {
+          headers: {
+            Authorization: `Bearer ${currentUser.token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      // STEP 2: Then submit the order
       await axios.post(
         `http://localhost:8000/orders/${order.id}/submit`,
         {},
         {
-          headers: { Authorization: `Bearer ${currentUser.token}` },
+          headers: {
+            Authorization: `Bearer ${currentUser.token}`,
+          },
         }
       );
-
+  
       setShowSuccess(true);
       setOrder(null);
-
-      // wait 2 seconds, then hide redirect
+  
       setTimeout(() => {
         setShowSuccess(false);
         navigate("/admin/dashboard");
@@ -70,6 +89,7 @@ export default function GenerateRestockPage() {
       alert("Submission failed.");
     }
   };
+
 
 
 
@@ -91,7 +111,7 @@ export default function GenerateRestockPage() {
 
         {!order && (
           <button onClick={generateOrder} disabled={loading}>
-            {loading ? "Generating..." : "Generate Suggested Order"}
+            {loading ? "Generating..." : "Generate Restock Order"}
           </button>
         )}
 

@@ -44,4 +44,9 @@ class OrderResponse(OrderBase):
     class Config:
         from_attributes = True
 
+class OrderItemUpdate(BaseModel):
+    item_id: int
+    final_quantity: int
+
+
 OrderItemResponse.update_forward_refs()
