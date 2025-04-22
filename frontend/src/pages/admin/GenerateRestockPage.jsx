@@ -4,7 +4,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import "./GenerateRestockPage.css";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
-
+import { useSearchParams } from "react-router-dom";
 
 
 export default function GenerateRestockPage() {
@@ -14,6 +14,8 @@ export default function GenerateRestockPage() {
   const [errorMsg, setErrorMsg] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const { orderId } = useParams(); // grab /restock/:orderId
+  const [searchParams] = useSearchParams();
+  const isReadOnly = searchParams.get("readonly") === "true";
 
 
   const navigate = useNavigate();
@@ -30,11 +32,12 @@ export default function GenerateRestockPage() {
           headers: { Authorization: `Bearer ${currentUser.token}` },
         });
 
-        if (res.data.submitted) {
+        if (res.data.submitted && !isReadOnly) {
           setErrorMsg("This order has already been submitted.");
-        } else {
-          setOrder(res.data);
+          return;
         }
+        
+        setOrder(res.data);
       } catch (err) {
         console.error("Failed to load order", err);
         setErrorMsg("Could not load draft order.");
@@ -136,7 +139,8 @@ export default function GenerateRestockPage() {
       <div className="generate-restock-container">
         {order && (
           <p className="order-meta">
-            Order #{order.id} created on{" "}
+            Order #{order.id}{" "}
+            {order.submitted ? "submitted" : "created"} on{" "}
             {new Date(order.created_at).toLocaleString()} by {currentUser.name}
           </p>
         )}
@@ -171,56 +175,43 @@ export default function GenerateRestockPage() {
                     <td>{item.withdrawn_7d ?? "0"}</td>
                     <td>{item.suggested_quantity}</td>
                     <td>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          gap: "4px",
-                        }}
-                      >
-                        <button
-                          onClick={() =>
-                            updateFinalQty(item.item_id, item.final_quantity - 1)
-                          }
-                          disabled={item.final_quantity <= 0}
-                          style={{ padding: "0 5px" }}
-                        >
-                          -
-                        </button>
-                        <input
-                          type="text"
-                          inputMode="numeric"
-                          pattern="[0-9]*"
-                          value={item.final_quantity}
-                          onChange={(e) =>
-                            updateFinalQty(item.item_id, e.target.value)
-                          }
-                          style={{
-                            width: "45px",
-                            textAlign: "center",
-                            padding: "2px",
-                          }}
-                        />
-                        <button
-                          onClick={() =>
-                            updateFinalQty(item.item_id, item.final_quantity + 1)
-                          }
-                          style={{ padding: "0 5px" }}
-                        >
-                          +
-                        </button>
-                      </div>
+                      {isReadOnly ? (
+                        <span>{item.final_quantity}</span>
+                      ) : (
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "4px" }}>
+                          <button
+                            onClick={() => updateFinalQty(item.item_id, item.final_quantity - 1)}
+                            disabled={item.final_quantity <= 0}
+                          >
+                            -
+                          </button>
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            value={item.final_quantity}
+                            onChange={(e) => updateFinalQty(item.item_id, e.target.value)}
+                          />
+                          <button
+                            onClick={() => updateFinalQty(item.item_id, item.final_quantity + 1)}
+                          >
+                            +
+                          </button>
+                        </div>
+                      )}
                     </td>
+
 
                   </tr>
                 ))}
               </tbody>
             </table>
 
-            <button className="submit-btn" onClick={submitOrder}>
-              Submit Order
-            </button>
+            {!isReadOnly && (
+              <button className="submit-btn" onClick={submitOrder}>
+                Submit Order
+              </button>
+            )}
           </>
         )}
       </div>

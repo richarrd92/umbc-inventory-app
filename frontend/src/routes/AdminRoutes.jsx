@@ -21,6 +21,7 @@ export default function AdminRoutes() {
       <Route path="transactions" element={<PastTransactionsPage />} />
       <Route path="analytics" element={<AnalyticsPage />} />
       <Route path="restock" element={<GenerateRestockPage />} />
+      <Route path="restock/:orderId" element={<GenerateRestockPage />} />
       <Route path="past-restocks" element={<PastRestockPage />} />
       <Route path="transaction-report" element={<TransactionReportPage />} />
       <Route path="export-cv" element={<ExportCVPage />} />

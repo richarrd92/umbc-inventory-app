@@ -84,10 +84,12 @@ export default function PastRestockPage() {
               <td>
                 {order.submitted ? (
                   <button
-                    onClick={() => navigate(`/admin/dashboard/order/${order.id}`)}
-                  >
-                    View
-                  </button>
+                  onClick={() =>
+                    navigate(`/admin/dashboard/restock/${order.id}?readonly=true`)
+                  }
+                >
+                  View
+                </button>
                 ) : (
                   <>
                     <button
