@@ -71,6 +71,7 @@ CREATE TABLE orders (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- when that order was generated
     deleted_at TIMESTAMP NULL DEFAULT NULL, -- added for soft delete instead of full removal
     created_by_id INT, -- NEW: associate order with a user (admin)
+    submitted_at TIMESTAMP NULL DEFAULT NULL, -- added to get time when order was submitted
     FOREIGN KEY (created_by_id) REFERENCES users(id) ON DELETE SET NULL -- track who created it
 
 );

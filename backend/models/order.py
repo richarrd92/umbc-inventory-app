@@ -9,6 +9,7 @@ class Order(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     created_at = Column(TIMESTAMP, server_default=func.current_timestamp())
     deleted_at = Column(TIMESTAMP, nullable=True)
+    submitted_at = Column(TIMESTAMP, nullable=True)
     submitted = Column(Boolean, default=False)
 
     # Foreign key to User

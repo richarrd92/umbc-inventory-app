@@ -17,7 +17,7 @@ export default function PastRestockPage() {
         const res = await axios.get("http://localhost:8000/orders/", {
           headers: { Authorization: `Bearer ${currentUser.token}` },
         });
-    
+
         const sorted = res.data.sort((a, b) => {
           // Drafts not submittedgo first
           if (a.submitted !== b.submitted) {
@@ -26,7 +26,7 @@ export default function PastRestockPage() {
           //  sort by created_at descending
           return new Date(b.created_at) - new Date(a.created_at);
         });
-    
+
         setOrders(sorted);
       } catch (err) {
         console.error("Failed to fetch orders", err);
@@ -76,20 +76,20 @@ export default function PastRestockPage() {
               <td>{order.id}</td>
               <td>{new Date(order.created_at).toLocaleString()}</td>
               <td>
-                {order.submitted && order.created_at
-                  ? new Date(order.created_at).toLocaleString()
+                {order.submitted && order.submitted_at
+                  ? new Date(order.submitted_at).toLocaleString()
                   : "---"}
               </td>
               <td>{order.created_by?.name || order.created_by?.email || "Unknown"}</td>
               <td>
                 {order.submitted ? (
                   <button
-                  onClick={() =>
-                    navigate(`/admin/dashboard/restock/${order.id}?readonly=true`)
-                  }
-                >
-                  View
-                </button>
+                    onClick={() =>
+                      navigate(`/admin/dashboard/restock/${order.id}?readonly=true`)
+                    }
+                  >
+                    View
+                  </button>
                 ) : (
                   <>
                     <button

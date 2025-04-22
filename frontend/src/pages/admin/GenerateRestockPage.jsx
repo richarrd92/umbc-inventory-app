@@ -36,7 +36,7 @@ export default function GenerateRestockPage() {
           setErrorMsg("This order has already been submitted.");
           return;
         }
-        
+
         setOrder(res.data);
       } catch (err) {
         console.error("Failed to load order", err);
@@ -140,8 +140,10 @@ export default function GenerateRestockPage() {
         {order && (
           <p className="order-meta">
             Order #{order.id}{" "}
-            {order.submitted ? "submitted" : "created"} on{" "}
-            {new Date(order.created_at).toLocaleString()} by {currentUser.name}
+            {order.submitted
+              ? `submitted on ${new Date(order.submitted_at).toLocaleString()}`
+              : `created on ${new Date(order.created_at).toLocaleString()}`
+            } by {order.created_by?.name || "Unknown"}
           </p>
         )}
 

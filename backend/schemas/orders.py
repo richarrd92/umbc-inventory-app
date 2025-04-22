@@ -40,6 +40,7 @@ class OrderResponse(OrderBase):
     created_at: datetime
     deleted_at: Optional[datetime] = None  # soft delete tracking
     submitted: bool  
+    submitted_at: Optional[datetime] = None
     order_items: List[OrderItemResponse] # nested order items
     created_by_id: Optional[int] = None
     created_by: Optional[UserResponse] = None 

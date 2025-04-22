@@ -173,11 +173,11 @@ def submit_order(order_id: int, db: Session = Depends(get_db)):
         print(f"[ORDER-SUBMIT] Restocked '{item.name}' (id={item.id}) with +{order_item.final_quantity}")
 
     order.submitted = True
+    order.submitted_at = datetime.utcnow()
     db.commit()
     db.refresh(order)
 
-    print(f"[ORDER-SUBMIT] Order id={order.id} submitted at {order.created_at}")
-
+    print(f"[ORDER-SUBMIT] Order id={order.id} submitted at {order.submitted_at}")
     return order
 
 
