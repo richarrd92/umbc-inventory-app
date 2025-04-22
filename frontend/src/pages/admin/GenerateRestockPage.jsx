@@ -3,6 +3,8 @@ import axios from "axios";
 import { useAuth } from "../../contexts/AuthContext";
 import "./GenerateRestockPage.css";
 import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
+
 
 
 export default function GenerateRestockPage() {
@@ -11,8 +13,38 @@ export default function GenerateRestockPage() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
+  const { orderId } = useParams(); // grab /restock/:orderId
+
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchDraft = async () => {
+      if (!orderId) return; // skip if no draft is being resumed
+
+      setLoading(true);
+      setErrorMsg(null);
+
+      try {
+        const res = await axios.get(`http://localhost:8000/orders/${orderId}`, {
+          headers: { Authorization: `Bearer ${currentUser.token}` },
+        });
+
+        if (res.data.submitted) {
+          setErrorMsg("This order has already been submitted.");
+        } else {
+          setOrder(res.data);
+        }
+      } catch (err) {
+        console.error("Failed to load order", err);
+        setErrorMsg("Could not load draft order.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDraft();
+  }, [orderId, currentUser.token]);
 
 
 
@@ -47,14 +79,14 @@ export default function GenerateRestockPage() {
 
   const submitOrder = async () => {
     if (!order) return;
-  
+
     try {
       // STEP 1: Update the final quantities first
       const updatedItems = order.order_items.map((item) => ({
         item_id: item.item_id,
         final_quantity: item.final_quantity,
       }));
-  
+
       await axios.put(
         `http://localhost:8000/orders/${order.id}/items`,
         updatedItems,
@@ -65,7 +97,7 @@ export default function GenerateRestockPage() {
           },
         }
       );
-  
+
       // STEP 2: Then submit the order
       await axios.post(
         `http://localhost:8000/orders/${order.id}/submit`,
@@ -76,10 +108,10 @@ export default function GenerateRestockPage() {
           },
         }
       );
-  
+
       setShowSuccess(true);
       setOrder(null);
-  
+
       setTimeout(() => {
         setShowSuccess(false);
         navigate("/admin/dashboard");
@@ -139,15 +171,48 @@ export default function GenerateRestockPage() {
                     <td>{item.withdrawn_7d ?? "0"}</td>
                     <td>{item.suggested_quantity}</td>
                     <td>
-                      <input
-                        type="number"
-                        min="0"
-                        value={item.final_quantity}
-                        onChange={(e) =>
-                          updateFinalQty(item.item_id, e.target.value)
-                        }
-                      />
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: "4px",
+                        }}
+                      >
+                        <button
+                          onClick={() =>
+                            updateFinalQty(item.item_id, item.final_quantity - 1)
+                          }
+                          disabled={item.final_quantity <= 0}
+                          style={{ padding: "0 5px" }}
+                        >
+                          -
+                        </button>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          value={item.final_quantity}
+                          onChange={(e) =>
+                            updateFinalQty(item.item_id, e.target.value)
+                          }
+                          style={{
+                            width: "45px",
+                            textAlign: "center",
+                            padding: "2px",
+                          }}
+                        />
+                        <button
+                          onClick={() =>
+                            updateFinalQty(item.item_id, item.final_quantity + 1)
+                          }
+                          style={{ padding: "0 5px" }}
+                        >
+                          +
+                        </button>
+                      </div>
                     </td>
+
                   </tr>
                 ))}
               </tbody>

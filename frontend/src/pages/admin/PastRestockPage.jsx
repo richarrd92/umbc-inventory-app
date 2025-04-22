@@ -17,10 +17,16 @@ export default function PastRestockPage() {
         const res = await axios.get("http://localhost:8000/orders/", {
           headers: { Authorization: `Bearer ${currentUser.token}` },
         });
-
-        const sorted = res.data.sort(
-          (a, b) => new Date(b.created_at) - new Date(a.created_at)
-        );
+    
+        const sorted = res.data.sort((a, b) => {
+          // Drafts not submittedgo first
+          if (a.submitted !== b.submitted) {
+            return a.submitted ? 1 : -1;
+          }
+          //  sort by created_at descending
+          return new Date(b.created_at) - new Date(a.created_at);
+        });
+    
         setOrders(sorted);
       } catch (err) {
         console.error("Failed to fetch orders", err);
