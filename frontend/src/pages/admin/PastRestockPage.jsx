@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import "./PastRestockPage.css";
 import Sidebar from "../../components/Sidebar";
 import { FaBars } from "react-icons/fa";
+import "../Pagination.css";
 
 export default function PastRestockPage() {
   const { currentUser } = useAuth();
@@ -14,6 +15,10 @@ export default function PastRestockPage() {
   const [toastMsg, setToastMsg] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const itemsPerPage = 10; // Number of items per page
+
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -60,6 +65,12 @@ export default function PastRestockPage() {
     }
   };
 
+  // Pagination
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = orders.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(orders.length / itemsPerPage);
+
   return (
     <div className="main-content-wrapper">
       <Sidebar
@@ -95,7 +106,7 @@ export default function PastRestockPage() {
               </tr>
             </thead>
             <tbody>
-              {orders.map((order) => (
+              {currentItems.map((order) => (
                 <tr key={order.id} className={!order.submitted ? "draft" : ""}>
                   <td>{order.id}</td>
                   <td>{new Date(order.created_at).toLocaleString()}</td>
@@ -131,6 +142,23 @@ export default function PastRestockPage() {
               ))}
             </tbody>
           </table>
+          <div className="pagination-container">
+            <button
+              onClick={() => setCurrentPage(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+            <span className="page-info">
+              {currentPage} / {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
     </div>
