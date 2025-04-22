@@ -3,6 +3,8 @@ import axios from "axios";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import "./PastRestockPage.css";
+import Sidebar from "../../components/Sidebar";
+import { FaBars } from "react-icons/fa";
 
 export default function PastRestockPage() {
   const { currentUser } = useAuth();
@@ -10,6 +12,8 @@ export default function PastRestockPage() {
   const [orders, setOrders] = useState([]);
   const [showToast, setShowToast] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -57,56 +61,78 @@ export default function PastRestockPage() {
   };
 
   return (
-    <div className="past-orders-page">
-      {showToast && <div className="toast-notification">{toastMsg}</div>}
-      <h2>Past Restock Orders</h2>
-      <table className="orders-table">
-        <thead>
-          <tr>
-            <th>Order ID</th>
-            <th>Created At</th>
-            <th>Submitted At</th>
-            <th>Created By</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {orders.map((order) => (
-            <tr key={order.id} className={!order.submitted ? "draft" : ""}>
-              <td>{order.id}</td>
-              <td>{new Date(order.created_at).toLocaleString()}</td>
-              <td>
-                {order.submitted && order.submitted_at
-                  ? new Date(order.submitted_at).toLocaleString()
-                  : "---"}
-              </td>
-              <td>{order.created_by?.name || order.created_by?.email || "Unknown"}</td>
-              <td>
-                {order.submitted ? (
-                  <button
-                    onClick={() =>
-                      navigate(`/admin/dashboard/restock/${order.id}?readonly=true`)
-                    }
-                  >
-                    View
-                  </button>
-                ) : (
-                  <>
-                    <button
-                      onClick={() =>
-                        navigate(`/admin/dashboard/restock/${order.id}`)
-                      }
-                    >
-                      Continue
-                    </button>
-                    <button onClick={() => deleteOrder(order.id)}>Delete</button>
-                  </>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="main-content-wrapper">
+      <Sidebar
+        className={`sidebar ${sidebarOpen ? "open" : ""}`}
+        isOpen={sidebarOpen}
+        toggleSidebar={toggleSidebar}
+        user={currentUser}
+      />
+
+      <div className="dashboard-container">
+        <div className="dashboard-header-container">
+          <div className="header-left">
+            <div className="sidebar-toggle-button" onClick={toggleSidebar}>
+              <FaBars size={24} />
+            </div>
+          </div>
+          <div className="header-center">
+            <h2 className="dashboard-header">Past Restock Orders</h2>
+          </div>
+        </div>
+
+        <div className="past-orders-page">
+          {showToast && <div className="toast-notification">{toastMsg}</div>}
+
+          <table className="orders-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Created At</th>
+                <th>Submitted At</th>
+                <th>Created By</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map((order) => (
+                <tr key={order.id} className={!order.submitted ? "draft" : ""}>
+                  <td>{order.id}</td>
+                  <td>{new Date(order.created_at).toLocaleString()}</td>
+                  <td>
+                    {order.submitted && order.submitted_at
+                      ? new Date(order.submitted_at).toLocaleString()
+                      : "---"}
+                  </td>
+                  <td>{order.created_by?.name || order.created_by?.email || "Unknown"}</td>
+                  <td>
+                    {order.submitted ? (
+                      <button
+                        onClick={() =>
+                          navigate(`/admin/dashboard/restock/${order.id}?readonly=true`)
+                        }
+                      >
+                        View
+                      </button>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() =>
+                            navigate(`/admin/dashboard/restock/${order.id}`)
+                          }
+                        >
+                          Continue
+                        </button>
+                        <button onClick={() => deleteOrder(order.id)}>Delete</button>
+                      </>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }

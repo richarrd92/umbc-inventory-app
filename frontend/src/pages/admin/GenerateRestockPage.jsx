@@ -5,6 +5,8 @@ import "./GenerateRestockPage.css";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
+import Sidebar from "../../components/Sidebar";
+import { FaBars } from "react-icons/fa";
 
 
 export default function GenerateRestockPage() {
@@ -16,6 +18,8 @@ export default function GenerateRestockPage() {
   const { orderId } = useParams(); // grab /restock/:orderId
   const [searchParams] = useSearchParams();
   const isReadOnly = searchParams.get("readonly") === "true";
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
 
   const navigate = useNavigate();
@@ -129,95 +133,113 @@ export default function GenerateRestockPage() {
 
 
   return (
-    <>
-      {showSuccess && (
-        <div className="toast-notification">
-          Order submitted and inventory updated!
+    <div className="main-content-wrapper">
+      <Sidebar
+        className={`sidebar ${sidebarOpen ? "open" : ""}`}
+        isOpen={sidebarOpen}
+        toggleSidebar={toggleSidebar}
+        user={currentUser}
+      />
+  
+      <div className="dashboard-container">
+        <div className="dashboard-header-container">
+          <div className="header-left">
+            <div className="sidebar-toggle-button" onClick={toggleSidebar}>
+              <FaBars size={24} />
+            </div>
+          </div>
+          <div className="header-center">
+            <h2 className="dashboard-header">Generate Restock Order</h2>
+          </div>
         </div>
-      )}
-
-      <div className="generate-restock-container">
-        {order && (
-          <p className="order-meta">
-            Order #{order.id}{" "}
-            {order.submitted
-              ? `submitted on ${new Date(order.submitted_at).toLocaleString()}`
-              : `created on ${new Date(order.created_at).toLocaleString()}`
-            } by {order.created_by?.name || "Unknown"}
-          </p>
+  
+        {showSuccess && (
+          <div className="toast-notification">
+            Order submitted and inventory updated!
+          </div>
         )}
-
-        {!order && (
-          <button onClick={generateOrder} disabled={loading}>
-            {loading ? "Generating..." : "Generate Restock Order"}
-          </button>
-        )}
-
-        {errorMsg && <p className="error-msg">{errorMsg}</p>}
-
-        {order && (
-          <>
-            <table className="restock-table">
-              <thead>
-                <tr>
-                  <th>Item Name</th>
-                  <th>Item ID</th>
-                  <th>Current Stock</th>
-                  <th>Withdrawn (7d)</th>
-                  <th>Suggested Qty</th>
-                  <th>Final Qty</th>
-                </tr>
-              </thead>
-              <tbody>
-                {order.order_items.map((item) => (
-                  <tr key={item.id}>
-                    <td>{item.item?.name || "Unknown"}</td>
-                    <td>{item.item_id}</td>
-                    <td>{item.item?.quantity ?? "?"}</td>
-                    <td>{item.withdrawn_7d ?? "0"}</td>
-                    <td>{item.suggested_quantity}</td>
-                    <td>
-                      {isReadOnly ? (
-                        <span>{item.final_quantity}</span>
-                      ) : (
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "4px" }}>
-                          <button
-                            onClick={() => updateFinalQty(item.item_id, item.final_quantity - 1)}
-                            disabled={item.final_quantity <= 0}
-                          >
-                            -
-                          </button>
-                          <input
-                            type="text"
-                            inputMode="numeric"
-                            pattern="[0-9]*"
-                            value={item.final_quantity}
-                            onChange={(e) => updateFinalQty(item.item_id, e.target.value)}
-                          />
-                          <button
-                            onClick={() => updateFinalQty(item.item_id, item.final_quantity + 1)}
-                          >
-                            +
-                          </button>
-                        </div>
-                      )}
-                    </td>
-
-
+  
+        <div className="generate-restock-container">
+          {order && (
+            <p className="order-meta">
+              Order #{order.id}{" "}
+              {order.submitted
+                ? `submitted on ${new Date(order.submitted_at).toLocaleString()}`
+                : `created on ${new Date(order.created_at).toLocaleString()}`}
+              {" "}by {order.created_by?.name || "Unknown"}
+            </p>
+          )}
+  
+          {!order && (
+            <button onClick={generateOrder} disabled={loading}>
+              {loading ? "Generating..." : "Generate Restock Order"}
+            </button>
+          )}
+  
+          {errorMsg && <p className="error-msg">{errorMsg}</p>}
+  
+          {order && (
+            <>
+              <table className="restock-table">
+                <thead>
+                  <tr>
+                    <th>Item Name</th>
+                    <th>Item ID</th>
+                    <th>Current Stock</th>
+                    <th>Withdrawn (7d)</th>
+                    <th>Suggested Qty</th>
+                    <th>Final Qty</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-
-            {!isReadOnly && (
-              <button className="submit-btn" onClick={submitOrder}>
-                Submit Order
-              </button>
-            )}
-          </>
-        )}
+                </thead>
+                <tbody>
+                  {order.order_items.map((item) => (
+                    <tr key={item.id}>
+                      <td>{item.item?.name || "Unknown"}</td>
+                      <td>{item.item_id}</td>
+                      <td>{item.item?.quantity ?? "?"}</td>
+                      <td>{item.withdrawn_7d ?? "0"}</td>
+                      <td>{item.suggested_quantity}</td>
+                      <td>
+                        {isReadOnly ? (
+                          <span>{item.final_quantity}</span>
+                        ) : (
+                          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "4px" }}>
+                            <button
+                              onClick={() => updateFinalQty(item.item_id, item.final_quantity - 1)}
+                              disabled={item.final_quantity <= 0}
+                            >
+                              -
+                            </button>
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              pattern="[0-9]*"
+                              value={item.final_quantity}
+                              onChange={(e) => updateFinalQty(item.item_id, e.target.value)}
+                            />
+                            <button
+                              onClick={() => updateFinalQty(item.item_id, item.final_quantity + 1)}
+                            >
+                              +
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+  
+              {!isReadOnly && (
+                <button className="submit-btn" onClick={submitOrder}>
+                  Submit Order
+                </button>
+              )}
+            </>
+          )}
+        </div>
       </div>
-    </>
-  );
+    </div>
+  );  
 
 }
