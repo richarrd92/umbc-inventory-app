@@ -101,7 +101,7 @@ export default function PastRestockPage() {
                   <td>{new Date(order.created_at).toLocaleString()}</td>
                   <td>
                     {order.submitted && order.submitted_at
-                      ? new Date(order.submitted_at).toLocaleString()
+                      ? new Date(order.submitted_at + "Z").toLocaleString()
                       : "---"}
                   </td>
                   <td>{order.created_by?.name || order.created_by?.email || "Unknown"}</td>

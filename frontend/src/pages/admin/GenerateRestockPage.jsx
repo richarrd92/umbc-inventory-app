@@ -164,7 +164,7 @@ export default function GenerateRestockPage() {
             <p className="order-meta">
               Order #{order.id}{" "}
               {order.submitted
-                ? `submitted on ${new Date(order.submitted_at).toLocaleString()}`
+                ? `submitted on ${new Date(order.submitted_at + "Z").toLocaleString()}`
                 : `created on ${new Date(order.created_at).toLocaleString()}`}
               {" "}by {order.created_by?.name || "Unknown"}
             </p>
