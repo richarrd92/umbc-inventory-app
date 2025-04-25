@@ -79,7 +79,7 @@ export default function PastRestockPage() {
         toggleSidebar={toggleSidebar}
         user={currentUser}
       />
-
+  
       <div className="dashboard-container">
         <div className="dashboard-header-container">
           <div className="header-left">
@@ -91,76 +91,83 @@ export default function PastRestockPage() {
             <h2 className="dashboard-header">Past Restock Orders</h2>
           </div>
         </div>
-
+  
         <div className="past-orders-page">
           {showToast && <div className="toast-notification">{toastMsg}</div>}
-
-          <table className="orders-table">
-            <thead>
-              <tr>
-                <th>Order ID</th>
-                <th>Created At</th>
-                <th>Submitted At</th>
-                <th>Created By</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentItems.map((order) => (
-                <tr key={order.id} className={!order.submitted ? "draft" : ""}>
-                  <td>{order.id}</td>
-                  <td>{new Date(order.created_at).toLocaleString()}</td>
-                  <td>
-                    {order.submitted && order.submitted_at
-                      ? new Date(order.submitted_at + "Z").toLocaleString()
-                      : "---"}
-                  </td>
-                  <td>{order.created_by?.name || order.created_by?.email || "Unknown"}</td>
-                  <td>
-                    {order.submitted ? (
-                      <button
-                        onClick={() =>
-                          navigate(`/admin/dashboard/restock/${order.id}?readonly=true`)
-                        }
-                      >
-                        View
-                      </button>
-                    ) : (
-                      <>
-                        <button
-                          onClick={() =>
-                            navigate(`/admin/dashboard/restock/${order.id}`)
-                          }
-                        >
-                          Continue
-                        </button>
-                        <button onClick={() => deleteOrder(order.id)}>Delete</button>
-                      </>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <div className="pagination-container">
-            <button
-              onClick={() => setCurrentPage(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </button>
-            <span className="page-info">
-              {currentPage} / {totalPages}
-            </span>
-            <button
-              onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
-          </div>
+  
+          {orders.length === 0 ? (
+            <p className="no-orders-msg">No restock orders available yet.</p>
+          ) : (
+            <>
+              <table className="orders-table">
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Created At</th>
+                    <th>Submitted At</th>
+                    <th>Created By</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentItems.map((order) => (
+                    <tr key={order.id} className={!order.submitted ? "draft" : ""}>
+                      <td>{order.id}</td>
+                      <td>{new Date(order.created_at).toLocaleString()}</td>
+                      <td>
+                        {order.submitted && order.submitted_at
+                          ? new Date(order.submitted_at + "Z").toLocaleString()
+                          : "---"}
+                      </td>
+                      <td>{order.created_by?.name || order.created_by?.email || "Unknown"}</td>
+                      <td>
+                        {order.submitted ? (
+                          <button
+                            onClick={() =>
+                              navigate(`/admin/dashboard/restock/${order.id}?readonly=true`)
+                            }
+                          >
+                            View
+                          </button>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() =>
+                                navigate(`/admin/dashboard/restock/${order.id}`)
+                              }
+                            >
+                              Continue
+                            </button>
+                            <button onClick={() => deleteOrder(order.id)}>Delete</button>
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+  
+              <div className="pagination-container">
+                <button
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </button>
+                <span className="page-info">
+                  {currentPage} / {totalPages}
+                </span>
+                <button
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
-  );
+  );  
 }
