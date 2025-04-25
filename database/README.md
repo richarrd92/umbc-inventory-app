@@ -74,6 +74,12 @@ mysql -u root -p inventory < database/main.sql
 ```
 Replace `inventory` with your database name if different.
 
+You can also run this to reset the database schema:
+```sh
+use inventory
+source <absolute filepath to main.sql>
+```
+
 **Reminder**: this will wipe any exisiting data and replace it with whatever is in updated `main.sql`.
 
 
