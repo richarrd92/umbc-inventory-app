@@ -80,7 +80,7 @@ export default function PastRestockPage() {
         toggleSidebar={toggleSidebar}
         user={currentUser}
       />
-
+  
       <div className="dashboard-container">
         <div className="dashboard-header-container">
           <div className="header-left">
@@ -88,9 +88,11 @@ export default function PastRestockPage() {
               <FaBars size={24} />
             </div>
           </div>
+  
           <div className="header-center">
             <h2 className="dashboard-header">Past Restock Orders</h2>
           </div>
+  
           {/* Right: Home Icon */}
           <div className="header-right">
             <div
@@ -100,12 +102,11 @@ export default function PastRestockPage() {
               <FaHome className="cart-icon" />
             </div>
           </div>
-
         </div>
-
+  
         <div className="past-orders-page">
           {showToast && <div className="toast-notification">{toastMsg}</div>}
-
+  
           {orders.length === 0 ? (
             <p className="no-orders-msg">No restock orders available yet.</p>
           ) : (
@@ -130,7 +131,9 @@ export default function PastRestockPage() {
                           ? new Date(order.submitted_at + "Z").toLocaleString()
                           : "---"}
                       </td>
-                      <td>{order.created_by?.name || order.created_by?.email || "Unknown"}</td>
+                      <td>
+                        {order.created_by?.name || order.created_by?.email || "Unknown"}
+                      </td>
                       <td>
                         {order.submitted ? (
                           <button
@@ -149,7 +152,9 @@ export default function PastRestockPage() {
                             >
                               Continue
                             </button>
-                            <button onClick={() => deleteOrder(order.id)}>Delete</button>
+                            <button onClick={() => deleteOrder(order.id)}>
+                              Delete
+                            </button>
                           </>
                         )}
                       </td>
@@ -157,28 +162,30 @@ export default function PastRestockPage() {
                   ))}
                 </tbody>
               </table>
-
-              <div className="pagination-container">
-                <button
-                  onClick={() => setCurrentPage(currentPage - 1)}
-                  disabled={currentPage === 1}
-                >
-                  Previous
-                </button>
-                <span className="page-info">
-                  {currentPage} / {totalPages}
-                </span>
-                <button
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                >
-                  Next
-                </button>
-              </div>
+  
+              {orders.length > 0 && (
+                <div className="pagination-container">
+                  <button
+                    onClick={() => setCurrentPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    Previous
+                  </button>
+                  <span className="page-info">
+                    {currentPage} / {totalPages}
+                  </span>
+                  <button
+                    onClick={() => setCurrentPage(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
             </>
           )}
         </div>
       </div>
     </div>
-  );
+  );  
 }
