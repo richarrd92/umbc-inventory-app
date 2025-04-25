@@ -6,6 +6,7 @@ import "./PastRestockPage.css";
 import Sidebar from "../../components/Sidebar";
 import { FaBars } from "react-icons/fa";
 import "../Pagination.css";
+import { FaHome } from "react-icons/fa";
 
 export default function PastRestockPage() {
   const { currentUser } = useAuth();
@@ -79,7 +80,7 @@ export default function PastRestockPage() {
         toggleSidebar={toggleSidebar}
         user={currentUser}
       />
-  
+
       <div className="dashboard-container">
         <div className="dashboard-header-container">
           <div className="header-left">
@@ -90,11 +91,21 @@ export default function PastRestockPage() {
           <div className="header-center">
             <h2 className="dashboard-header">Past Restock Orders</h2>
           </div>
+          {/* Right: Home Icon */}
+          <div className="header-right">
+            <div
+              className="cart-icon-container"
+              onClick={() => navigate("/admin/dashboard")}
+            >
+              <FaHome className="cart-icon" />
+            </div>
+          </div>
+
         </div>
-  
+
         <div className="past-orders-page">
           {showToast && <div className="toast-notification">{toastMsg}</div>}
-  
+
           {orders.length === 0 ? (
             <p className="no-orders-msg">No restock orders available yet.</p>
           ) : (
@@ -146,7 +157,7 @@ export default function PastRestockPage() {
                   ))}
                 </tbody>
               </table>
-  
+
               <div className="pagination-container">
                 <button
                   onClick={() => setCurrentPage(currentPage - 1)}
@@ -169,5 +180,5 @@ export default function PastRestockPage() {
         </div>
       </div>
     </div>
-  );  
+  );
 }
