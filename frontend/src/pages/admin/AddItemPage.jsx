@@ -1,81 +1,67 @@
-import { useState } from "react";
-import axios from "axios";
+import "./AddItemPage.css";
+import { useNavigate } from "react-router-dom";
+import Sidebar from "../../components/Sidebar";
+import "../../components/Sidebar.css";
+import { FaBars, FaHome } from "react-icons/fa";
 import { useAuth } from "../../contexts/AuthContext";
-import LogoutButton from "../../components/LogoutButton";
+import { useState } from "react";
 
-// AddItemPage.jsx
 export default function AddItemPage() {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const { user } = useAuth(); // Get authenticated user
-
-  // Handle form submission to add item
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.post(
-        "http://localhost:8000/items",
-        {
-          name,
-          description,
-          quantity: parseInt(quantity),
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${user.token}`, // Send auth token
-          },
-        }
-      );
-      alert("Item added!");
-      setName("");
-      setDescription("");
-      setQuantity("");
-    } catch (err) {
-      console.error(err);
-      alert("Failed to add item");
-    }
-  };
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
   return (
-    <div>
-      <h2>Admin Dashboard</h2>
-      {/* Logout Button */}
-      {/* <button onClick={LogoutButton}>Logout</button> */}
-      <LogoutButton />
-      {/* Item submission form */}
-      <form onSubmit={handleSubmit}>
-        <label>Item Name:</label>
-        <br />
-        <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-        <br />
+    <div className="main-content-wrapper">
+      <Sidebar
+        className={`sidebar ${sidebarOpen ? "open" : ""}`}
+        isOpen={sidebarOpen}
+        toggleSidebar={toggleSidebar}
+        user={currentUser}
+      />
 
-        <label>Description:</label>
-        <br />
-        <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-        />
-        <br />
+      {/* <div className="student-dashboard-content"> */}
+      <div className="dashboard-container">
+        <div className="dashboard-header-container">
+          {/* Left: Sidebar toggle */}
+          <div className="header-left">
+            <div className="sidebar-toggle-button" onClick={toggleSidebar}>
+              <FaBars size={24} />
+            </div>
+          </div>
 
-        <label>Quantity:</label>
-        <br />
-        <input
-          type="number"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-          required
-        />
-        <br />
+          {/* Center: Title */}
+          <div className="header-center">
+            <h2 className="dashboard-header">Essential Items</h2>
+          </div>
 
-        {/* Submit button */}
-        <button type="submit">Add Item</button>
-      </form>
+          {/* Right: Cart Icon */}
+          <div className="header-right">
+            <div
+              className="cart-icon-container"
+              onClick={() => navigate("/admin/dashboard")}
+            >
+              <FaHome className="cart-icon" />
+            </div>
+          </div>
+        </div>
+        <div className="manage-items-container">
+          <div className="grid-container">
+            <div className="grid-item" onClick={() => navigate("/add-item")}>
+              <h3 className="grid-item-label">Add New Item</h3>
+            </div>
+
+            <div className="grid-item" onClick={() => navigate("/update-item")}>
+              <h3 className="grid-item-label">Update Item</h3>
+            </div>
+
+            <div className="grid-item" onClick={() => navigate("/delete-item")}>
+              <h3 className="grid-item-label">Delete Item</h3>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

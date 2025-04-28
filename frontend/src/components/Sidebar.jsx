@@ -81,7 +81,7 @@ export default function Sidebar({ isOpen, toggleSidebar, user }) {
                   toggleSidebar();
                 }}
               >
-                Add New Item
+                Essential Items
               </button>
               <button
                 className="sidebar-btn"
