@@ -2,27 +2,34 @@ from fastapi import APIRouter, Depends, HTTPException, status, Body
 from sqlalchemy.orm import Session
 from database import get_db
 from models import Order, OrderItem, Item
-from schemas.orders import OrderCreate, OrderResponse
+from schemas.orders import OrderCreate, OrderResponse, OrderItemUpdate
 from models import Transaction, TransactionItem, User
 from datetime import datetime, timedelta
 from typing import List
 from sqlalchemy import func, desc
+from fastapi import Request
+from routes.firebase_auth import get_current_user
 
 
 router = APIRouter(prefix="/orders", tags=["Orders"])
 
 # generate order
 @router.post("/", response_model=OrderResponse, status_code=status.HTTP_201_CREATED)
-def create_order(db: Session = Depends(get_db)):
+def create_order(db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     """
     Generates a new order combining:
     - Items below restock threshold (suggested_quantity = threshold * 2)
     - Top 5 most withdrawn items in past 7 days (suggested_quantity = threshold or threshold * 1.5 if getting low)
     """
-    new_order = Order()
+    # firebase_uid = request.state.user.uid
+    # user = db.query(User).filter(User.firebase_uid == firebase_uid).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    new_order = Order(created_by_id=user.id)
     db.add(new_order)
     db.commit()
     db.refresh(new_order)
+    # new_order.created_by = user
 
     order_items = []
     seven_days_ago = datetime.utcnow() - timedelta(days=7)
@@ -97,6 +104,15 @@ def create_order(db: Session = Depends(get_db)):
     db.add_all(order_items)
     db.commit()
     db.refresh(new_order)
+    for order_item in new_order.order_items:
+        order_item.item = db.query(Item).filter(Item.id == order_item.item_id).first()
+        order_item.withdrawn_7d = db.query(func.sum(TransactionItem.quantity)).join(Transaction).filter(
+            Transaction.transaction_type == "OUT",
+            TransactionItem.item_id == order_item.item_id,
+            Transaction.deleted_at == None,
+            TransactionItem.deleted_at == None,
+            Transaction.created_at >= seven_days_ago
+        ).scalar() or 0
 
     return new_order
 
@@ -157,9 +173,40 @@ def submit_order(order_id: int, db: Session = Depends(get_db)):
         print(f"[ORDER-SUBMIT] Restocked '{item.name}' (id={item.id}) with +{order_item.final_quantity}")
 
     order.submitted = True
+    order.submitted_at = datetime.utcnow()
     db.commit()
     db.refresh(order)
 
-    print(f"[ORDER-SUBMIT] Order id={order.id} submitted at {order.created_at}")
-
+    print(f"[ORDER-SUBMIT] Order id={order.id} submitted at {order.submitted_at}")
     return order
+
+
+@router.put("/{order_id}/items")
+def update_order_items(order_id: int, updated_items: List[OrderItemUpdate], db: Session = Depends(get_db)):
+    """
+    Updates final quantities for each item in a draft order
+    Expects a list of { item_id: int, final_quantity: int }
+    """
+    order = db.query(Order).filter(Order.id == order_id, Order.deleted_at == None, Order.submitted == False).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Draft order not found")
+
+    for item_data in updated_items:
+        item_id = item_data.item_id
+        final_quantity = item_data.final_quantity
+
+
+        if item_id is None or final_quantity is None:
+            continue  # Skip incomplete entries
+
+        order_item = db.query(OrderItem).filter(
+            OrderItem.order_id == order_id,
+            OrderItem.item_id == item_id
+        ).first()
+
+        if order_item:
+            order_item.final_quantity = final_quantity
+
+    db.commit()
+    return {"message": "Order item quantities updated successfully"}
+

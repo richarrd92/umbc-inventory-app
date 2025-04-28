@@ -21,3 +21,4 @@ class User(Base):
     # Define relationships
     items_added = relationship("Item", back_populates="added_by", passive_deletes=True)  # Keep items, but make FKs null
     transactions = relationship("Transaction", back_populates="user", passive_deletes=True)  # User's transactions - keep transaction history
+    orders = relationship("Order", back_populates="created_by", passive_deletes=True)

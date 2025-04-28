@@ -4,13 +4,16 @@ from database import Base # Base for model inheritance
 
 # Define the Order model
 class Order(Base):
-    __tablename__ = "orders"  # Table name in the database
+    __tablename__ = "orders"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)  # Unique identifier for each order
-    created_at = Column(TIMESTAMP, server_default=func.current_timestamp())  # Timestamp when the order was created
-    deleted_at = Column(TIMESTAMP, nullable=True) # soft delete timestamp
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    created_at = Column(TIMESTAMP, server_default=func.current_timestamp())
+    deleted_at = Column(TIMESTAMP, nullable=True)
+    submitted_at = Column(TIMESTAMP, nullable=True)
     submitted = Column(Boolean, default=False)
 
+    # Foreign key to User
+    created_by_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    created_by = relationship("User", back_populates="orders")  # Use 'orders' on User side
 
-    # Define relationships
-    order_items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan") # Items within this order
+    order_items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
