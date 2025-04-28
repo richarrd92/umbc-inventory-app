@@ -26,7 +26,7 @@ export default function GenerateRestockPage() {
   // generate suggested restock order
   const handleGenerateClick = () => {
     setClicked(true);
-    generateOrder(); // your existing function
+    generateOrder(); 
   };
 
   const navigate = useNavigate();
