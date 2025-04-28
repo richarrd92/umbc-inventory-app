@@ -77,7 +77,7 @@ export default function Sidebar({ isOpen, toggleSidebar, user }) {
               <button
                 className="sidebar-btn"
                 onClick={() => {
-                  navigate("/admin/dashboard/add-item");
+                  navigate("/admin/dashboard/Essential-Items");
                   toggleSidebar();
                 }}
               >

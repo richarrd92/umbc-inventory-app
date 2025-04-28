@@ -1,4 +1,4 @@
-import "./AddItemPage.css";
+import "./EssentialItemsPage.css";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
 import "../../components/Sidebar.css";
@@ -48,15 +48,15 @@ export default function AddItemPage() {
         </div>
         <div className="manage-items-container">
           <div className="grid-container">
-            <div className="grid-item" onClick={() => navigate("/add-item")}>
+            <div className="grid-item" onClick={() => navigate("/admin/dashboard/add-item")}>
               <h3 className="grid-item-label">Add New Item</h3>
             </div>
 
-            <div className="grid-item" onClick={() => navigate("/update-item")}>
+            <div className="grid-item" onClick={() => navigate("/admin/dashboard/update-item")}>
               <h3 className="grid-item-label">Update Item</h3>
             </div>
 
-            <div className="grid-item" onClick={() => navigate("/delete-item")}>
+            <div className="grid-item" onClick={() => navigate("/admin/dashboard/delete-item")}>
               <h3 className="grid-item-label">Delete Item</h3>
             </div>
           </div>
