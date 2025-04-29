@@ -143,10 +143,3 @@
     background-color: rgb(8, 190, 8);
     transform: scale(1.05);
 }
-
-.transactions-header {
-    margin: 0;
-    font-size: 1.8rem;
-    font-weight: 600;
-    color: #333;
-}
