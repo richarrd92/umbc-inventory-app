@@ -5,6 +5,9 @@ import { useNavigate } from "react-router-dom";
 import "./AddNewItemPage.css";
 import Sidebar from "../../components/Sidebar";
 import { FaBars, FaHome } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "../toastStyles.css";
 
 export default function AddNewItemPage() {
   const { currentUser } = useAuth();
@@ -14,9 +17,7 @@ export default function AddNewItemPage() {
   const [quantity, setQuantity] = useState("");
   const [restockThreshold, setRestockThreshold] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(""); 
-  const [showToast, setShowToast] = useState(false);
-  const [toastMsg, setToastMsg] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
@@ -56,9 +57,7 @@ export default function AddNewItemPage() {
       setCategory("");
       setQuantity("");
       setRestockThreshold("");
-      setToastMsg("Item added successfully!");
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
+      toast.success("Item added successfully!");
     } catch (err) {
       console.error(err); // Log error
       console.log("Error adding item:", err);
@@ -66,14 +65,31 @@ export default function AddNewItemPage() {
       // Set error message
       if (err.response && err.response.data && err.response.data.detail) {
         setErrorMessage(err.response.data.detail);
+        toast.error("Item with this name and category already exists");
       } else {
         setErrorMessage("An error occurred. Please try again later.");
+        toast.error("An error occurred. Please try again later.");
       }
     }
   };
 
   return (
     <div className="main-content-wrapper">
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        closeButton={false}
+        toastClassName={(context) => {
+          let base = "toastify-container";
+          if (context?.type === "success") return `${base} toast-success`;
+          if (context?.type === "error") return `${base} toast-error`;
+          return base;
+        }}
+      />
       <Sidebar
         className={`sidebar ${sidebarOpen ? "open" : ""}`}
         isOpen={sidebarOpen}
@@ -103,8 +119,6 @@ export default function AddNewItemPage() {
         </div>
 
         <div className="add-item-page">
-          {showToast && <div className="toast-notification">{toastMsg}</div>}
-
           <form onSubmit={handleSubmit} className="add-item-form">
             <label>Name:</label>
             <input
@@ -152,11 +166,6 @@ export default function AddNewItemPage() {
             <button type="submit" className="submit-button">
               Add Item
             </button>
-
-            {/* Display error message if an error occurs */}
-            {errorMessage && (
-              <div className="error-message">{errorMessage}</div>
-            )}
           </form>
         </div>
       </div>

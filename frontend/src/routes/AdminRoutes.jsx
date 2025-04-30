@@ -11,8 +11,7 @@ import ExportCVPage from "../pages/admin/ExportCVPage";
 import ReportIssuePage from "../pages/ReportIssuePage"; // shared page btn admins and students
 import Cart from "../pages/Cart";
 import AddNewItemPage from "../pages/admin/AddNewItemPage";
-import UpdateItemPage from "../pages/admin/UpdateItemPage";
-import DeleteItemPage from "../pages/admin/DeleteItemPage";
+import ManageItemsPage from "../pages/admin/ManageItemsPage";
 
 // Component for admin-specific routes
 export default function AdminRoutes() {
@@ -29,8 +28,7 @@ export default function AdminRoutes() {
       <Route path="transaction-report" element={<TransactionReportPage />} />
       <Route path="export-cv" element={<ExportCVPage />} />
       <Route path="add-item" element={<AddNewItemPage />} />
-      <Route path="update-item" element={<UpdateItemPage />} />
-      <Route path="delete-item" element={<DeleteItemPage />} />
+      <Route path="Manage-Items" element={<ManageItemsPage />} />
       <Route path="report-issue" element={<ReportIssuePage />} />
       <Route path="cart" element={<Cart />} />
     </Routes>

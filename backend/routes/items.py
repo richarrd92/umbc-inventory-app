@@ -78,8 +78,30 @@ def update_item(item_id: int, item: ItemUpdate, db: Session = Depends(get_db)):
     if not db_item:
         raise HTTPException(status_code=404, detail="Item not found")
 
+    # updated name and category
+    new_name = item.name if item.name is not None else db_item.name
+    new_category = item.category if item.category is not None else db_item.category
+
+    # Check for existing item with same name and category, excluding current item
+    duplicate = (
+        db.query(models.Item)
+        .filter(
+            models.Item.name == new_name,
+            models.Item.category == new_category,
+            models.Item.id != item_id
+        )
+        .first()
+    )
+
+    # item with same name exits
+    if duplicate:
+        raise HTTPException(
+            status_code=400,
+            detail="An item with the same name and category already exists."
+        )
+
     # Update only provided fields
-    item_data = item.dict(exclude_unset=True)  # Excludes missing fields
+    item_data = item.dict(exclude_unset=True)
     for key, value in item_data.items():
         setattr(db_item, key, value)
 

@@ -51,13 +51,8 @@ export default function AddItemPage() {
             <div className="grid-item" onClick={() => navigate("/admin/dashboard/add-item")}>
               <h3 className="grid-item-label">Add New Item</h3>
             </div>
-
-            <div className="grid-item" onClick={() => navigate("/admin/dashboard/update-item")}>
-              <h3 className="grid-item-label">Update Item</h3>
-            </div>
-
-            <div className="grid-item" onClick={() => navigate("/admin/dashboard/delete-item")}>
-              <h3 className="grid-item-label">Delete Item</h3>
+            <div className="grid-item" onClick={() => navigate("/admin/dashboard/manage-items")}>
+              <h3 className="grid-item-label">Manage Items</h3>
             </div>
           </div>
         </div>
