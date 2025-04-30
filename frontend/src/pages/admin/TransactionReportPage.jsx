@@ -12,8 +12,9 @@ export default function TransactionReportsPage() {
   const [transactions, setTransactions] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [expanded, setExpanded] = useState({});
 
+  const itemsPerPage = 5; // number of transaction groups per page
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = transactions.slice(indexOfFirstItem, indexOfLastItem);
@@ -29,27 +30,49 @@ export default function TransactionReportsPage() {
           headers: { Authorization: `Bearer ${currentUser.token}` },
         });
 
-        const flattened = res.data.flatMap((tx) =>
-          tx.transaction_items.map((tItem) => ({
-            transactionId: tx.id,
-            itemName: tItem.item?.name || "Unknown",
-            type: tx.transaction_type,
+        const grouped = res.data.map((tx) => ({
+          transactionId: tx.id,
+          user: tx.user?.name ?? tx.user?.email ?? `User ID ${tx.user_id}`,
+          date: tx.created_at,
+          type: tx.transaction_type,
+          items: tx.transaction_items.map((tItem) => ({
+            id: tItem.id,
+            name: tItem.item?.name ?? `Item ID ${tItem.item_id}`,
             quantity: tItem.quantity,
-            user: tx.user?.name || tx.user?.email || "Unknown",
-            date: tx.created_at,
-          }))
-        );
+          })),
+        }));
 
-        flattened.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-        setTransactions(flattened);
+        grouped.sort((a, b) => new Date(b.date) - new Date(a.date)); // newest first
+        setTransactions(grouped);
       } catch (err) {
         console.error("Failed to fetch transactions", err);
       }
     };
 
+
     fetchTransactions();
   }, [currentUser.token]);
+
+
+  const toggleExpand = (id) => {
+    setExpanded((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
+  const expandAll = () => {
+    const allExpanded = {};
+    currentItems.forEach((group) => {
+      allExpanded[group.transactionId] = true;
+    });
+    setExpanded(allExpanded);
+  };
+
+  const collapseAll = () => {
+    setExpanded({});
+  };
+
 
   return (
     <div className="main-content-wrapper">
@@ -59,7 +82,7 @@ export default function TransactionReportsPage() {
         toggleSidebar={toggleSidebar}
         user={currentUser}
       />
-  
+
       <div className="dashboard-container">
         <div className="dashboard-header-container">
           <div className="header-left">
@@ -79,37 +102,58 @@ export default function TransactionReportsPage() {
             </div>
           </div>
         </div>
-  
+
         <div className="transaction-report-page">
           {transactions.length === 0 ? (
             <p className="no-transactions-msg">No transactions available yet.</p>
           ) : (
             <>
+              <div className="expand-controls">
+                <button onClick={expandAll}>Expand All</button>
+                <button onClick={collapseAll}>Collapse All</button>
+              </div>
               <table className="transactions-table">
                 <thead>
                   <tr>
+                    <th></th>
                     <th>Transaction ID</th>
-                    <th>Item Name</th>
                     <th>Type</th>
-                    <th>Quantity</th>
                     <th>User</th>
                     <th>Date</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {currentItems.map((row, idx) => (
-                    <tr key={idx}>
-                      <td>{row.transactionId}</td>
-                      <td>{row.itemName}</td>
-                      <td>{row.type}</td>
-                      <td>{row.quantity}</td>
-                      <td>{row.user}</td>
-                      <td>{new Date(row.date).toLocaleString()}</td>
-                    </tr>
+                  {currentItems.map((group) => (
+                    <React.Fragment key={group.transactionId}>
+                      {/* Parent row */}
+                      <tr className="group-header">
+                        <td>
+                          <button onClick={() => toggleExpand(group.transactionId)}>
+                            {expanded[group.transactionId] ? "▼" : "▶"}
+                          </button>
+                        </td>
+                        <td>{group.transactionId}</td>
+                        <td>{group.type}</td>
+                        <td>{group.user}</td>
+                        <td>{new Date(group.date).toLocaleString()}</td>
+                      </tr>
+
+                      {/* Expanded rows */}
+                      {expanded[group.transactionId] &&
+                        group.items.map((item) => (
+                          <tr key={item.id} className="group-item">
+                            <td></td>
+                            <td colSpan={2}>{item.name}</td>
+                            <td>Qty: {item.quantity}</td>
+                            <td></td>
+                          </tr>
+                        ))}
+                    </React.Fragment>
                   ))}
                 </tbody>
               </table>
-  
+
+
               <div className="pagination-container">
                 <button
                   onClick={() => setCurrentPage(currentPage - 1)}
@@ -132,5 +176,5 @@ export default function TransactionReportsPage() {
         </div>
       </div>
     </div>
-  );  
+  );
 }

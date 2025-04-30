@@ -27,3 +27,31 @@
     text-align: center;
   }
   
+   .transactions-table button {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+
+  .expand-controls {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+  }
+  
+  .expand-controls button {
+    background-color: #eee;
+    border: 1px solid #ccc;
+    padding: 6px 12px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .expand-controls button:hover {
+    background-color: #ddd;
+  }
+  
