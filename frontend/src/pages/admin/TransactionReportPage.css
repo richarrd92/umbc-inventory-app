@@ -1,0 +1,29 @@
+.transactions-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+  }
+  
+  .transactions-table th,
+  .transactions-table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .toast-notification {
+    background-color: #28a745;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+  }
+  
+  .no-transactions-msg {
+    margin-top: 2rem;
+    font-size: 1.2rem;
+    color: #777;
+    text-align: center;
+  }
+  
