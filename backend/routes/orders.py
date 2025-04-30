@@ -99,7 +99,7 @@ def create_order(db: Session = Depends(get_db), user: User = Depends(get_current
         ))
 
     if not order_items:
-        raise HTTPException(status_code=200, detail="All items are stocked and none are highly requested. No order needed.")
+        raise HTTPException(status_code=400, detail="All items are stocked and none are highly requested. No order needed.")
 
     db.add_all(order_items)
     db.commit()
