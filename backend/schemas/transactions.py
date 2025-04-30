@@ -1,6 +1,8 @@
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime
+from .items import ItemResponse
+from .users import UserResponse
 
 # transaction items nested inside transactions
 class TransactionItemBase(BaseModel):
@@ -14,6 +16,7 @@ class TransactionItemResponse(TransactionItemBase):
     id: int
     created_at: datetime
     deleted_at: Optional[datetime] = None
+    item: Optional[ItemResponse]
 
     class Config:
         from_attributes = True
@@ -40,6 +43,7 @@ class TransactionResponse(TransactionBase):
     created_at: datetime
     deleted_at: Optional[datetime] = None
     transaction_items: List[TransactionItemResponse]
+    user: Optional[UserResponse]
 
     class Config:
         from_attributes = True

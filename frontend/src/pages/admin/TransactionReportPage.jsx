@@ -40,6 +40,8 @@ export default function TransactionReportsPage() {
           }))
         );
 
+        flattened.sort((a, b) => new Date(b.date) - new Date(a.date));
+
         setTransactions(flattened);
       } catch (err) {
         console.error("Failed to fetch transactions", err);
