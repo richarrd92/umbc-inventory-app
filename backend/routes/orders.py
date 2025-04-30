@@ -10,7 +10,6 @@ from sqlalchemy import func, desc
 from fastapi import Request
 from routes.firebase_auth import get_current_user
 
-
 router = APIRouter(prefix="/orders", tags=["Orders"])
 
 # generate order
