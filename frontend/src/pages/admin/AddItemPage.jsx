@@ -97,13 +97,12 @@ export default function AddItemPage() {
           />
           <br />
 
-          <label>Description:</label>
+          <label>Description (optional):</label>
           <br />
           <textarea
             rows="4"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            required
           />
           <br />
 
