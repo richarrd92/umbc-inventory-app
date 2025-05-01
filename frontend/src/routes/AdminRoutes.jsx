@@ -17,6 +17,7 @@ export default function AdminRoutes() {
     <Routes>
       <Route path="/" element={<AdminDashboard />} />
       <Route path="add-item" element={<AddItemPage />} />
+      <Route path="edit-item/:itemId" element={<AddItemPage />} />
       <Route path="favorites" element={<FavoritesPage />} />
       <Route path="transactions" element={<PastTransactionsPage />} />
       <Route path="analytics" element={<AnalyticsPage />} />

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../../contexts/AuthContext";
@@ -6,6 +6,8 @@ import Sidebar from "../../components/Sidebar";
 import "../Pagination.css";
 import "./AddItemPage.css";
 import { FaBars, FaHome } from "react-icons/fa";
+import { useParams } from "react-router-dom";
+
 
 export default function AddItemPage() {
   const [name, setName] = useState("");
@@ -14,46 +16,91 @@ export default function AddItemPage() {
   const [restockThreshold, setRestockThreshold] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+
   const navigate = useNavigate();
+  const { itemId } = useParams();
   const { currentUser } = useAuth();
 
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (parseInt(quantity) < 1 || parseInt(restockThreshold) < 1) {
       alert("Quantity and Restock Threshold must be at least 1.");
       return;
     }
-
+  
     try {
-      await axios.post(
-        "http://localhost:8000/items",
-        {
-          name,
-          description,
-          quantity: parseInt(quantity),
-          restock_threshold: parseInt(restockThreshold),
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${currentUser.token}`,
+      if (itemId) {
+        // UPDATE mode
+        await axios.put(
+          `http://localhost:8000/items/${itemId}`,
+          {
+            name,
+            description,
+            quantity: parseInt(quantity),
+            restock_threshold: parseInt(restockThreshold),
           },
-        }
-      );
-      setShowSuccess(true);
-      setName("");
-      setDescription("");
-      setQuantity("");
-      setRestockThreshold("");
-
-      setTimeout(() => setShowSuccess(false), 2000);
+          {
+            headers: {
+              Authorization: `Bearer ${currentUser.token}`,
+            },
+          }
+        );
+        setSuccessMessage("Item updated successfully!"); // ✅
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 2000);
+      } else {
+        // ADD mode
+        await axios.post(
+          "http://localhost:8000/items",
+          {
+            name,
+            description,
+            quantity: parseInt(quantity),
+            restock_threshold: parseInt(restockThreshold),
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${currentUser.token}`,
+            },
+          }
+        );
+        setSuccessMessage("Item added to inventory!"); // ✅
+        setShowSuccess(true);
+        setName("");
+        setDescription("");
+        setQuantity("");
+        setRestockThreshold("");
+        setTimeout(() => setShowSuccess(false), 2000);
+      }
     } catch (err) {
       console.error(err);
-      alert("Failed to add item");
+      alert(itemId ? "Failed to update item" : "Failed to add item");
     }
-  };
+  };  
+
+
+  useEffect(() => {
+    if (itemId) {
+      axios.get(`http://localhost:8000/items/${itemId}`, {
+        headers: { Authorization: `Bearer ${currentUser.token}` },
+      })
+        .then(res => {
+          setName(res.data.name);
+          setDescription(res.data.description || "");
+          setQuantity(res.data.quantity);
+          setRestockThreshold(res.data.restock_threshold);
+        })
+        .catch(err => {
+          console.error("Failed to load item", err);
+          alert("Failed to load item details.");
+        });
+    }
+  }, [itemId, currentUser.token]);
+
 
   return (
     <div className="add-items-page">
@@ -84,7 +131,7 @@ export default function AddItemPage() {
         </div>
 
         {showSuccess && (
-          <div className="toast-notification">Item added to inventory!</div>
+          <div className="toast-notification">{successMessage}</div>
         )}
 
         <form onSubmit={handleSubmit}>
@@ -129,7 +176,9 @@ export default function AddItemPage() {
           <br />
 
           <div className="button-container">
-            <button type="submit">Add Item</button>
+            <button type="submit">
+              {itemId ? "Update Item" : "Add Item"}
+            </button>
           </div>
         </form>
       </div>

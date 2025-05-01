@@ -56,6 +56,28 @@ export default function StudentDashboard() {
     fetchItems();
   }, [currentUser.token]);
 
+
+  const handleDelete = async (itemId, itemName) => {
+    const confirmed = window.confirm(`Are you sure you want to delete "${itemName}"?`);
+    if (!confirmed) return;
+  
+    try {
+      await axios.delete(`http://localhost:8000/items/${itemId}`, {
+        headers: { Authorization: `Bearer ${currentUser.token}` },
+      });
+      alert(`Item "${itemName}" deleted.`);
+      // refetch updated list
+      const res = await axios.get("http://localhost:8000/items", {
+        headers: { Authorization: `Bearer ${currentUser.token}` },
+      });
+      setItems(res.data.filter((item) => item.quantity > 0));
+    } catch (err) {
+      console.error("Delete failed", err);
+      alert("Failed to delete item.");
+    }
+  };
+  
+
   // Function to handle quantity changes
   const handleQuantityChange = (itemId, inputValue) => {
     const item = items.find((i) => i.id === itemId);
@@ -158,7 +180,23 @@ export default function StudentDashboard() {
           <tbody>
             {currentItems.map((item) => (
               <tr key={item.id} style={{ borderBottom: "1px solid #ccc" }}>
-                <td style={{ padding: "10px", width: "60%" }}>{item.name}</td>
+                <td style={{ padding: "10px", width: "60%" }}>
+                  {item.name}
+                  <div style={{ marginTop: "4px" }}>
+                    <button
+                      onClick={() => navigate(`/admin/dashboard/edit-item/${item.id}`)}
+                      style={{ marginRight: "6px", fontSize: "0.8rem" }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(item.id, item.name)}
+                      style={{ fontSize: "0.8rem", color: "red" }}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </td>
                 <td style={{ textAlign: "center", width: "20%" }}>
                   {getAvailableStock(item.id)}
                 </td>
