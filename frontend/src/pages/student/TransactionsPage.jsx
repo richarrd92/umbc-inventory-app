@@ -40,7 +40,7 @@ export default function TransactionsPage() {
     };
 
     fetchOrders();
-  }, [currentUser.token]);
+  }, [currentUser.id, currentUser.token]);
 
   const getItemName = (itemId) => {
     const item = items.find((element) => element.id === itemId);
@@ -113,16 +113,7 @@ export default function TransactionsPage() {
                     style={{
                       textAlign: "center",
                       padding: "10px",
-                      width: "20%",
-                    }}
-                  >
-                    Notes
-                  </th>
-                  <th
-                    style={{
-                      textAlign: "center",
-                      padding: "10px",
-                      width: "20%",
+                      width: "40%",
                     }}
                   >
                     Date/Time
@@ -157,18 +148,9 @@ export default function TransactionsPage() {
                     </td>
                     <td
                       style={{
-                        textAlign: "left",
+                        textAlign: "center",
                         padding: "10px",
-                        width: "20%",
-                      }}
-                    >
-                      {order.notes}
-                    </td>
-                    <td
-                      style={{
-                        textAlign: "left",
-                        padding: "10px",
-                        width: "20%",
+                        width: "40%",
                       }}
                     >
                       {formatDate(order.created_at)}

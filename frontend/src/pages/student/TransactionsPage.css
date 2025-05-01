@@ -38,30 +38,7 @@
     color: #333;
 }
   
-  
-.sidebar {
-    width: 250px;
-    transition: transform 0.3s ease-in-out;
-    transform: translateX(-100%);
-    position: absolute;
-    height: 100vh;
-    background-color: #fff;
-    z-index: 20;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-}
-  
-.sidebar.open {
-    transform: translateX(0);
-}
-  
-  
-.sidebar-toggle-button {
-    cursor: pointer;
-    background: none;
-    border: none;
-    font-size: 20px;
-}
-  
+
 .main-content-container {
     padding: 1rem;
     background-color: #f4f4f9;

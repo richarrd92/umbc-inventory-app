@@ -12,7 +12,7 @@ export default function AddItemPage() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState("");
-  const { user } = useAuth(); // Get authenticated user
+  const { currentUser } = useAuth(); // Get authenticated user
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
@@ -30,7 +30,7 @@ export default function AddItemPage() {
         },
         {
           headers: {
-            Authorization: `Bearer ${user.token}`, // Send auth token
+            Authorization: `Bearer ${currentUser.token}`, // Send auth token
           },
         }
       );
@@ -50,7 +50,7 @@ export default function AddItemPage() {
           className={`sidebar ${sidebarOpen ? "open" : ""}`}
           isOpen={sidebarOpen}
           toggleSidebar={toggleSidebar}
-          user={user}
+          user={currentUser}
         />
         <div className="main-content-container">
           <div className="add-items-header-container">
