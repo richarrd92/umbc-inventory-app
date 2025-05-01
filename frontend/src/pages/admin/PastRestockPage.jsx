@@ -20,7 +20,6 @@ export default function PastRestockPage() {
 
   const itemsPerPage = 10; // Number of items per page
 
-
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -80,7 +79,7 @@ export default function PastRestockPage() {
         toggleSidebar={toggleSidebar}
         user={currentUser}
       />
-  
+
       <div className="dashboard-container">
         <div className="dashboard-header-container">
           <div className="header-left">
@@ -88,11 +87,11 @@ export default function PastRestockPage() {
               <FaBars size={24} />
             </div>
           </div>
-  
+
           <div className="header-center">
             <h2 className="dashboard-header">Past Restock Orders</h2>
           </div>
-  
+
           {/* Right: Home Icon */}
           <div className="header-right">
             <div
@@ -103,10 +102,10 @@ export default function PastRestockPage() {
             </div>
           </div>
         </div>
-  
+
         <div className="past-orders-page">
           {showToast && <div className="toast-notification">{toastMsg}</div>}
-  
+
           {orders.length === 0 ? (
             <p className="no-orders-msg">No restock orders available yet.</p>
           ) : (
@@ -123,7 +122,10 @@ export default function PastRestockPage() {
                 </thead>
                 <tbody>
                   {currentItems.map((order) => (
-                    <tr key={order.id} className={!order.submitted ? "draft" : ""}>
+                    <tr
+                      key={order.id}
+                      className={!order.submitted ? "draft" : ""}
+                    >
                       <td>{order.id}</td>
                       <td>{new Date(order.created_at).toLocaleString()}</td>
                       <td>
@@ -132,19 +134,24 @@ export default function PastRestockPage() {
                           : "---"}
                       </td>
                       <td>
-                        {order.created_by?.name || order.created_by?.email || "Unknown"}
+                        {order.created_by?.name ||
+                          order.created_by?.email ||
+                          "Unknown"}
                       </td>
                       <td>
                         {order.submitted ? (
                           <button
                             onClick={() =>
-                              navigate(`/admin/dashboard/restock/${order.id}?readonly=true`)
+                              navigate(
+                                `/admin/dashboard/restock/${order.id}?readonly=true`
+                              )
                             }
                           >
                             View
                           </button>
                         ) : (
-                          <>
+                          <div className="action-buttons">
+                            {" "}
                             <button
                               onClick={() =>
                                 navigate(`/admin/dashboard/restock/${order.id}`)
@@ -155,14 +162,14 @@ export default function PastRestockPage() {
                             <button onClick={() => deleteOrder(order.id)}>
                               Delete
                             </button>
-                          </>
+                          </div>
                         )}
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-  
+
               {orders.length > 0 && (
                 <div className="pagination-container">
                   <button
@@ -187,5 +194,5 @@ export default function PastRestockPage() {
         </div>
       </div>
     </div>
-  );  
+  );
 }
