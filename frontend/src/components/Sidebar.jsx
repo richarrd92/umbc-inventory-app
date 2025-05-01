@@ -77,11 +77,20 @@ export default function Sidebar({ isOpen, toggleSidebar, user }) {
               <button
                 className="sidebar-btn"
                 onClick={() => {
-                  navigate("/admin/dashboard/Essential-Items");
+                  navigate("/admin/dashboard/add-item");
                   toggleSidebar();
                 }}
               >
-                Essential Items
+                Add New Item
+              </button>
+              <button
+                className="sidebar-btn"
+                onClick={() => {
+                  navigate("/admin/dashboard/manage-items");
+                  toggleSidebar();
+                }}
+              >
+                Manage Items
               </button>
               <button
                 className="sidebar-btn"
