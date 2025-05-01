@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../../contexts/AuthContext";
 import Sidebar from "../../components/Sidebar";
-import "./ManageItemsPage.css";
 import "../pagination.css";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -16,124 +15,130 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import "./AddNewItemPage.css";
+import "./ManageItemsPage.css"; // Reuse Items page styling
 
-export default function ManageItemsPage() {
+export default function ManageUsersPage() {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 
-  const [items, setItems] = useState([]);
-  const [editingItemId, setEditingItemId] = useState(null);
-  const [editedItem, setEditedItem] = useState({});
+  const [users, setUsers] = useState([]);
+  const [editingUserId, setEditingUserId] = useState(null);
+  const [editedUser, setEditedUser] = useState({});
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const usersPerPage = 5;
 
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
   useEffect(() => {
-    fetchItems();
+    fetchUsers();
   }, [currentUser]);
 
-  // Fetch items
-  const fetchItems = async () => {
+  // Fetch users
+  const fetchUsers = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/items", {
+      const response = await axios.get("http://localhost:8000/users", {
         headers: { Authorization: `Bearer ${currentUser.token}` },
       });
-      setItems(response.data);
+      setUsers(response.data);
     } catch (err) {
-      console.error("Error fetching items:", err);
-      setErrorMessage("Failed to fetch items.");
+      console.error("Error fetching users:", err);
+      setErrorMessage("Failed to fetch users.");
     }
   };
 
-  // Edit item
-  const startEditing = (item) => {
-    setEditingItemId(item.id);
-    setEditedItem({
-      name: item.name,
-      category: item.category,
-      quantity: item.quantity,
-      restock_threshold: item.restock_threshold,
+  // Start editing a user
+  const startEditing = (user) => {
+    setEditingUserId(user.id);
+    setEditedUser({
+      name: user.name,
+      email: user.email,
+      role: user.role,
     });
   };
 
   // Cancel editing
   const cancelEditing = () => {
-    setEditingItemId(null);
-    setEditedItem({});
+    setEditingUserId(null);
+    setEditedUser({});
     setErrorMessage(""); // Reset error message
   };
 
   // Handle edit form changes
   const handleEditChange = (field, value) => {
-    setEditedItem((prev) => ({ ...prev, [field]: value }));
+    if (field === "email") {
+      if (!value.endsWith("@umbc.edu")) {
+        setEmailError("Email must end with @umbc.edu");
+        toast.error("Email must end with @umbc.edu", {
+          position: "top-center",
+          autoClose: 3000,
+        });
+        return;
+      } else {
+        setEmailError("");
+      }
+    }
+
+    setEditedUser((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
+  // Save edited user
+  const saveEdit = async (id) => {
+    const originalUser = users.find((user) => user.id === id);
+    const hasChanged = Object.keys(editedUser).some(
+      (key) => editedUser[key] !== originalUser[key]
+    );
 
-// Save edited item
-const saveEdit = async (id) => {
-  const originalItem = items.find((item) => item.id === id);
-  const hasChanged = Object.keys(editedItem).some(
-    (key) => editedItem[key] !== originalItem[key]
-  );
-
-  // If no changes were made, cancel editing
-  if (!hasChanged) {
-    setEditingItemId(null);
-    setEditedItem({});
-    return;
-  }
-
-  try {
-    await axios.put(`http://localhost:8000/items/${id}`, editedItem, {
-      headers: { Authorization: `Bearer ${currentUser.token}` },
-    });
-    setEditingItemId(null);
-    fetchItems();
-    setErrorMessage("");
-    toast.success("Item updated successfully!");
-  } catch (err) {
-    console.error("Error updating item:", err);
-    if (err.response?.data?.detail) {
-      setErrorMessage(err.response.data.detail);
-      toast.error(err.response.data.detail);
-    } else {
-      setErrorMessage("Failed to update item.");
-      toast.error("Failed to update item.");
+    // If no changes were made, cancel editing
+    if (!hasChanged) {
+      setEditingUserId(null);
+      setEditedUser({});
+      return;
     }
-  }
-};
 
-  // Delete item
-  const deleteItem = async (id) => {
+    try {
+      await axios.put(`http://localhost:8000/users/${id}`, editedUser, {
+        headers: { Authorization: `Bearer ${currentUser.token}` },
+      });
+      setEditingUserId(null);
+      fetchUsers();
+      setErrorMessage("");
+      toast.success("User updated successfully!");
+    } catch (err) {
+      console.error("Error updating user:", err);
+      toast.error("Failed to update user.");
+    }
+  };
+
+  // Delete user
+  const deleteUser = async (id) => {
     const confirmDelete = window.confirm(
-      "Are you sure you want to delete this item?"
+      "Are you sure you want to delete this user?"
     );
     if (!confirmDelete) return;
 
     try {
-      await axios.delete(`http://localhost:8000/items/${id}`, {
+      await axios.delete(`http://localhost:8000/users/${id}`, {
         headers: { Authorization: `Bearer ${currentUser.token}` },
       });
-      setItems(items.filter((item) => item.id !== id));
-      toast.success("Item deleted successfully!");
+      setUsers(users.filter((user) => user.id !== id));
+      toast.success("User deleted successfully!");
     } catch (err) {
-      console.error("Error deleting item:", err);
-      setErrorMessage("Failed to delete item.");
-      toast.error("Failed to delete item.");
+      console.error("Error deleting user:", err);
+      toast.error("Failed to delete user.");
     }
   };
 
-  // Pagination
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = items.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(items.length / itemsPerPage);
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+  const totalPages = Math.ceil(users.length / usersPerPage);
 
-  // Change page
   const changePage = (pageNumber) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
@@ -163,7 +168,6 @@ const saveEdit = async (id) => {
         toggleSidebar={toggleSidebar}
         user={currentUser}
       />
-
       <div className="dashboard-container">
         <div className="dashboard-header-container">
           <div className="header-left">
@@ -172,7 +176,7 @@ const saveEdit = async (id) => {
             </div>
           </div>
           <div className="header-center">
-            <h2 className="dashboard-header">Manage Items</h2>
+            <h2 className="dashboard-header">Manage Users</h2>
           </div>
           <div className="header-right">
             <div
@@ -189,20 +193,19 @@ const saveEdit = async (id) => {
             <thead>
               <tr>
                 <th>Name</th>
-                <th>Category</th>
-                <th>Quantity</th>
-                <th>Restock Threshold</th>
+                <th>Email</th>
+                <th>Role</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {currentItems.map((item) => (
-                <tr key={item.id}>
-                  {editingItemId === item.id ? (
+              {currentUsers.map((user) => (
+                <tr key={user.id}>
+                  {editingUserId === user.id ? (
                     <>
                       <td>
                         <input
-                          value={editedItem.name}
+                          value={editedUser.name}
                           onChange={(e) =>
                             handleEditChange("name", e.target.value)
                           }
@@ -210,38 +213,26 @@ const saveEdit = async (id) => {
                       </td>
                       <td>
                         <input
-                          value={editedItem.category}
+                          value={editedUser.email}
                           onChange={(e) =>
-                            handleEditChange("category", e.target.value)
+                            handleEditChange("email", e.target.value)
                           }
                         />
                       </td>
                       <td>
-                        <input
-                          type="number"
-                          value={editedItem.quantity}
-                          min="1"
+                        <select
+                          value={editedUser.role}
                           onChange={(e) =>
-                            handleEditChange("quantity", e.target.value)
+                            handleEditChange("role", e.target.value)
                           }
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="number"
-                          value={editedItem.restock_threshold}
-                          min="1"
-                          onChange={(e) =>
-                            handleEditChange(
-                              "restock_threshold",
-                              e.target.value
-                            )
-                          }
-                        />
+                        >
+                          <option value="student">Student</option>
+                          <option value="admin">Admin</option>
+                        </select>
                       </td>
                       <td className="action-buttons">
                         <button
-                          onClick={() => saveEdit(item.id)}
+                          onClick={() => saveEdit(user.id)}
                           className="submit-button"
                         >
                           <FaSave /> Save
@@ -256,19 +247,18 @@ const saveEdit = async (id) => {
                     </>
                   ) : (
                     <>
-                      <td>{item.name}</td>
-                      <td>{item.category}</td>
-                      <td>{item.quantity}</td>
-                      <td>{item.restock_threshold}</td>
+                      <td>{user.name}</td>
+                      <td>{user.email}</td>
+                      <td>{user.role}</td>
                       <td className="action-buttons">
                         <button
-                          onClick={() => startEditing(item)}
+                          onClick={() => startEditing(user)}
                           className="submit-button"
                         >
                           <FaEdit /> Update
                         </button>
                         <button
-                          onClick={() => deleteItem(item.id)}
+                          onClick={() => deleteUser(user.id)}
                           className="delete-button"
                         >
                           <FaTrash /> Delete
@@ -282,7 +272,6 @@ const saveEdit = async (id) => {
           </table>
         </div>
 
-        {/* Pagination Controls */}
         <div className="pagination-container">
           <button
             onClick={() => changePage(currentPage - 1)}

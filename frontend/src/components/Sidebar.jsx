@@ -95,6 +95,15 @@ export default function Sidebar({ isOpen, toggleSidebar, user }) {
               <button
                 className="sidebar-btn"
                 onClick={() => {
+                  navigate("/admin/dashboard/manage-users");
+                  toggleSidebar();
+                }}
+              >
+                Manage Users
+              </button>
+              <button
+                className="sidebar-btn"
+                onClick={() => {
                   navigate("/admin/dashboard/favorites");
                   toggleSidebar();
                 }}
