@@ -17,8 +17,6 @@ export default function StudentDashboard() {
   const navigate = useNavigate();
   const { cart, addToCart, removeFromCart, clearCart } = useCart(); // Cart context
   const [currentPage, setCurrentPage] = useState(1);
-  const [showToast, setShowToast] = useState(false);
-  const [toastMsg, setToastMsg] = useState("");
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
@@ -57,30 +55,6 @@ export default function StudentDashboard() {
 
     fetchItems();
   }, [currentUser.token]);
-
-
-  const handleDelete = async (itemId, itemName) => {
-    const confirmed = window.confirm(`Are you sure you want to delete "${itemName}"?`);
-    if (!confirmed) return;
-
-    try {
-      await axios.delete(`http://localhost:8000/items/${itemId}`, {
-        headers: { Authorization: `Bearer ${currentUser.token}` },
-      });
-      setToastMsg("Item deleted successfully!");
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 2000);
-      // refetch updated list
-      const res = await axios.get("http://localhost:8000/items", {
-        headers: { Authorization: `Bearer ${currentUser.token}` },
-      });
-      setItems(res.data.filter((item) => item.quantity > 0));
-    } catch (err) {
-      console.error("Delete failed", err);
-      alert("Failed to delete item.");
-    }
-  };
-
 
   // Function to handle quantity changes
   const handleQuantityChange = (itemId, inputValue) => {
@@ -140,7 +114,6 @@ export default function StudentDashboard() {
       {/* <div className="student-dashboard-content"> */}
       <div className="dashboard-container">
         <div className="dashboard-header-container">
-        {showToast && <div className="toast-notification">{toastMsg}</div>}
           {/* Left: Sidebar toggle */}
           <div className="header-left">
             <div className="sidebar-toggle-button" onClick={toggleSidebar}>
@@ -185,23 +158,7 @@ export default function StudentDashboard() {
           <tbody>
             {currentItems.map((item) => (
               <tr key={item.id} style={{ borderBottom: "1px solid #ccc" }}>
-                <td style={{ padding: "10px", width: "60%" }}>
-                  {item.name}
-                  <div style={{ marginTop: "4px" }}>
-                    <button
-                      onClick={() => navigate(`/admin/dashboard/edit-item/${item.id}`)}
-                      style={{ marginRight: "6px", fontSize: "0.8rem" }}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(item.id, item.name)}
-                      style={{ fontSize: "0.8rem", color: "red" }}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
+                <td style={{ padding: "10px", width: "60%" }}>{item.name}</td>
                 <td style={{ textAlign: "center", width: "20%" }}>
                   {getAvailableStock(item.id)}
                 </td>
