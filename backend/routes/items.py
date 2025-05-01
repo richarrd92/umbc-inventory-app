@@ -38,28 +38,37 @@ def create_item(item: ItemCreate, db: Session = Depends(get_db)):
     It takes the item data as input and adds it to the database.
     """
     try:
-        # Check if an item with the same name and category already exists
+        # Check if an active item with the same name and category already exists
         existing_item = (
             db.query(models.Item)
-            .filter(models.Item.name == item.name, models.Item.category == item.category)
+            .filter(
+                models.Item.name == item.name,
+                models.Item.category == item.category,
+                models.Item.deleted_at.is_(None)  # ignore soft-deleted items
+            )
             .first()
         )
+
+        # item with same name exits
         if existing_item:
             raise HTTPException(status_code=400, detail="Item with this name and category already exists")
 
+        # Create new item
         new_item = models.Item(**item.dict(exclude_unset=True))
         db.add(new_item)
         db.commit()
         db.refresh(new_item)
         return new_item
-
+    
+    # Handle database integrity errors
     except IntegrityError:
-        db.rollback()  # Rollback in case of failure
+        db.rollback()
         raise HTTPException(
             status_code=400,
             detail="Database integrity error: Duplicate entry or foreign key constraint violation."
         )
 
+    # Handle other exceptions
     except Exception as e:
         db.rollback()
         raise HTTPException(
