@@ -106,7 +106,13 @@ export default function ExportCVPage() {
             </div>
           )}
 
-          <button className="download-btn" onClick={handleDownload}>
+          <button
+            className="download-btn"
+            onClick={handleDownload}
+            disabled={
+              (reportType === "orders" || reportType === "transactions") && !dateRange
+            }
+          >
             Download CSV
           </button>
         </div>

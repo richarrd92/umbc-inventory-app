@@ -19,12 +19,13 @@
     border-radius: 4px;
   }
   
-  .download-btn:hover {
-    background-color: #45a049;
+  .download-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
   }
-
-  .date-range-selector {
-    margin-top: 1rem;
+  
+  .download-btn:hover:enabled {
+    background-color: #45a049;
   }
   
   .date-range-selector select {
