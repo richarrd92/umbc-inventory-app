@@ -17,6 +17,8 @@ export default function StudentDashboard() {
   const navigate = useNavigate();
   const { cart, addToCart, removeFromCart, clearCart } = useCart(); // Cart context
   const [currentPage, setCurrentPage] = useState(1);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMsg, setToastMsg] = useState("");
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
@@ -60,12 +62,14 @@ export default function StudentDashboard() {
   const handleDelete = async (itemId, itemName) => {
     const confirmed = window.confirm(`Are you sure you want to delete "${itemName}"?`);
     if (!confirmed) return;
-  
+
     try {
       await axios.delete(`http://localhost:8000/items/${itemId}`, {
         headers: { Authorization: `Bearer ${currentUser.token}` },
       });
-      alert(`Item "${itemName}" deleted.`);
+      setToastMsg("Item deleted successfully!");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2000);
       // refetch updated list
       const res = await axios.get("http://localhost:8000/items", {
         headers: { Authorization: `Bearer ${currentUser.token}` },
@@ -76,7 +80,7 @@ export default function StudentDashboard() {
       alert("Failed to delete item.");
     }
   };
-  
+
 
   // Function to handle quantity changes
   const handleQuantityChange = (itemId, inputValue) => {
@@ -136,6 +140,7 @@ export default function StudentDashboard() {
       {/* <div className="student-dashboard-content"> */}
       <div className="dashboard-container">
         <div className="dashboard-header-container">
+        {showToast && <div className="toast-notification">{toastMsg}</div>}
           {/* Left: Sidebar toggle */}
           <div className="header-left">
             <div className="sidebar-toggle-button" onClick={toggleSidebar}>

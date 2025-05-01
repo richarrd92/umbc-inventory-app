@@ -49,9 +49,12 @@ export default function AddItemPage() {
             },
           }
         );
-        setSuccessMessage("Item updated successfully!"); // ✅
+        setSuccessMessage("Item updated successfully!");
         setShowSuccess(true);
-        setTimeout(() => setShowSuccess(false), 2000);
+        setTimeout(() => {
+          setShowSuccess(false);
+          navigate("/admin/dashboard"); //  redirect after 2s
+        }, 2000);
       } else {
         // ADD mode
         await axios.post(
@@ -68,7 +71,7 @@ export default function AddItemPage() {
             },
           }
         );
-        setSuccessMessage("Item added to inventory!"); // ✅
+        setSuccessMessage("Item added to inventory!");
         setShowSuccess(true);
         setName("");
         setDescription("");
@@ -80,7 +83,8 @@ export default function AddItemPage() {
       console.error(err);
       alert(itemId ? "Failed to update item" : "Failed to add item");
     }
-  };  
+  };
+  
 
 
   useEffect(() => {
