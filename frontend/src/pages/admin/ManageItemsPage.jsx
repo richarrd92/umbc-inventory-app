@@ -3,7 +3,7 @@ import axios from "axios";
 import { useAuth } from "../../contexts/AuthContext";
 import Sidebar from "../../components/Sidebar";
 import "./ManageItemsPage.css";
-import "../pagination.css";
+import "../Pagination.css";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../toastStyles.css";
