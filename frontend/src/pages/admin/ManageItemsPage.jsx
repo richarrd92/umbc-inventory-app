@@ -68,9 +68,21 @@ export default function ManageItemsPage() {
   };
 
   // Handle edit form changes
-  const handleEditChange = (field, value) => {
+const handleEditChange = (field, value) => {
+  if (field === "quantity" || field === "restock_threshold") {
+    const number = parseInt(value, 10);
+
+    // Validate quantity and restock threshold
+    if (isNaN(number) || number < 0) {
+        toast.error("Please enter a valid non-negative number.");
+        return;
+    } else {
+      setEditedItem((prev) => ({ ...prev, [field]: number }));
+    }
+  } else {
     setEditedItem((prev) => ({ ...prev, [field]: value }));
-  };
+  }
+};
 
 
 // Save edited item
