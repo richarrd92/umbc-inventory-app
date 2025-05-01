@@ -141,7 +141,7 @@ export default function GenerateRestockPage() {
         toggleSidebar={toggleSidebar}
         user={currentUser}
       />
-
+  
       <div className="dashboard-container">
         <div className="dashboard-header-container">
           <div className="header-left">
@@ -161,15 +161,14 @@ export default function GenerateRestockPage() {
               <FaHome className="cart-icon" />
             </div>
           </div>
-
         </div>
-
+  
         {showSuccess && (
           <div className="toast-notification">
             Order submitted and inventory updated!
           </div>
         )}
-
+  
         <div className="generate-restock-container">
           {order && (
             <p className="order-meta">
@@ -180,16 +179,18 @@ export default function GenerateRestockPage() {
               {" "}by {order.created_by?.name || "Unknown"}
             </p>
           )}
-
+  
           {!order && (
             <button onClick={generateOrder} disabled={loading}>
               {loading ? "Generating..." : "Generate Restock Order"}
             </button>
           )}
-
+  
           {errorMsg && <p className="error-msg">{errorMsg}</p>}
-
-          {order && (
+  
+          {console.log("order:", order)}
+  
+          {Array.isArray(order?.order_items) && order.order_items.length > 0 ? (
             <>
               <table className="restock-table">
                 <thead>
@@ -240,17 +241,24 @@ export default function GenerateRestockPage() {
                   ))}
                 </tbody>
               </table>
-
+  
               {!isReadOnly && (
                 <button className="submit-btn" onClick={submitOrder}>
                   Submit Order
                 </button>
               )}
             </>
+          ) : (
+            order && (
+              <p className="empty-msg">
+                No items to restock.
+              </p>
+            )
           )}
         </div>
       </div>
     </div>
   );
+  
 
 }
