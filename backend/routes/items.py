@@ -38,28 +38,37 @@ def create_item(item: ItemCreate, db: Session = Depends(get_db)):
     It takes the item data as input and adds it to the database.
     """
     try:
-        # Check if an item with the same name and category already exists
+        # Check if an active item with the same name and category already exists
         existing_item = (
             db.query(models.Item)
-            .filter(models.Item.name == item.name, models.Item.category == item.category)
+            .filter(
+                models.Item.name == item.name,
+                models.Item.category == item.category,
+                models.Item.deleted_at.is_(None)  # ignore soft-deleted items
+            )
             .first()
         )
+
+        # item with same name exits
         if existing_item:
             raise HTTPException(status_code=400, detail="Item with this name and category already exists")
 
+        # Create new item
         new_item = models.Item(**item.dict(exclude_unset=True))
         db.add(new_item)
         db.commit()
         db.refresh(new_item)
         return new_item
-
+    
+    # Handle database integrity errors
     except IntegrityError:
-        db.rollback()  # Rollback in case of failure
+        db.rollback()
         raise HTTPException(
             status_code=400,
             detail="Database integrity error: Duplicate entry or foreign key constraint violation."
         )
 
+    # Handle other exceptions
     except Exception as e:
         db.rollback()
         raise HTTPException(
@@ -74,12 +83,34 @@ def update_item(item_id: int, item: ItemUpdate, db: Session = Depends(get_db)):
     This endpoint updates an existing item in the database.
     It takes the item ID and the updated item data as input.
     """
-    db_item = db.query(models.Item).filter(models.Item.id == item_id).first()
+    db_item = db.query(models.Item).filter(
+        models.Item.id == item_id,
+        models.Item.deleted_at.is_(None) 
+    ).first()
+
     if not db_item:
         raise HTTPException(status_code=404, detail="Item not found")
 
-    # Update only provided fields
-    item_data = item.dict(exclude_unset=True)  # Excludes missing fields
+    # Determine the new name and category
+    new_name = item.name if item.name is not None else db_item.name
+    new_category = item.category if item.category is not None else db_item.category
+
+    # Check for duplicates excluding current item and soft-deleted items
+    duplicate = db.query(models.Item).filter(
+        models.Item.name == new_name,
+        models.Item.category == new_category,
+        models.Item.id != item_id,
+        models.Item.deleted_at.is_(None) 
+    ).first()
+
+    if duplicate:
+        raise HTTPException(
+            status_code=400,
+            detail="An item with the same name and category already exists."
+        )
+
+    # Update only the fields provided
+    item_data = item.dict(exclude_unset=True)
     for key, value in item_data.items():
         setattr(db_item, key, value)
 

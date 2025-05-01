@@ -9,7 +9,6 @@ import Sidebar from "../../components/Sidebar";
 import { FaBars } from "react-icons/fa";
 import { FaHome } from "react-icons/fa";
 
-
 export default function GenerateRestockPage() {
   const { currentUser } = useAuth();
   const [order, setOrder] = useState(null);
@@ -22,6 +21,13 @@ export default function GenerateRestockPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
+  const [clicked, setClicked] = useState(false); // track if generate button has been clicked
+
+  // generate suggested restock order
+  const handleGenerateClick = () => {
+    setClicked(true);
+    generateOrder(); 
+  };
 
   const navigate = useNavigate();
 
@@ -54,16 +60,18 @@ export default function GenerateRestockPage() {
     fetchDraft();
   }, [orderId, currentUser.token]);
 
-
-
   // generate suggested restock order
   const generateOrder = async () => {
     setLoading(true);
     setErrorMsg(null);
     try {
-      const res = await axios.post("http://localhost:8000/orders/", {}, {
-        headers: { Authorization: `Bearer ${currentUser.token}` },
-      });
+      const res = await axios.post(
+        "http://localhost:8000/orders/",
+        {},
+        {
+          headers: { Authorization: `Bearer ${currentUser.token}` },
+        }
+      );
       setOrder(res.data);
     } catch (err) {
       console.error(err);
@@ -130,9 +138,6 @@ export default function GenerateRestockPage() {
     }
   };
 
-
-
-
   return (
     <div className="main-content-wrapper">
       <Sidebar
@@ -174,15 +179,23 @@ export default function GenerateRestockPage() {
             <p className="order-meta">
               Order #{order.id}{" "}
               {order.submitted
-                ? `submitted on ${new Date(order.submitted_at + "Z").toLocaleString()}`
-                : `created on ${new Date(order.created_at).toLocaleString()}`}
-              {" "}by {order.created_by?.name || "Unknown"}
+                ? `submitted on ${new Date(
+                    order.submitted_at + "Z"
+                  ).toLocaleString()}`
+                : `created on ${new Date(
+                    order.created_at
+                  ).toLocaleString()}`}{" "}
+              by {order.created_by?.name || "Unknown"}
             </p>
           )}
   
           {!order && (
-            <button onClick={generateOrder} disabled={loading}>
-              {loading ? "Generating..." : "Generate Restock Order"}
+            <button
+              className={`generate-btn ${!clicked ? "pulsing" : ""}`}
+              onClick={handleGenerateClick}
+              disabled={loading}
+            >
+              {loading ? "..." : "Generate restock order"}
             </button>
           )}
   
@@ -215,9 +228,21 @@ export default function GenerateRestockPage() {
                         {isReadOnly ? (
                           <span>{item.final_quantity}</span>
                         ) : (
-                          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "4px" }}>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              gap: "4px",
+                            }}
+                          >
                             <button
-                              onClick={() => updateFinalQty(item.item_id, item.final_quantity - 1)}
+                              onClick={() =>
+                                updateFinalQty(
+                                  item.item_id,
+                                  item.final_quantity - 1
+                                )
+                              }
                               disabled={item.final_quantity <= 0}
                             >
                               -
@@ -227,10 +252,17 @@ export default function GenerateRestockPage() {
                               inputMode="numeric"
                               pattern="[0-9]*"
                               value={item.final_quantity}
-                              onChange={(e) => updateFinalQty(item.item_id, e.target.value)}
+                              onChange={(e) =>
+                                updateFinalQty(item.item_id, e.target.value)
+                              }
                             />
                             <button
-                              onClick={() => updateFinalQty(item.item_id, item.final_quantity + 1)}
+                              onClick={() =>
+                                updateFinalQty(
+                                  item.item_id,
+                                  item.final_quantity + 1
+                                )
+                              }
                             >
                               +
                             </button>
@@ -259,6 +291,4 @@ export default function GenerateRestockPage() {
       </div>
     </div>
   );
-  
-
 }
