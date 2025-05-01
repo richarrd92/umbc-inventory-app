@@ -134,11 +134,3 @@ INSERT INTO order_items (order_id, item_id, suggested_quantity, final_quantity, 
     (1, 3, 100, 100, 'WaterSupply Inc.'),
     (2, 2, 30, 30, 'FreshFarms Ltd.'),
     (2, 4, 75, 75, 'SnackDistributors');
-
-
-SELECT * FROM users;
-SELECT * FROM items;
-SELECT * FROM transactions;
-SELECT * FROM transaction_items;
-SELECT * FROM orders;
-SELECT * FROM order_items;
