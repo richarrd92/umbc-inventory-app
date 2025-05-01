@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS inventory;
-USE inventory;
+CREATE DATABASE IF NOT EXISTS `inventory-app`;
+USE `inventory-app`;
 
 ----------------- BE CAREFUL RUN COMMAND TO RESET ALL TABLES IN TABLES 
 
@@ -92,7 +92,7 @@ CREATE TABLE order_items (
 
 
 -- inserting example data into the inventory database.
-USE inventory;
+USE `inventory-app`;
 
 -- insert test users (admins & students) 
 INSERT INTO users (firebase_uid, email, name, role) VALUES
