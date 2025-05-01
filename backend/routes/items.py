@@ -83,33 +83,33 @@ def update_item(item_id: int, item: ItemUpdate, db: Session = Depends(get_db)):
     This endpoint updates an existing item in the database.
     It takes the item ID and the updated item data as input.
     """
-    db_item = db.query(models.Item).filter(models.Item.id == item_id).first()
+    db_item = db.query(models.Item).filter(
+        models.Item.id == item_id,
+        models.Item.deleted_at.is_(None) 
+    ).first()
+
     if not db_item:
         raise HTTPException(status_code=404, detail="Item not found")
 
-    # updated name and category
+    # Determine the new name and category
     new_name = item.name if item.name is not None else db_item.name
     new_category = item.category if item.category is not None else db_item.category
 
-    # Check for existing item with same name and category, excluding current item
-    duplicate = (
-        db.query(models.Item)
-        .filter(
-            models.Item.name == new_name,
-            models.Item.category == new_category,
-            models.Item.id != item_id
-        )
-        .first()
-    )
+    # Check for duplicates excluding current item and soft-deleted items
+    duplicate = db.query(models.Item).filter(
+        models.Item.name == new_name,
+        models.Item.category == new_category,
+        models.Item.id != item_id,
+        models.Item.deleted_at.is_(None) 
+    ).first()
 
-    # item with same name exits
     if duplicate:
         raise HTTPException(
             status_code=400,
             detail="An item with the same name and category already exists."
         )
 
-    # Update only provided fields
+    # Update only the fields provided
     item_data = item.dict(exclude_unset=True)
     for key, value in item_data.items():
         setattr(db_item, key, value)
