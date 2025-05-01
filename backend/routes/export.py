@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from fastapi.responses import StreamingResponse
 from database import get_db
 import csv
 from io import StringIO
 import models
+from datetime import datetime, timedelta
 
 router = APIRouter(prefix="/export", tags=["Export"])
 
@@ -14,7 +15,6 @@ def export_inventory_csv(db: Session = Depends(get_db)):
     writer = csv.writer(output)
     writer.writerow(["Item ID", "Name", "Category", "Quantity", "Restock Threshold"])
 
-    # FILTER OUT SOFT-DELETED ITEMS
     items = db.query(models.Item).filter(models.Item.deleted_at == None).all()
 
     for item in items:
@@ -26,17 +26,31 @@ def export_inventory_csv(db: Session = Depends(get_db)):
     })
 
 @router.get("/orders")
-def export_orders_csv(db: Session = Depends(get_db)):
+def export_orders_csv(
+    db: Session = Depends(get_db),
+    range: str = Query(None)
+):
     output = StringIO()
     writer = csv.writer(output)
     writer.writerow(["Order ID", "Created At", "Submitted", "Submitted At", "Created By", "Item Name", "Final Quantity"])
 
-    # FILTER OUT SOFT-DELETED ORDERS
-    orders = db.query(models.Order).filter(models.Order.deleted_at == None).all()
+    query = db.query(models.Order).filter(models.Order.deleted_at == None)
+
+    if range == "past-24h":
+        since = datetime.utcnow() - timedelta(hours=24)
+        query = query.filter(models.Order.created_at >= since)
+    elif range == "past-week":
+        since = datetime.utcnow() - timedelta(days=7)
+        query = query.filter(models.Order.created_at >= since)
+    elif range == "past-month":
+        since = datetime.utcnow() - timedelta(days=30)
+        query = query.filter(models.Order.created_at >= since)
+    # no filter for "all" or None
+
+    orders = query.all()
 
     for order in orders:
         for order_item in order.order_items:
-            # FILTER OUT SOFT-DELETED ORDER ITEMS
             if order_item.deleted_at is None:
                 writer.writerow([
                     order.id,
@@ -53,19 +67,32 @@ def export_orders_csv(db: Session = Depends(get_db)):
         "Content-Disposition": "attachment; filename=restock_orders.csv"
     })
 
-
 @router.get("/transactions")
-def export_transactions_csv(db: Session = Depends(get_db)):
+def export_transactions_csv(
+    db: Session = Depends(get_db),
+    range: str = Query(None)
+):
     output = StringIO()
     writer = csv.writer(output)
     writer.writerow(["Transaction ID", "Item Name", "Type", "Quantity", "User", "Date"])
 
-    # FILTER OUT SOFT-DELETED TRANSACTIONS
-    transactions = db.query(models.Transaction).filter(models.Transaction.deleted_at == None).all()
+    query = db.query(models.Transaction).filter(models.Transaction.deleted_at == None)
+
+    if range == "past-24h":
+        since = datetime.utcnow() - timedelta(hours=24)
+        query = query.filter(models.Transaction.created_at >= since)
+    elif range == "past-week":
+        since = datetime.utcnow() - timedelta(days=7)
+        query = query.filter(models.Transaction.created_at >= since)
+    elif range == "past-month":
+        since = datetime.utcnow() - timedelta(days=30)
+        query = query.filter(models.Transaction.created_at >= since)
+    # no filter for "all" or None
+
+    transactions = query.all()
 
     for tx in transactions:
         for t_item in tx.transaction_items:
-            # ALSO FILTER OUT DELETED TRANSACTION ITEMS
             if t_item.deleted_at is None:
                 writer.writerow([
                     tx.id,
