@@ -5,7 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function Sidebar({ isOpen, toggleSidebar, user }) {
+export default function Sidebar({ isOpen, toggleSidebar }) {
   const { currentUser } = useAuth();
   const sidebarRef = useRef(); // Reference to the sidebar
   const navigate = useNavigate();
