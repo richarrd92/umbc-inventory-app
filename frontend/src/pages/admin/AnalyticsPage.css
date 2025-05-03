@@ -28,4 +28,9 @@
     margin-bottom: 8px;
     text-align: center;
   }
-  
+/* 
+  .analytics-tile canvas {
+    height: 200px !important;
+    display: block;
+    margin: 0 auto;
+  } */

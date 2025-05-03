@@ -19,7 +19,7 @@ import { FaBars, FaHome } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import "./AnalyticsPage.css";
 
-// Register chart.js components
+// register chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -53,7 +53,7 @@ export default function AnalyticsPage() {
 
         const transactions = res.data;
 
-        // ✅ 1️⃣ Popular Items Withdrawn
+        // Popular Items Withdrawn
         const itemCounts = {};
         const userCounts = {};
         transactions.forEach((tx) => {
@@ -84,7 +84,7 @@ export default function AnalyticsPage() {
           ],
         });
 
-        // ✅ 2️⃣ Transactions by Hour
+        // Transactions by Hour
         const hourCounts = Array(24).fill(0);
         transactions.forEach((tx) => {
           const hour = new Date(tx.created_at).getHours();
@@ -104,7 +104,7 @@ export default function AnalyticsPage() {
           ],
         });
 
-        // ✅ 3️⃣ Transactions by Day
+        // Transactions by Day
         const dayCounts = Array(7).fill(0);
         transactions.forEach((tx) => {
           const day = new Date(tx.created_at).getDay();
@@ -124,7 +124,7 @@ export default function AnalyticsPage() {
           ],
         });
 
-        // ✅ 4️⃣ Transactions By User
+        // Transactions By User
         const userEntries = Object.entries(userCounts).sort((a, b) => b[1] - a[1]);
         setTransactionsByUserData({
           labels: userEntries.map(([name]) => name),
@@ -223,7 +223,25 @@ export default function AnalyticsPage() {
 
           <div className="analytics-tile">
             <h3>Percent of Items Below Restock Threshold</h3>
-            {itemsBelowThresholdData ? <Doughnut data={itemsBelowThresholdData} /> : <p>Loading...</p>}
+            {itemsBelowThresholdData ? <Doughnut
+              data={itemsBelowThresholdData}
+              options={{
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: {
+                    position: 'top',
+                    align: 'center',
+                    labels: {
+                      boxWidth: 12, // default 40
+                      padding: 8,   // default 10
+                      font: {
+                        size: 10    // default 12
+                      }
+                    }
+                  },
+                },
+              }}
+            /> : <p>Loading...</p>}
           </div>
 
         </div>
