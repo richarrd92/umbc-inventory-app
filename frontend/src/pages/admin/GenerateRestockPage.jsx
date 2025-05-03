@@ -26,7 +26,7 @@ export default function GenerateRestockPage() {
   // generate suggested restock order
   const handleGenerateClick = () => {
     setClicked(true);
-    generateOrder(); 
+    generateOrder();
   };
 
   const navigate = useNavigate();
@@ -146,7 +146,7 @@ export default function GenerateRestockPage() {
         toggleSidebar={toggleSidebar}
         user={currentUser}
       />
-  
+
       <div className="dashboard-container">
         <div className="dashboard-header-container">
           <div className="header-left">
@@ -167,28 +167,28 @@ export default function GenerateRestockPage() {
             </div>
           </div>
         </div>
-  
+
         {showSuccess && (
           <div className="toast-notification">
             Order submitted and inventory updated!
           </div>
         )}
-  
+
         <div className="generate-restock-container">
           {order && (
             <p className="order-meta">
               Order #{order.id}{" "}
               {order.submitted
                 ? `submitted on ${new Date(
-                    order.submitted_at + "Z"
-                  ).toLocaleString()}`
+                  order.submitted_at + "Z"
+                ).toLocaleString()}`
                 : `created on ${new Date(
-                    order.created_at
-                  ).toLocaleString()}`}{" "}
+                  order.created_at
+                ).toLocaleString()}`}{" "}
               by {order.created_by?.name || "Unknown"}
             </p>
           )}
-  
+
           {!order && (
             <button
               className={`generate-btn ${!clicked ? "pulsing" : ""}`}
@@ -198,11 +198,11 @@ export default function GenerateRestockPage() {
               {loading ? "..." : "Generate restock order"}
             </button>
           )}
-  
+
           {errorMsg && <p className="error-msg">{errorMsg}</p>}
-  
+
           {console.log("order:", order)}
-  
+
           {Array.isArray(order?.order_items) && order.order_items.length > 0 ? (
             <>
               <table className="restock-table">
@@ -211,7 +211,7 @@ export default function GenerateRestockPage() {
                     <th>Item Name</th>
                     <th>Item ID</th>
                     <th>Current Stock</th>
-                    <th>Withdrawn (7d)</th>
+                    {!isReadOnly && <th>Withdrawn (7d)</th>}
                     <th>Suggested Qty</th>
                     <th>Final Qty</th>
                   </tr>
@@ -222,7 +222,7 @@ export default function GenerateRestockPage() {
                       <td>{item.item?.name || "Unknown"}</td>
                       <td>{item.item_id}</td>
                       <td>{item.item?.quantity ?? "?"}</td>
-                      <td>{item.withdrawn_7d ?? "0"}</td>
+                      {!isReadOnly && <td>{item.withdrawn_7d ?? "0"}</td>}
                       <td>{item.suggested_quantity}</td>
                       <td>
                         {isReadOnly ? (
@@ -238,10 +238,7 @@ export default function GenerateRestockPage() {
                           >
                             <button
                               onClick={() =>
-                                updateFinalQty(
-                                  item.item_id,
-                                  item.final_quantity - 1
-                                )
+                                updateFinalQty(item.item_id, item.final_quantity - 1)
                               }
                               disabled={item.final_quantity <= 0}
                             >
@@ -258,10 +255,7 @@ export default function GenerateRestockPage() {
                             />
                             <button
                               onClick={() =>
-                                updateFinalQty(
-                                  item.item_id,
-                                  item.final_quantity + 1
-                                )
+                                updateFinalQty(item.item_id, item.final_quantity + 1)
                               }
                             >
                               +
@@ -273,7 +267,6 @@ export default function GenerateRestockPage() {
                   ))}
                 </tbody>
               </table>
-  
               {!isReadOnly && (
                 <button className="submit-btn" onClick={submitOrder}>
                   Submit Order
