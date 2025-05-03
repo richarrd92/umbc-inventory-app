@@ -23,14 +23,10 @@
     height: 300px;
     overflow: hidden;
   }
+
   .analytics-tile h3 {
     font-size: 1rem;
-    margin-bottom: 8px;
+    margin-top: 0;
+    margin-bottom: 4px;
     text-align: center;
   }
-/* 
-  .analytics-tile canvas {
-    height: 200px !important;
-    display: block;
-    margin: 0 auto;
-  } */

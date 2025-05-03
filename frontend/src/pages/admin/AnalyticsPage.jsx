@@ -173,6 +173,30 @@ export default function AnalyticsPage() {
     fetchItems();
   }, [currentUser.token]);
 
+  const centerTextPlugin = {
+    id: 'centerText',
+    afterDraw: (chart) => {
+      const { ctx, chartArea: { left, right, top, bottom } } = chart;
+      ctx.save();
+      const xCenter = (left + right) / 2;
+      const yCenter = (top + bottom) / 2;
+
+      ctx.font = 'bold 16px Arial';
+      ctx.fillStyle = '#333';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      const data = chart.data.datasets[0].data;
+      const below = data[0];
+      const total = data[0] + data[1];
+      const percent = total === 0 ? 0 : Math.round((below / total) * 100);
+
+      ctx.fillText(`${percent}% Below`, xCenter, yCenter);
+      ctx.restore();
+    }
+  };
+
+
   return (
     <div className="main-content-wrapper">
       <Sidebar
@@ -207,17 +231,44 @@ export default function AnalyticsPage() {
           </div>
 
           <div className="analytics-tile">
-            <h3>Transactions By Hour</h3>
-            {transactionsByHourData ? <Line data={transactionsByHourData} /> : <p>Loading...</p>}
+            <h3>Transactions By Hour (Today)</h3>
+            {transactionsByHourData ? <Line
+              data={transactionsByHourData}
+              options={{
+                scales: {
+                  y: {
+                    ticks: {
+                      stepSize: 1,
+                      callback: function (value) {
+                        return Number.isInteger(value) ? value : null;
+                      }
+                    },
+                    beginAtZero: true
+                  }
+                }
+              }}
+            /> : <p>Loading...</p>}
           </div>
 
           <div className="analytics-tile">
-            <h3>Transactions By Day of Week</h3>
-            {transactionsByDayData ? <Bar data={transactionsByDayData} /> : <p>Loading...</p>}
+            <h3>Transactions Per Day (This Week)</h3>
+            {transactionsByDayData ? <Bar data={transactionsByDayData} options={{
+              scales: {
+                y: {
+                  ticks: {
+                    stepSize: 1,
+                    callback: function (value) {
+                      return Number.isInteger(value) ? value : null;
+                    }
+                  },
+                  beginAtZero: true
+                }
+              }
+            }} /> : <p>Loading...</p>}
           </div>
 
           <div className="analytics-tile">
-            <h3>Transactions By User</h3>
+            <h3>Top Users by Transaction Count</h3>
             {transactionsByUserData ? <Bar data={transactionsByUserData} options={{ indexAxis: "y" }} /> : <p>Loading...</p>}
           </div>
 
@@ -227,21 +278,23 @@ export default function AnalyticsPage() {
               data={itemsBelowThresholdData}
               options={{
                 maintainAspectRatio: false,
+                radius: '90%',
+                cutout: '50%',
                 plugins: {
                   legend: {
                     position: 'top',
                     align: 'center',
                     labels: {
-                      boxWidth: 12, // default 40
-                      padding: 8,   // default 10
-                      font: {
-                        size: 10    // default 12
-                      }
+                      boxWidth: 12,
+                      padding: 8,
+                      font: { size: 10 }
                     }
-                  },
-                },
+                  }
+                }
               }}
-            /> : <p>Loading...</p>}
+              plugins={[centerTextPlugin]}
+            />
+              : <p>Loading...</p>}
           </div>
 
         </div>
