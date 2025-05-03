@@ -32,6 +32,8 @@ if not DATABASE_URL:
 # Confirm successful loading of environment variables
 print("Environment file loaded successfully.")
 
+# Print the DATABASE_URL for debugging purposes
+print(f"Database URL: {DATABASE_URL}")
 
 # Create a database engine
 # The engine manages the connection and interacts with the database
@@ -39,13 +41,13 @@ try:
     engine = create_engine(DATABASE_URL)
     with engine.connect() as conn:
         print("Database connection established.")
-except OperationalError :
-    print({"error message: " : "Database connection failed. Check database connection url" }, file=sys.stderr)
+except OperationalError as e:
+    print({"error message: " : f"Database connection failed. {e}"}, file=sys.stderr)
     sys.exit(1)  # Graceful exit
 
 # all other cases possibly not related to database connection url
-except Exception:
-    print({"error message: " : "Unexpected error while connecting to the database."}, file=sys.stderr)
+except Exception as e:
+    print({"error message: " : f"Unexpected error while connecting to the database. {e}"}, file=sys.stderr)
     sys.exit(1)  # Graceful exit
 
 
@@ -69,8 +71,8 @@ try:
     print("Creating database tables...")
     Base.metadata.create_all(bind=engine)
     print("Tables created successfully!")
-except Exception:
-    print({"error message: ": "Failed to create database tables."}, file=sys.stderr)
+except Exception as e:
+    print({"error message: ": f"Failed to create database tables. {e}"}, file=sys.stderr)
     sys.exit(1)  # Graceful exit
 
 # Dependency function to get a database session
@@ -91,8 +93,8 @@ def test_db_connection():
             print("Database connection successful:", result.scalar())  # Expecting 1 as output
             print("\n-------- DATABASE CONNECTED --------")
             print()
-    except Exception:
-        print({"error message: ": "Database connection failed:"})  # Print error if connection fails
+    except Exception as e:
+        print({"error message: ": f"Database connection failed: {e}"})  # Print error if connection fails
 
 # Run the database connection test on script execution
 test_db_connection()

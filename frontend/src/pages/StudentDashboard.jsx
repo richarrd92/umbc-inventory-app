@@ -132,108 +132,125 @@ export default function StudentDashboard() {
           </div>
         </div>
 
-        <table className="table">
-          <thead>
-            <tr>
-              <th style={{ textAlign: "left", padding: "10px", width: "60%" }}>
-                Item
-              </th>
-              <th
-                style={{ textAlign: "center", padding: "10px", width: "20%" }}
-              >
-                Available
-              </th>
-              <th
-                style={{ textAlign: "center", padding: "10px", width: "20%" }}
-              >
-                Checkout
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentItems.map((item) => (
-              <tr key={item.id} style={{ borderBottom: "1px solid #ccc" }}>
-                <td style={{ padding: "10px", width: "60%" }}>{item.name}</td>
-                <td style={{ textAlign: "center", width: "20%" }}>
-                  {getAvailableStock(item.id)}
-                </td>
-                <td style={{ textAlign: "center", width: "20%" }}>
-                  <div
+        {items.length === 0 ? (
+          <p className="no-items-msg">No Items available yet.</p>
+        ) : (
+          <>
+            <table className="table">
+              <thead>
+                <tr>
+                  <th
+                    style={{ textAlign: "left", padding: "10px", width: "60%" }}
+                  >
+                    Item
+                  </th>
+                  <th
                     style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: "4px",
+                      textAlign: "center",
+                      padding: "10px",
+                      width: "20%",
                     }}
                   >
-                    <button
-                      onClick={() =>
-                        handleQuantityChange(
-                          item.id,
-                          (quantities[item.id] || 0) - 1
-                        )
-                      }
-                      disabled={(quantities[item.id] || 0) <= 0}
-                      style={{ padding: "0 5px" }}
-                    >
-                      -
-                    </button>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      value={
-                        quantities[item.id] !== undefined
-                          ? quantities[item.id]
-                          : ""
-                      }
-                      onChange={(e) =>
-                        handleQuantityChange(item.id, e.target.value)
-                      }
-                      style={{
-                        width: "45px",
-                        textAlign: "center",
-                        padding: "2px",
-                      }}
-                    />
-                    <button
-                      onClick={() =>
-                        handleQuantityChange(
-                          item.id,
-                          (quantities[item.id] || 0) + 1
-                        )
-                      }
-                      disabled={
-                        (quantities[item.id] || 0) >= originalStock[item.id]
-                      }
-                      style={{ padding: "0 5px" }}
-                    >
-                      +
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        <div className="pagination-container">
-          <button
-            onClick={() => setCurrentPage(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </button>
-          <span className="page-info">
-            {currentPage} / {totalPages}
-          </span>
-          <button
-            onClick={() => setCurrentPage(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </button>
-        </div>
+                    Available
+                  </th>
+                  <th
+                    style={{
+                      textAlign: "center",
+                      padding: "10px",
+                      width: "20%",
+                    }}
+                  >
+                    Checkout
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentItems.map((item) => (
+                  <tr key={item.id} style={{ borderBottom: "1px solid #ccc" }}>
+                    <td style={{ padding: "10px", width: "60%" }}>
+                      {item.name}
+                    </td>
+                    <td style={{ textAlign: "center", width: "20%" }}>
+                      {getAvailableStock(item.id)}
+                    </td>
+                    <td style={{ textAlign: "center", width: "20%" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: "4px",
+                        }}
+                      >
+                        <button
+                          onClick={() =>
+                            handleQuantityChange(
+                              item.id,
+                              (quantities[item.id] || 0) - 1
+                            )
+                          }
+                          disabled={(quantities[item.id] || 0) <= 0}
+                          style={{ padding: "0 5px" }}
+                        >
+                          -
+                        </button>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          value={
+                            quantities[item.id] !== undefined
+                              ? quantities[item.id]
+                              : ""
+                          }
+                          onChange={(e) =>
+                            handleQuantityChange(item.id, e.target.value)
+                          }
+                          style={{
+                            width: "45px",
+                            textAlign: "center",
+                            padding: "2px",
+                          }}
+                        />
+                        <button
+                          onClick={() =>
+                            handleQuantityChange(
+                              item.id,
+                              (quantities[item.id] || 0) + 1
+                            )
+                          }
+                          disabled={
+                            (quantities[item.id] || 0) >= originalStock[item.id]
+                          }
+                          style={{ padding: "0 5px" }}
+                        >
+                          +
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="pagination-container">
+              <button
+                onClick={() => setCurrentPage(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </button>
+              <span className="page-info">
+                {currentPage} / {totalPages}
+              </span>
+              <button
+                onClick={() => setCurrentPage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
