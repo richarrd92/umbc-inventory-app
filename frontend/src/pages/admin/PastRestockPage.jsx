@@ -127,7 +127,7 @@ export default function PastRestockPage() {
                       className={!order.submitted ? "draft" : ""}
                     >
                       <td>{order.id}</td>
-                      <td>{new Date(order.created_at).toLocaleString()}</td>
+                      <td>{new Date(order.created_at + "Z").toLocaleString()}</td>
                       <td>
                         {order.submitted && order.submitted_at
                           ? new Date(order.submitted_at + "Z").toLocaleString()
