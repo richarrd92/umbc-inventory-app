@@ -341,7 +341,7 @@ export default function AnalyticsPage() {
           </div>
 
           <div className="analytics-tile">
-            <h3>Top Items Ordered (Last 5 Restock Ordered)</h3>
+            <h3>Top Items Ordered (Last 5 Restock Orders)</h3>
             {itemsOrderedInLastOrdersData ? <Bar data={itemsOrderedInLastOrdersData} options={{ indexAxis: "y" }} /> : <p>Loading...</p>}
           </div>
 
