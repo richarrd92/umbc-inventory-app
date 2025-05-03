@@ -43,6 +43,7 @@ export default function AnalyticsPage() {
   const [transactionsByDayData, setTransactionsByDayData] = useState(null);
   const [transactionsByUserData, setTransactionsByUserData] = useState(null);
   const [itemsBelowThresholdData, setItemsBelowThresholdData] = useState(null);
+  const [itemsOrderedInLastOrdersData, setItemsOrderedInLastOrdersData] = useState(null);
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -142,6 +143,47 @@ export default function AnalyticsPage() {
       }
     };
 
+    const fetchOrders = async () => {
+      try {
+        const res = await axios.get("http://localhost:8000/orders", {
+          headers: { Authorization: `Bearer ${currentUser.token}` },
+        });
+
+        const orders = res.data
+          .filter(order => order.submitted) // only count submitted orders
+          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+          .slice(0, 5); // get last 5 orders
+
+        const itemCounts = {};
+
+        orders.forEach(order => {
+          order.order_items.forEach(item => {
+            const name = item.item?.name || "Unknown";
+            itemCounts[name] = (itemCounts[name] || 0) + item.final_quantity;
+          });
+        });
+
+        const sortedItems = Object.entries(itemCounts)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 10);
+
+        setItemsOrderedInLastOrdersData({
+          labels: sortedItems.map(([name]) => name),
+          datasets: [
+            {
+              label: "Quantity Ordered (Last 5 Orders)",
+              data: sortedItems.map(([_, qty]) => qty),
+              backgroundColor: "rgba(255, 205, 86, 0.7)",
+            },
+          ],
+        });
+
+      } catch (err) {
+        console.error("Failed to fetch restock orders", err);
+      }
+    };
+
+
     const fetchItems = async () => {
       try {
         const res = await axios.get("http://localhost:8000/items", {
@@ -170,6 +212,7 @@ export default function AnalyticsPage() {
     };
 
     fetchTransactions();
+    fetchOrders();
     fetchItems();
   }, [currentUser.token]);
 
@@ -295,6 +338,11 @@ export default function AnalyticsPage() {
               plugins={[centerTextPlugin]}
             />
               : <p>Loading...</p>}
+          </div>
+
+          <div className="analytics-tile">
+            <h3>Top Items Ordered (Last 5 Restock Ordered)</h3>
+            {itemsOrderedInLastOrdersData ? <Bar data={itemsOrderedInLastOrdersData} options={{ indexAxis: "y" }} /> : <p>Loading...</p>}
           </div>
 
         </div>
