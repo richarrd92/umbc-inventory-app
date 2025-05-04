@@ -1,0 +1,173 @@
+.transactions-page {
+    display: flex;
+    position: relative;
+    width: 100%;
+    max-width: 100vw; 
+    overflow-x: hidden; 
+    box-sizing: border-box;
+}
+  
+.transactions-header-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    padding: 0 3rem;
+    box-sizing: border-box;
+    margin-bottom: 1.5rem;
+    min-height: 60px;
+}
+  
+.header-left {
+    position: absolute;
+    left: 0;
+    display: flex;
+    align-items: center;
+}
+  
+.header-center {
+    text-align: center;
+    flex: none;
+}
+  
+.transactions-tb-header {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #333;
+}
+  
+
+.main-content-container {
+    padding: 1rem;
+    background-color: #f4f4f9;
+    width: 100%;
+    max-width: 1200px; 
+    margin: 0 auto; 
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+  
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 12px;
+  margin-top: 1rem;
+  border-radius: 8px;
+  background-color: #fff;
+  table-layout: fixed;
+  word-wrap: break-word;
+  justify-content: space-between;
+}
+
+.table th {
+  padding: 16px 12px;
+  color: #333;
+  text-align: left;
+}
+
+.table td {
+  padding: 14px 12px;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.table th:nth-child(1),
+.table td:nth-child(1) {
+  width: 30%; 
+}
+
+.table th:nth-child(2),
+.table td:nth-child(2) {
+  width: 55%; 
+  text-align: center;
+}
+
+.table th:nth-child(3),
+.table td:nth-child(3) {
+  width: 15%; 
+  text-align: right;
+}
+
+
+.table input {
+    width: 45px;
+    padding: 6px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.button-container button {
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #fff;
+    transition: background-color 0.3s, transform 0.2s;
+    border: none;
+}
+
+.finish-button {
+    background-color: rgb(34, 179, 34);
+}
+
+.finish-button:hover {
+    background-color: rgb(8, 190, 8);
+    transform: scale(1.05);
+}
+
+.toggle-items-button {
+  padding: 6px 12px;
+  border-radius: 8px;
+  background-color: black;
+  color: white;
+  border: none;
+  cursor: pointer;
+  float: center;
+}
+
+
+.toggle-items-button:hover {
+  background-color: #555;
+}
+
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 1.2rem;
+  color: #888;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border-left-color: #333;
+  animation: spin 1s linear infinite;
+  margin-right: 10px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
