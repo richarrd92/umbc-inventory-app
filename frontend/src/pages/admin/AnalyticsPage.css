@@ -1,0 +1,32 @@
+.analytics-content {
+    padding: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  .analytics-content h3 {
+    margin: 1.5rem 0 0.5rem;
+  }
+  
+  .analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  .analytics-tile {
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    height: 300px;
+    overflow: hidden;
+  }
+
+  .analytics-tile h3 {
+    font-size: 1rem;
+    margin-top: 0;
+    margin-bottom: 4px;
+    text-align: center;
+  }
