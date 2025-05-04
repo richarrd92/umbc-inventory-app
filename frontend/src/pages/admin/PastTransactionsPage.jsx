@@ -52,12 +52,18 @@ export default function TransactionsPage() {
           headers: { Authorization: `Bearer ${currentUser.token}` },
         });
 
-        setOrders(
-          res1.data.filter(
-            (order) =>
-              order.user_id === currentUser.id && order.deleted_at === null
-          )
+        // Filter out orders with deleted_at === null
+        const filtered = res1.data.filter(
+          (order) =>
+            order.user_id === currentUser.id && order.deleted_at === null
         );
+
+        // Sort orders by created_at
+        filtered.sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        );
+
+        setOrders(filtered); // Set filtered orders
         setItems(res2.data);
       } catch (error) {
         console.error("Failed to fetch orders or items:", error);
