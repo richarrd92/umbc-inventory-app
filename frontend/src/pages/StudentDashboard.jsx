@@ -140,9 +140,14 @@ export default function StudentDashboard() {
               <thead>
                 <tr>
                   <th
-                    style={{ textAlign: "left", padding: "10px", width: "60%" }}
+                    style={{ textAlign: "left", padding: "10px", width: "30%" }}
                   >
                     Item
+                  </th>
+                  <th
+                    style={{ textAlign: "left", padding: "10px", width: "30%" }}
+                  >
+                    Category
                   </th>
                   <th
                     style={{
@@ -167,8 +172,17 @@ export default function StudentDashboard() {
               <tbody>
                 {currentItems.map((item) => (
                   <tr key={item.id} style={{ borderBottom: "1px solid #ccc" }}>
-                    <td style={{ padding: "10px", width: "60%" }}>
+                    <td style={{ padding: "10px", width: "30%" }}>
                       {item.name}
+                    </td>
+                    <td
+                      style={{
+                        padding: "10px",
+                        textAlign: "left",
+                        width: "30%",
+                      }}
+                    >
+                      {item.category}
                     </td>
                     <td style={{ textAlign: "center", width: "20%" }}>
                       {getAvailableStock(item.id)}
