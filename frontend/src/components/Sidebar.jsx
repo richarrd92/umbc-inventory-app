@@ -101,15 +101,6 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
               >
                 Manage Users
               </button>
-              {/* <button
-                className="sidebar-btn"
-                onClick={() => {
-                  navigate("/admin/dashboard/favorites");
-                  toggleSidebar();
-                }}
-              >
-                Favorites Orders
-              </button> */}
               <button
                 className="sidebar-btn"
                 onClick={() => {
@@ -117,7 +108,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
                   toggleSidebar();
                 }}
               >
-                Past Transactions
+                Order History
               </button>
               <button
                 className="sidebar-btn"
@@ -178,15 +169,6 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
           {/* Student-only buttons */}
           {currentUser.role === "student" && (
             <>
-              {/* <button
-                className="sidebar-btn"
-                onClick={() => {
-                  navigate("/student/dashboard/favorites");
-                  toggleSidebar();
-                }}
-              >
-                Favorites Orders
-              </button> */}
               <button
                 className="sidebar-btn"
                 onClick={() => {
@@ -194,7 +176,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
                   toggleSidebar();
                 }}
               >
-                Past Transactions
+                Order History
               </button>
               <button
                 className="sidebar-btn"
