@@ -195,7 +195,7 @@ export default function GenerateRestockPage() {
               onClick={handleGenerateClick}
               disabled={loading}
             >
-              {loading ? "..." : "Generate restock order"}
+              {loading ? "Generating..." : "Generate restock order"}
             </button>
           )}
 

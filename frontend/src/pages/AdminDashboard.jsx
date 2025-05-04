@@ -9,6 +9,10 @@ import { useCart } from "../contexts/CartContext";
 import Sidebar from "../components/Sidebar";
 import { FaBars } from "react-icons/fa";
 
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "./toastStyles.css";
+
 export default function StudentDashboard() {
   const [items, setItems] = useState([]);
   const [originalStock, setOriginalStock] = useState({}); // Track initial stock
@@ -98,7 +102,8 @@ export default function StudentDashboard() {
   // Validate checkout attempt
   const handleCheckout = () => {
     if (cart.length === 0) {
-      alert("Your cart is empty. Please add items before checking out.");
+      // alert("Your cart is empty. Please add items before checking out.");
+      toast.error("Your cart is empty. Please add items before checking out.");
       return;
     }
     navigate("/admin/dashboard/cart");
@@ -113,6 +118,23 @@ export default function StudentDashboard() {
 
   return (
     <div className="main-content-wrapper">
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        closeButton={false}
+        toastClassName={(context) => {
+          let base = "toastify-container";
+          if (context?.type === "success") return `${base} toast-success`;
+          if (context?.type === "error") return `${base} toast-error`;
+          if (context?.type === "warn") return `${base} toast-warn`;
+          if (context?.type === "info") return `${base} toast-info`;
+          return base;
+        }}
+      />
       <Sidebar
         className={`sidebar ${sidebarOpen ? "open" : ""}`}
         isOpen={sidebarOpen}
@@ -189,7 +211,13 @@ export default function StudentDashboard() {
                     <td style={{ padding: "10px", width: "30%" }}>
                       {item.name}
                     </td>
-                    <td style={{ padding: "10px", textAlign: "left", width: "30%" }}>
+                    <td
+                      style={{
+                        padding: "10px",
+                        textAlign: "left",
+                        width: "30%",
+                      }}
+                    >
                       {item.category}
                     </td>
                     <td style={{ textAlign: "center", width: "20%" }}>

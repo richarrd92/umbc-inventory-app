@@ -6,6 +6,10 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import "./Cart.css";
 
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "./toastStyles.css";
+
 // Cart component
 export default function Cart() {
   const { cart, removeFromCart, clearCart, decreaseQuantity, addToCart } =
@@ -40,6 +44,15 @@ export default function Cart() {
   // Function to handle remove
   const handleRemove = (id) => {
     removeFromCart(id);
+
+    // If cart is now empty, navigate back to dashboard
+    if (cart.length === 1) {
+      // toast.error("Your cart is now empty.");
+      navigate(
+        `/${currentUser.role === "admin" ? "admin" : "student"}/dashboard`
+      );
+      clearCart();
+    }
   };
 
   // Function to handle increment
@@ -62,27 +75,24 @@ export default function Cart() {
   // Function to handle checkout
   const handleOrder = async () => {
     if (cart.length === 0) {
-      alert("Your cart is empty.");
+      toast.error("Your cart is empty.");
       return;
     }
 
-    console.log("currentUser ID from handleOrder:", currentUser.id);
+    setLoading(true);
 
-    // Prepare the transaction payload
     const transactionPayload = {
       user_id: currentUser.id,
-      transaction_type: "OUT", // 'OUT' for checkout (items are being removed from inventory)
-      notes: "Enter any additional notes here", // Optional - should be documented by admin
+      transaction_type: "OUT",
+      notes: "Enter any additional notes here",
       transaction_items: cart.map((item) => ({
         item_id: item.id,
-        quantity: item.quantity, // Use item quantity for checkout
+        quantity: item.quantity,
       })),
     };
 
     try {
-      setLoading(true);
-      // Create the transaction (student checkout)
-      const transactionResponse = await axios.post(
+      const response = await axios.post(
         "http://localhost:8000/transactions/",
         transactionPayload,
         {
@@ -93,22 +103,23 @@ export default function Cart() {
         }
       );
 
-      // Check if the transaction response contains the expected transaction ID
-      if (!transactionResponse.data || !transactionResponse.data.id) {
-        throw new Error(
-          "Transaction creation failed, missing transaction ID in response."
-        );
+      if (!response.data || !response.data.id) {
+        toast.error("Failed to place order. Please try again.");
+        throw new Error("Missing transaction ID in response.");
       }
 
-      alert("Order placed successfully!");
-      clearCart(); // Clear the cart after placing the order
-      // navigate("/dashboard"); // Navigate back to the dashboard
-      navigate(
-        `/${currentUser.role === "admin" ? "admin" : "student"}/dashboard`
-      );
+      toast.success("Order placed successfully!");
+
+      // Clear cart and redirect after toast
+      setTimeout(() => {
+        clearCart();
+        navigate(
+          `/${currentUser.role === "admin" ? "admin" : "student"}/dashboard`
+        );
+      }, 2000);
     } catch (error) {
       console.error("Transaction failed:", error);
-      alert("Failed to place order. Please try again.");
+      toast.error("Failed to place order. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -116,6 +127,23 @@ export default function Cart() {
 
   return (
     <div className="cart-container">
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        closeButton={false}
+        toastClassName={(context) => {
+          let base = "toastify-container";
+          if (context?.type === "success") return `${base} toast-success`;
+          if (context?.type === "error") return `${base} toast-error`;
+          if (context?.type === "warn") return `${base} toast-warn`;
+          if (context?.type === "info") return `${base} toast-info`;
+          return base;
+        }}
+      />
       <h2 className="cart-title">Your Cart</h2>
 
       {cart.length === 0 ? (
@@ -195,7 +223,7 @@ export default function Cart() {
               className="order-btn"
               disabled={loading}
             >
-              {loading ? "Placing Order..." : "Place Order"}
+              Place Order
             </button>
           </div>
         </>
