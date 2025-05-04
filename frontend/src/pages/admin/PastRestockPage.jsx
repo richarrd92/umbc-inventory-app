@@ -20,8 +20,11 @@ export default function PastRestockPage() {
 
   const itemsPerPage = 10; // Number of items per page
 
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     const fetchOrders = async () => {
+      setLoading(true);
       try {
         const res = await axios.get("http://localhost:8000/orders/", {
           headers: { Authorization: `Bearer ${currentUser.token}` },
@@ -39,6 +42,8 @@ export default function PastRestockPage() {
         setOrders(sorted);
       } catch (err) {
         console.error("Failed to fetch orders", err);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -106,7 +111,11 @@ export default function PastRestockPage() {
         <div className="past-orders-page">
           {showToast && <div className="toast-notification">{toastMsg}</div>}
 
-          {orders.length === 0 ? (
+          {loading ? (
+            <div className="spinner-container">
+              <div className="spinner"></div>
+            </div>
+          ) : orders.length === 0 ? (
             <p className="no-orders-msg">No restock orders available yet.</p>
           ) : (
             <>
@@ -127,7 +136,9 @@ export default function PastRestockPage() {
                       className={!order.submitted ? "draft" : ""}
                     >
                       <td>{order.id}</td>
-                      <td>{new Date(order.created_at + "Z").toLocaleString()}</td>
+                      <td>
+                        {new Date(order.created_at + "Z").toLocaleString()}
+                      </td>
                       <td>
                         {order.submitted && order.submitted_at
                           ? new Date(order.submitted_at + "Z").toLocaleString()
@@ -138,7 +149,7 @@ export default function PastRestockPage() {
                           order.created_by?.email ||
                           "Unknown"}
                       </td>
-                      <td>
+                      <td className="actions-cell">
                         {order.submitted ? (
                           <button
                             onClick={() =>
@@ -150,7 +161,7 @@ export default function PastRestockPage() {
                             View
                           </button>
                         ) : (
-                          <div className="action-buttons">
+                          <>
                             {" "}
                             <button
                               onClick={() =>
@@ -162,7 +173,7 @@ export default function PastRestockPage() {
                             <button onClick={() => deleteOrder(order.id)}>
                               Delete
                             </button>
-                          </div>
+                          </>
                         )}
                       </td>
                     </tr>
