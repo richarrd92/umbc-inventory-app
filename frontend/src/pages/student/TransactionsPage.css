@@ -59,20 +59,28 @@
   table-layout: fixed;
   word-wrap: break-word;
   justify-content: space-between;
+  padding: 1rem;
 }
 
+.table td,
 .table th {
-  padding: 16px 12px;
-  color: #333;
-  text-align: left;
-}
-
-.table td {
-  padding: 14px 12px;
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  font-size: 0.95rem;
   text-align: left;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.table th {
+  background-color: #f0f0f0;
+  font-weight: 600;
+  color: #333;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
 }
 
 .table th:nth-child(1),
@@ -91,7 +99,6 @@
   width: 15%; 
   text-align: right;
 }
-
 
 .table input {
     width: 45px;
