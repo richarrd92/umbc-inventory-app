@@ -11,6 +11,7 @@ import { FaHome } from "react-icons/fa";
 import './ReportIssuePage.css'
 
 export default function ReportIssuePage() {
+  /* Get user and navigation and set email and feedback values */
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -29,6 +30,7 @@ export default function ReportIssuePage() {
       toast.success("Feedback sent!");
     }catch(err){
       console.error(err);
+      setErrorMessage(err);
       toast.error("Error sending feedback.");
     }
   }
@@ -60,15 +62,17 @@ export default function ReportIssuePage() {
 
         <div className="dashboard-container">
           <div className="dashboard-header-container">
+            {/* Display sidebar */}
             <div className="header-left">
               <div className="sidebar-toggle-button" onClick={toggleSidebar}>
                 <FaBars size={24} />
               </div>
             </div>
-
+            {/* Display Report Issue title */}
             <div className="header-center">
-              <h2 className="dashboard-header">Add New Item</h2>
+              <h2 className="dashboard-header">Report Issue</h2>
             </div>
+            {/* Display Home button */}
             <div className="header-right">
               <div
                 className="cart-icon-container"
@@ -79,6 +83,7 @@ export default function ReportIssuePage() {
             </div>
           </div>
 
+          {/* Form to submit feedback */}
           <div className="report-issue-page">
             <form onSubmit={handleSubmit} className="feedback-form">
               <label>Email</label>
