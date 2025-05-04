@@ -34,7 +34,16 @@ export default function StudentDashboard() {
       // ******************************************************************************
       // MAY NEED TO LET ADMINS BE ABLE TO SEE EMPTY ITEMS
 
-      const availableItems = res.data.filter((item) => item.quantity > 0);
+      const availableItems = res.data
+        // Filter out items with quantity === 0
+        .filter((item) => item.quantity > 0)
+        // Sort items by name and category
+        .sort((a, b) => {
+          const nameCompare = a.name.localeCompare(b.name);
+          return nameCompare !== 0
+            ? nameCompare
+            : a.category.localeCompare(b.category);
+        });
       setItems(availableItems); // only show items with quantity > 0
 
       // ******************************************************************************
