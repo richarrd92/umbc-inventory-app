@@ -39,7 +39,6 @@
   align-items: center;
 }
 
-
 .spinner-container {
   display: flex;
   justify-content: center;
@@ -57,7 +56,17 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
+.no-restock-msg{
+  text-align: center;
+  font-style: italic;
+  color: #555;
+  margin-top: 2rem;
+}

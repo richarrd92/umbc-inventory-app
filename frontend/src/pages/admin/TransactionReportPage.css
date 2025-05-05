@@ -146,3 +146,10 @@
   align-items: center;
   flex-wrap: wrap;
 }
+
+.no-transactions-msg {
+  text-align: center;
+  font-style: italic;
+  color: #555;
+  margin-top: 2rem;
+}

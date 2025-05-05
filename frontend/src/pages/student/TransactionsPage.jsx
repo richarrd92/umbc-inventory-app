@@ -245,7 +245,7 @@ export default function TransactionsPage() {
             </table>
           </>
         ) : (
-          <p>No recent orders to display.</p>
+          <p className="no-past-orders-msg">No recent orders to display.</p>
         )}
         {orders.length > 0 && (
           <div className="pagination-container">

@@ -178,3 +178,10 @@
     transform: rotate(360deg);
   }
 }
+
+.no-past-orders-msg {
+  text-align: center;
+  font-style: italic;
+  color: #555;
+  margin-top: 2rem;
+}
