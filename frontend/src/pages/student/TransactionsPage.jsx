@@ -11,10 +11,13 @@ import { FaHome } from "react-icons/fa";
 
 
 export default function TransactionsPage() {
+  // set variables for order, item arrays
   const [orders, setOrders] = useState([]);
   const [items, setItems] = useState([]);
   const { currentUser } = useAuth();
   const navigate = useNavigate();
+  
+  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const ordersPerPage = 5;
@@ -25,6 +28,7 @@ export default function TransactionsPage() {
 
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
+  // fetch orders and items table in array
   useEffect(() => {
     const fetchOrders = async () => {
       const res1 = await axios.get("http://localhost:8000/transactions", {
@@ -42,14 +46,16 @@ export default function TransactionsPage() {
     fetchOrders();
   }, [currentUser.id, currentUser.token]);
 
+  // find item in table
   const getItemName = (itemId) => {
     const item = items.find((element) => element.id === itemId);
-    console.log(item);
     return item.name;
   };
 
+  // check if the user has recent orders
   const hasOrders = currentOrders && currentOrders.length > 0;
 
+  // format date of transaction
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "long", day: "numeric", hour: 'numeric', minute: 'numeric', hour12: true}
     return new Date(dateString).toLocaleDateString(undefined, options)
@@ -89,7 +95,7 @@ export default function TransactionsPage() {
           </div>
         </div>
         
-
+        {/* Checks if orders exist to display in table and displays either the table of orders or a paragraph text */}
         {hasOrders ? (
           <>
             <table className="table">
@@ -164,6 +170,7 @@ export default function TransactionsPage() {
           <p>No recent orders to display.</p>
         )}
 
+        {/* Display pagination for table if they exist */}
         {orders.length > 0 && (
                 <div className="pagination-container">
                   <button
