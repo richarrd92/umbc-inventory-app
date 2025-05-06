@@ -9,6 +9,10 @@ import { useCart } from "../contexts/CartContext";
 import Sidebar from "../components/Sidebar";
 import { FaBars } from "react-icons/fa";
 
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "./toastStyles.css";
+
 export default function StudentDashboard() {
   const [items, setItems] = useState([]);
   const [originalStock, setOriginalStock] = useState({}); // Track initial stock
@@ -31,7 +35,16 @@ export default function StudentDashboard() {
         headers: { Authorization: `Bearer ${currentUser.token}` },
       });
 
-      const availableItems = res.data.filter((item) => item.quantity > 0);
+      const availableItems = res.data
+        // Filter out items with quantity === 0
+        .filter((item) => item.quantity > 0)
+        // Sort items by name and category
+        .sort((a, b) => {
+          const nameCompare = a.name.localeCompare(b.name);
+          return nameCompare !== 0
+            ? nameCompare
+            : a.category.localeCompare(b.category);
+        });
       setItems(availableItems); // only show items with quantity > 0
 
       const initialStock = {};
@@ -84,7 +97,8 @@ export default function StudentDashboard() {
   // Validate checkout attempt
   const handleCheckout = () => {
     if (cart.length === 0) {
-      alert("Your cart is empty. Please add items before checking out.");
+      // alert("Your cart is empty. Please add items before checking out.");
+      toast.error("Your cart is empty. Please add items before checking out.");
       return;
     }
     navigate("/student/dashboard/cart");
@@ -99,6 +113,23 @@ export default function StudentDashboard() {
 
   return (
     <div className="main-content-wrapper">
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        closeButton={false}
+        toastClassName={(context) => {
+          let base = "toastify-container";
+          if (context?.type === "success") return `${base} toast-success`;
+          if (context?.type === "error") return `${base} toast-error`;
+          if (context?.type === "warn") return `${base} toast-warn`;
+          if (context?.type === "info") return `${base} toast-info`;
+          return base;
+        }}
+      />
       <Sidebar
         className={`sidebar ${sidebarOpen ? "open" : ""}`}
         isOpen={sidebarOpen}
@@ -140,9 +171,14 @@ export default function StudentDashboard() {
               <thead>
                 <tr>
                   <th
-                    style={{ textAlign: "left", padding: "10px", width: "60%" }}
+                    style={{ textAlign: "left", padding: "10px", width: "30%" }}
                   >
                     Item
+                  </th>
+                  <th
+                    style={{ textAlign: "left", padding: "10px", width: "30%" }}
+                  >
+                    Category
                   </th>
                   <th
                     style={{
@@ -167,8 +203,17 @@ export default function StudentDashboard() {
               <tbody>
                 {currentItems.map((item) => (
                   <tr key={item.id} style={{ borderBottom: "1px solid #ccc" }}>
-                    <td style={{ padding: "10px", width: "60%" }}>
+                    <td style={{ padding: "10px", width: "30%" }}>
                       {item.name}
+                    </td>
+                    <td
+                      style={{
+                        padding: "10px",
+                        textAlign: "left",
+                        width: "30%",
+                      }}
+                    >
+                      {item.category}
                     </td>
                     <td style={{ textAlign: "center", width: "20%" }}>
                       {getAvailableStock(item.id)}

@@ -52,6 +52,7 @@
   justify-content: left;
   height: 100%;
   align-items: center;
+  gap: 8px;
 }
 
 .submit-button,
@@ -98,4 +99,11 @@
   margin-bottom: 1rem;
   text-align: center;
   font-weight: 500;
+}
+
+.no-items-message {
+  text-align: center;
+  font-style: italic;
+  color: #555;
+  margin-top: 2rem;
 }

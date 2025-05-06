@@ -9,12 +9,16 @@ import Sidebar from "../../components/Sidebar";
 import { FaBars } from "react-icons/fa";
 import { FaHome } from "react-icons/fa";
 
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "../toastStyles.css";
+
 export default function GenerateRestockPage() {
   const { currentUser } = useAuth();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState(null);
-  const [showSuccess, setShowSuccess] = useState(false);
+  // const [errorMsg, setErrorMsg] = useState(null);
+  // const [showSuccess, setShowSuccess] = useState(false);
   const { orderId } = useParams(); // grab /restock/:orderId
   const [searchParams] = useSearchParams();
   const isReadOnly = searchParams.get("readonly") === "true";
@@ -36,7 +40,7 @@ export default function GenerateRestockPage() {
       if (!orderId) return; // skip if no draft is being resumed
 
       setLoading(true);
-      setErrorMsg(null);
+      // setErrorMsg(null);
 
       try {
         const res = await axios.get(`http://localhost:8000/orders/${orderId}`, {
@@ -44,14 +48,16 @@ export default function GenerateRestockPage() {
         });
 
         if (res.data.submitted && !isReadOnly) {
-          setErrorMsg("This order has already been submitted.");
+          // setErrorMsg("This order has already been submitted.");
+          toast.error("This order has already been submitted.");
           return;
         }
 
         setOrder(res.data);
       } catch (err) {
         console.error("Failed to load order", err);
-        setErrorMsg("Could not load draft order.");
+        // setErrorMsg("Could not load draft order.");
+        toast.error("Could not load draft order.");
       } finally {
         setLoading(false);
       }
@@ -63,7 +69,7 @@ export default function GenerateRestockPage() {
   // generate suggested restock order
   const generateOrder = async () => {
     setLoading(true);
-    setErrorMsg(null);
+    // setErrorMsg(null);
     try {
       const res = await axios.post(
         "http://localhost:8000/orders/",
@@ -75,7 +81,8 @@ export default function GenerateRestockPage() {
       setOrder(res.data);
     } catch (err) {
       console.error(err);
-      setErrorMsg(err.response?.data?.detail || "Failed to generate order.");
+      // setErrorMsg(err.response?.data?.detail || "Failed to generate order.");
+      toast.error(err.response?.data?.detail || "Failed to generate order.");
     } finally {
       setLoading(false);
     }
@@ -125,21 +132,40 @@ export default function GenerateRestockPage() {
         }
       );
 
-      setShowSuccess(true);
+      // setShowSuccess(true);
       setOrder(null);
-
+      
+      toast.success("Order submitted and inventory updated!");
       setTimeout(() => {
-        setShowSuccess(false);
+        // setShowSuccess(false);
         navigate("/admin/dashboard");
-      }, 2000);
+      }, 2500);
     } catch (err) {
       console.error(err);
-      alert("Submission failed.");
+      // alert("Submission failed.");
+      toast.error("Submission failed.");
     }
   };
 
   return (
     <div className="main-content-wrapper">
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        closeButton={false}
+        toastClassName={(context) => {
+          let base = "toastify-container";
+          if (context?.type === "success") return `${base} toast-success`;
+          if (context?.type === "error") return `${base} toast-error`;
+          if (context?.type === "warn") return `${base} toast-warn`;
+          if (context?.type === "info") return `${base} toast-info`;
+          return base;
+        }}
+      />
       <Sidebar
         className={`sidebar ${sidebarOpen ? "open" : ""}`}
         isOpen={sidebarOpen}
@@ -168,11 +194,11 @@ export default function GenerateRestockPage() {
           </div>
         </div>
 
-        {showSuccess && (
+        {/* {showSuccess && (
           <div className="toast-notification">
             Order submitted and inventory updated!
           </div>
-        )}
+        )} */}
 
         <div className="generate-restock-container">
           {order && (
@@ -180,11 +206,11 @@ export default function GenerateRestockPage() {
               Order #{order.id}{" "}
               {order.submitted
                 ? `submitted on ${new Date(
-                  order.submitted_at + "Z"
-                ).toLocaleString()}`
+                    order.submitted_at + "Z"
+                  ).toLocaleString()}`
                 : `created on ${new Date(
-                  order.created_at
-                ).toLocaleString()}`}{" "}
+                    order.created_at
+                  ).toLocaleString()}`}{" "}
               by {order.created_by?.name || "Unknown"}
             </p>
           )}
@@ -195,11 +221,11 @@ export default function GenerateRestockPage() {
               onClick={handleGenerateClick}
               disabled={loading}
             >
-              {loading ? "..." : "Generate restock order"}
+              {loading ? "Generating..." : "Generate restock order"}
             </button>
           )}
 
-          {errorMsg && <p className="error-msg">{errorMsg}</p>}
+          {/* {errorMsg && <p className="error-msg">{errorMsg}</p>} */}
 
           {console.log("order:", order)}
 
@@ -238,7 +264,10 @@ export default function GenerateRestockPage() {
                           >
                             <button
                               onClick={() =>
-                                updateFinalQty(item.item_id, item.final_quantity - 1)
+                                updateFinalQty(
+                                  item.item_id,
+                                  item.final_quantity - 1
+                                )
                               }
                               disabled={item.final_quantity <= 0}
                             >
@@ -255,7 +284,10 @@ export default function GenerateRestockPage() {
                             />
                             <button
                               onClick={() =>
-                                updateFinalQty(item.item_id, item.final_quantity + 1)
+                                updateFinalQty(
+                                  item.item_id,
+                                  item.final_quantity + 1
+                                )
                               }
                             >
                               +
@@ -274,11 +306,7 @@ export default function GenerateRestockPage() {
               )}
             </>
           ) : (
-            order && (
-              <p className="empty-msg">
-                No items to restock.
-              </p>
-            )
+            order && <p className="empty-msg">No items to restock.</p>
           )}
         </div>
       </div>

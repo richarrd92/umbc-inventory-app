@@ -9,7 +9,6 @@ import "./TransactionsPage.css";
 import { FaBars } from "react-icons/fa";
 import { FaHome } from "react-icons/fa";
 
-
 export default function TransactionsPage() {
   // set variables for order, item arrays
   const [orders, setOrders] = useState([]);
@@ -26,21 +25,55 @@ export default function TransactionsPage() {
   const currentOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
   const totalPages = Math.ceil(orders.length / ordersPerPage);
 
+  const [loading, setLoading] = useState(true); // loading state
+
+  const [expandedOrders, setExpandedOrders] = useState(new Set()); // Set to keep track of expanded orders
+
+  // Function to toggle the expanded state of an order
+  const toggleOrderItems = (orderId) => {
+    setExpandedOrders((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(orderId)) {
+        newSet.delete(orderId);
+      } else {
+        newSet.add(orderId);
+      }
+      return newSet;
+    });
+  };
+
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
   // fetch orders and items table in array
   useEffect(() => {
     const fetchOrders = async () => {
-      const res1 = await axios.get("http://localhost:8000/transactions", {
-        headers: { Authorization: `Bearer ${currentUser.token}` },
-      });
+      try {
+        const res1 = await axios.get("http://localhost:8000/transactions", {
+          headers: { Authorization: `Bearer ${currentUser.token}` },
+        });
 
-      const res2 = await axios.get("http://localhost:8000/items", {
-        headers: { Authorization: `Bearer ${currentUser.token}` },
-      });
+        const res2 = await axios.get("http://localhost:8000/items", {
+          headers: { Authorization: `Bearer ${currentUser.token}` },
+        });
 
-      setOrders(res1.data.filter((order) => order.user_id === currentUser.id && order.deleted_at === null));
-      setItems(res2.data);
+        // Filter out orders with deleted_at === null
+        const filtered = res1.data.filter(
+          (order) =>
+            order.user_id === currentUser.id && order.deleted_at === null
+        );
+
+        // Sort orders by created_at
+        filtered.sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        );
+
+        setOrders(filtered); // Set filtered orders
+        setItems(res2.data);
+      } catch (error) {
+        console.error("Failed to fetch orders or items:", error);
+      } finally {
+        setLoading(false); // Done loading
+      }
     };
 
     fetchOrders();
@@ -57,9 +90,16 @@ export default function TransactionsPage() {
 
   // format date of transaction
   const formatDate = (dateString) => {
-    const options = { year: "numeric", month: "long", day: "numeric", hour: 'numeric', minute: 'numeric', hour12: true}
-    return new Date(dateString).toLocaleDateString(undefined, options)
-  }
+    const options = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
 
   return (
     <div className="transactions-page">
@@ -81,7 +121,7 @@ export default function TransactionsPage() {
 
           {/* Center: Title */}
           <div className="header-center">
-            <h2 className="transactions-tb-header">Your Past Orders</h2>
+            <h2 className="transactions-tb-header">Order History</h2>
           </div>
 
           {/* Right: Home Icon */}
@@ -94,102 +134,138 @@ export default function TransactionsPage() {
             </div>
           </div>
         </div>
-        
-        {/* Checks if orders exist to display in table and displays either the table of orders or a paragraph text */}
-        {hasOrders ? (
+
+        {loading ? (
+          <div className="loading-container">
+            <div className="spinner"></div>
+            <span>Loading...</span>
+          </div>
+        ) : hasOrders ? (
           <>
             <table className="table">
               <thead>
                 <tr>
                   <th
-                    style={{ textAlign: "left", padding: "10px", width: "20%" }}
+                    style={{ textAlign: "left", padding: "10px", width: "30%" }}
                   >
                     Order ID
                   </th>
                   <th
-                    style={{
-                      textAlign: "center",
-                      padding: "10px",
-                      width: "40%",
-                    }}
+                    style={{ textAlign: "left", padding: "10px", width: "55%" }}
                   >
-                    Items
+                    Date/Time
                   </th>
                   <th
                     style={{
-                      textAlign: "center",
+                      textAlign: "left",
                       padding: "10px",
-                      width: "40%",
+                      width: "15%",
                     }}
                   >
-                    Date/Time
+                    Details
                   </th>
                 </tr>
               </thead>
 
               <tbody>
                 {currentOrders.map((order) => (
-                  <tr key={order.id} style={{ borderBottom: "1px solid #ccc" }}>
-                    <td
-                      style={{
-                        textAlign: "left",
-                        padding: "10px",
-                        width: "20%",
-                      }}
-                    >
-                      {order.id}
-                    </td>
-                    <td
-                      style={{
-                        textAlign: "center",
-                        padding: "10px",
-                        width: "40%",
-                      }}
-                    >
-                      {order.transaction_items.map((item) => (
-                        <p key={item.id}>
-                          {getItemName(item.item_id)}: {item.quantity}
-                        </p>
-                      ))}
-                    </td>
-                    <td
-                      style={{
-                        textAlign: "center",
-                        padding: "10px",
-                        width: "40%",
-                      }}
-                    >
-                      {formatDate(order.created_at)}
-                    </td>
-                  </tr>
+                  <>
+                    <tr key={order.id}>
+                      <td style={{ textAlign: "left", padding: "10px" }}>
+                        {order.id}
+                      </td>
+                      <td style={{ textAlign: "left", padding: "10px" }}>
+                        {formatDate(order.created_at)}
+                      </td>
+                      <td style={{ textAlign: "left", padding: "10px" }}>
+                        <button
+                          onClick={() => toggleOrderItems(order.id)}
+                          className="toggle-items-button"
+                        >
+                          {expandedOrders.has(order.id)
+                            ? "Hide Items"
+                            : "Show Items"}
+                        </button>
+                      </td>
+                    </tr>
+                    {expandedOrders.has(order.id) && (
+                      <tr key={`${order.id}-details`}>
+                        <td
+                          colSpan="3"
+                          style={{
+                            padding: "10px",
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              gap: "1rem",
+                              flexWrap: "wrap",
+                              justifyContent: "center",
+                              backgroundColor: "#f9f9f9",
+                              padding: "15px",
+                              borderRadius: "8px",
+                            }}
+                          >
+                            {order.transaction_items.map((item) => {
+                              const fullItem = items.find(
+                                (i) => i.id === item.item_id
+                              );
+                              return (
+                                <div
+                                  key={item.id}
+                                  style={{
+                                    textAlign: "center",
+                                    border: "1px solid #ccc",
+                                    borderRadius: "8px",
+                                    padding: "10px 15px",
+                                    textAlignLast: "left",
+                                    backgroundColor: "#f9f9f9",
+                                  }}
+                                >
+                                  <strong>
+                                    {fullItem?.name || "Unknown Item"}
+                                  </strong>
+                                  <br />
+                                  Category: {fullItem?.category || "N/A"}
+                                  <br />
+                                  Qty: {item.quantity}
+                                  <br />
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </>
                 ))}
               </tbody>
             </table>
           </>
         ) : (
-          <p>No recent orders to display.</p>
+          <p className="no-past-orders-msg">No recent orders to display.</p>
         )}
-
-        {/* Display pagination for table if they exist */}
         {orders.length > 0 && (
-                <div className="pagination-container">
-                  <button
-                    onClick={() => setCurrentPage(currentPage - 1)}
-                    disabled={currentPage === 1}
-                  >
-                    Previous
-                  </button>
-                  <span className="page-info">
-                    {currentPage} / {totalPages}
-                  </span>
-                  <button
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                  >
-                    Next
-                  </button>
-                </div>
-          )};
+          <div className="pagination-container">
+            <button
+              onClick={() => setCurrentPage(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+            <span className="page-info">
+              {currentPage} / {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

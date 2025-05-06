@@ -23,9 +23,12 @@ export default function TransactionReportsPage() {
 
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
+        setLoading(true);
         const res = await axios.get("http://localhost:8000/transactions", {
           headers: { Authorization: `Bearer ${currentUser.token}` },
         });
@@ -39,20 +42,21 @@ export default function TransactionReportsPage() {
             id: tItem.id,
             name: tItem.item?.name ?? `Item ID ${tItem.item_id}`,
             quantity: tItem.quantity,
+            category: tItem.item?.category ?? "Uncategorized",
           })),
         }));
 
-        grouped.sort((a, b) => new Date(b.date) - new Date(a.date)); // newest first
+        grouped.sort((a, b) => new Date(b.date) - new Date(a.date));
         setTransactions(grouped);
       } catch (err) {
         console.error("Failed to fetch transactions", err);
+      } finally {
+        setLoading(false);
       }
     };
 
-
     fetchTransactions();
   }, [currentUser.token]);
-
 
   const toggleExpand = (id) => {
     setExpanded((prev) => ({
@@ -72,7 +76,6 @@ export default function TransactionReportsPage() {
   const collapseAll = () => {
     setExpanded({});
   };
-
 
   return (
     <div className="main-content-wrapper">
@@ -104,8 +107,15 @@ export default function TransactionReportsPage() {
         </div>
 
         <div className="transaction-report-page">
-          {transactions.length === 0 ? (
-            <p className="no-transactions-msg">No transactions available yet.</p>
+          {loading ? (
+            <div className="loading-container">
+              <div className="spinner"></div>
+              Loading transactions...
+            </div>
+          ) : transactions.length === 0 ? (
+            <p className="no-transactions-msg">
+              No transactions available yet.
+            </p>
           ) : (
             <>
               <div className="expand-controls">
@@ -128,7 +138,9 @@ export default function TransactionReportsPage() {
                       {/* Parent row */}
                       <tr className="group-header">
                         <td>
-                          <button onClick={() => toggleExpand(group.transactionId)}>
+                          <button
+                            onClick={() => toggleExpand(group.transactionId)}
+                          >
                             {expanded[group.transactionId] ? "▼" : "▶"}
                           </button>
                         </td>
@@ -139,20 +151,52 @@ export default function TransactionReportsPage() {
                       </tr>
 
                       {/* Expanded rows */}
-                      {expanded[group.transactionId] &&
-                        group.items.map((item) => (
-                          <tr key={item.id} className="group-item">
-                            <td></td>
-                            <td colSpan={2}>{item.name}</td>
-                            <td>Qty: {item.quantity}</td>
-                            <td></td>
-                          </tr>
-                        ))}
+                      {expanded[group.transactionId] && (
+                        <tr
+                          key={`${group.transactionId}-items`}
+                        >
+                          <td colSpan="5" style={{ padding: "10px" }}>
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                gap: "1rem",
+                                flexWrap: "wrap",
+                                backgroundColor: "#f9f9f9",
+                                padding: "15px",
+                                borderRadius: "8px",
+                              }}
+                              className="expanded-items-container"
+                            >
+                              {group.items.map((item) => (
+                                <div
+                                  key={item.id}
+                                  style={{
+                                    textAlign: "center",
+                                    border: "1px solid #ccc",
+                                    borderRadius: "8px",
+                                    padding: "10px 15px",
+                                    textAlignLast: "left",
+                                    backgroundColor: "#f9f9f9",
+                                  }}
+                                  className="expanded-item"
+                                >
+                                  <strong>{item.name}</strong>
+                                  <br />
+                                  Category: {item.category}
+                                  <br />
+                                  Qty: {item.quantity}
+                                  <br />
+                                </div>
+                              ))}
+                            </div>
+                          </td>
+                        </tr>
+                      )}
                     </React.Fragment>
                   ))}
                 </tbody>
               </table>
-
 
               <div className="pagination-container">
                 <button

@@ -1,7 +1,8 @@
 CREATE DATABASE IF NOT EXISTS `inventory-app`;
 USE `inventory-app`;
 
------------------ BE CAREFUL RUN COMMAND TO RESET ALL TABLES IN TABLES 
+----------------------------------------------------------------------------------------
+----------------- BE CAREFUL RUN COMMAND TO RESET ALL TABLES IN TABLES -----------------
 
 SET FOREIGN_KEY_CHECKS = 0; -- Temporarily disables foreign key constraints to avoid dependency errors.
 DROP TABLE IF EXISTS order_items;
@@ -12,16 +13,16 @@ DROP TABLE IF EXISTS items;
 DROP TABLE IF EXISTS users;
 SET FOREIGN_KEY_CHECKS = 1; -- Re-enables foreign key constraints after tables are deleted.
 
------------------ BE CAREFUL RUN COMMAND TO RESET ALL TABLES IN TABLES 
+----------------- BE CAREFUL RUN COMMAND TO RESET ALL TABLES IN TABLES -----------------
+----------------------------------------------------------------------------------------
+
 
 -- users table (stores both admins & students)
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    -- username VARCHAR(50) UNIQUE NOT NULL,  -- student ID (XX#####) or "admin"
     firebase_uid VARCHAR(255) UNIQUE NOT NULL,  -- Firebase UID (replaces username)
     email VARCHAR(255) UNIQUE NOT NULL,  -- Store user email (from Firebase)
     name VARCHAR(255) NOT NULL,
-    -- password VARCHAR(255) NOT NULL DEFAULT '1234',  -- default password for dummy login
     role ENUM('student', 'admin') NOT NULL,  -- defines what the user can do
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP NULL DEFAULT NULL, -- added for soft delete instead of full removal
@@ -90,47 +91,57 @@ CREATE TABLE order_items (
     FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE SET NULL -- Updated: Retains historical order data even if item is deleted
 );
 
-
--- inserting example data into the inventory database.
 USE `inventory-app`;
 
--- insert test users (admins & students) 
-INSERT INTO users (firebase_uid, email, name, role) VALUES
-    ('firebase_admin1', 'alice.johnson@umbc.edu', 'Alice Johnson', 'admin'),
-    ('firebase_admin2', 'bob.smith@umbc.edu', 'Bob Smith', 'admin'),
-    ('firebase_s12345', 'charlie.brown@umbc.edu', 'Charlie Brown', 'student'),
-    ('firebase_s67890', 'diana.prince@umbc.edu', 'Diana Prince', 'student'),
-    ('firebase_s11223', 'ethan.hunt@umbc.edu', 'Ethan Hunt', 'student');
-
--- insert test inventory items (must link to an admin ID)
+-- AI generated sample data part 1
 INSERT INTO items (name, category, quantity, restock_threshold, user_id) VALUES
-    ('Sandwiches', 'Food', 50, 10, 1),
-    ('Fruit Packs', 'Food', 30, 5, 2),
-    ('Bottled Water', 'Beverages', 100, 20, 1),
-    ('Granola Bars', 'Food', 75, 15, 2),
-    ('Salads', 'Food', 25, 5, 1);
+    ('Canned Black Beans', 'Canned Food', 60, 12, 1),
+    ('Canned Corn', 'Canned Food', 65, 13, 2),
+    ('Canned Peaches in Juice', 'Canned Food', 50, 10, 1),
+    ('Canned Tuna in Water', 'Canned Food', 70, 14, 2),
+    ('Apple Slices (Fresh)', 'Fresh Produce', 30, 6, 1),
+    ('Mixed Fruit Cup', 'Fresh Produce', 25, 5, 2),
+    ('Banana Bunch', 'Fresh Produce', 40, 8, 1),
+    ('Bag of Baby Carrots', 'Fresh Produce', 35, 7, 2),
+    ('Microwaveable Brown Rice', 'Grains & Pasta', 55, 11, 1),
+    ('Boxed Whole Wheat Pasta', 'Grains & Pasta', 60, 12, 2),
+    ('Instant Mashed Potatoes', 'Grains & Pasta', 50, 10, 1),
+    ('Frozen Breakfast Burrito', 'Frozen Meals', 30, 6, 2),
+    ('Frozen Vegetable Steamer Pack', 'Frozen Meals', 40, 8, 1),
+    ('Frozen Mac & Cheese Bowl', 'Frozen Meals', 35, 7, 2),
+    ('Peanut Butter (Jar)', 'Protein', 45, 9, 1),
+    ('Nut Butter Snack Packs', 'Protein', 50, 10, 2),
+    ('Protein Bar - Chocolate', 'Snacks', 70, 14, 1),
+    ('Fruit Snacks', 'Snacks', 60, 12, 2),
+    ('Cheddar Cheese Crackers', 'Snacks', 55, 11, 1),
+    ('Shelf-Stable Milk (1L)', 'Dairy Alternatives', 40, 8, 2);
 
--- insert test transactions (checkout event)
-INSERT INTO transactions (user_id, transaction_type, notes) VALUES
-    (3, 'OUT', 'Charlie took snacks and drinks'),
-    (4, 'OUT', 'Diana picked up food items');
 
--- insert transaction items (must reference an existing transaction and item)
-INSERT INTO transaction_items (transaction_id, item_id, quantity) VALUES
-    (1, 1, 1),  -- Sandwich
-    (1, 3, 1),  -- Bottled Water
-    (1, 4, 2),  -- Granola Bars
-    (2, 2, 1),  -- Fruit Pack
-    (2, 5, 1);  -- Salad
+-- AI generated sample data part 2
+INSERT INTO items (name, category, quantity, restock_threshold, user_id) VALUES
+    ('Canned Green Beans', 'Canned Food', 60, 12, 1),
+    ('Canned Chicken Breast', 'Canned Food', 50, 10, 2),
+    ('Canned Pineapple Chunks', 'Canned Food', 45, 9, 1),
+    ('Instant Oatmeal Packets - Maple Brown Sugar', 'Breakfast Items', 80, 16, 2),
+    ('Boxed Cereal - Multigrain', 'Breakfast Items', 70, 14, 1),
+    ('Shelf-Stable Scrambled Egg Pouch', 'Breakfast Items', 30, 6, 2),
+    ('Microwavable Quinoa Bowl', 'Grains & Pasta', 40, 8, 1),
+    ('Whole Wheat Tortillas (Pack)', 'Grains & Pasta', 35, 7, 2),
+    ('Couscous Packets', 'Grains & Pasta', 50, 10, 1),
+    ('Frozen Chicken Stir Fry', 'Frozen Meals', 30, 6, 2),
+    ('Frozen Vegetable Fried Rice', 'Frozen Meals', 25, 5, 1),
+    ('Frozen Turkey Meatballs', 'Frozen Meals', 28, 6, 2),
+    ('Hard-Boiled Eggs (2-pack)', 'Protein', 20, 4, 1),
+    ('Single-Serve Tuna Pack', 'Protein', 55, 11, 2),
+    ('Black Bean Pouches', 'Protein', 50, 10, 1),
+    ('Shelf-Stable Cheese Cups', 'Dairy Alternatives', 40, 8, 2),
+    ('Almond Milk (Shelf-Stable)', 'Dairy Alternatives', 45, 9, 1),
+    ('Yogurt Tubes (Refrigerated)', 'Dairy Alternatives', 30, 6, 2),
+    ('Banana Chips', 'Snacks', 50, 10, 1),
+    ('Granola Trail Mix Bars', 'Snacks', 65, 13, 2),
+    ('Crackers and Peanut Butter Packs', 'Snacks', 70, 14, 1),
+    ('Mandarin Orange Cups', 'Fresh Produce', 40, 8, 2),
+    ('Bagged Grapes (Fresh)', 'Fresh Produce', 35, 7, 1),
+    ('Mini Carrot Snack Bags', 'Fresh Produce', 45, 9, 2),
+    ('100% Apple Juice Box', 'Beverages', 60, 12, 1);
 
--- insert test orders (you must create an order before order_items)
-INSERT INTO orders (created_at) VALUES
-    ('2024-02-01 10:30:00'),
-    ('2024-02-05 14:15:00');
-
--- insert order items (must reference an existing order & item)
-INSERT INTO order_items (order_id, item_id, suggested_quantity, final_quantity, supplier) VALUES
-    (1, 1, 50, 50, 'FoodBank Co.'),
-    (1, 3, 100, 100, 'WaterSupply Inc.'),
-    (2, 2, 30, 30, 'FreshFarms Ltd.'),
-    (2, 4, 75, 75, 'SnackDistributors');

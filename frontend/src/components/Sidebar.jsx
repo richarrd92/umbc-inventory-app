@@ -104,20 +104,11 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
               <button
                 className="sidebar-btn"
                 onClick={() => {
-                  navigate("/admin/dashboard/favorites");
-                  toggleSidebar();
-                }}
-              >
-                Favorites Orders
-              </button>
-              <button
-                className="sidebar-btn"
-                onClick={() => {
                   navigate("/admin/dashboard/transactions");
                   toggleSidebar();
                 }}
               >
-                Past Transactions
+                Order History
               </button>
               <button
                 className="sidebar-btn"
@@ -181,20 +172,11 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
               <button
                 className="sidebar-btn"
                 onClick={() => {
-                  navigate("/student/dashboard/favorites");
-                  toggleSidebar();
-                }}
-              >
-                Favorites Orders
-              </button>
-              <button
-                className="sidebar-btn"
-                onClick={() => {
                   navigate("/student/dashboard/transactions");
                   toggleSidebar();
                 }}
               >
-                Past Transactions
+                Order History
               </button>
               <button
                 className="sidebar-btn"

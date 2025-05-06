@@ -8,20 +8,27 @@ import { FaBars } from "react-icons/fa";
 import "../Pagination.css";
 import { FaHome } from "react-icons/fa";
 
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "../toastStyles.css";
+
 export default function PastRestockPage() {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
-  const [showToast, setShowToast] = useState(false);
-  const [toastMsg, setToastMsg] = useState("");
+  // const [showToast, setShowToast] = useState(false);
+  // const [toastMsg, setToastMsg] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
   const [currentPage, setCurrentPage] = useState(1);
 
   const itemsPerPage = 10; // Number of items per page
 
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     const fetchOrders = async () => {
+      setLoading(true);
       try {
         const res = await axios.get("http://localhost:8000/orders/", {
           headers: { Authorization: `Bearer ${currentUser.token}` },
@@ -39,31 +46,33 @@ export default function PastRestockPage() {
         setOrders(sorted);
       } catch (err) {
         console.error("Failed to fetch orders", err);
+        toast.error("Failed to fetch orders.");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchOrders();
   }, [currentUser.token]);
 
-  const deleteOrder = async (id) => {
-    const confirmed = window.confirm(
-      `Are you sure you want to delete Order #${id}?`
-    );
-    if (!confirmed) return;
+const deleteOrder = async (id) => {
+  const confirmed = window.confirm(
+    `Are you sure you want to delete Order #${id}?`
+  );
+  if (!confirmed) return;
 
-    try {
-      await axios.delete(`http://localhost:8000/orders/${id}`, {
-        headers: { Authorization: `Bearer ${currentUser.token}` },
-      });
-
-      setOrders((prev) => prev.filter((o) => o.id !== id));
-      setToastMsg(`Order #${id} successfully deleted.`);
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
-    } catch (err) {
-      console.error("Failed to delete order", err);
-    }
-  };
+  try {
+    await axios.delete(`http://localhost:8000/orders/${id}`, {
+      headers: { Authorization: `Bearer ${currentUser.token}` },
+    });
+    
+    setOrders((prev) => prev.filter((o) => o.id !== id));
+    toast.success(`Order #${id} successfully deleted.`); // Show toast immediately
+  } catch (err) {
+    console.error("Failed to delete order", err);
+    toast.error("Failed to delete order.");
+  }
+};
 
   // Pagination
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -73,6 +82,23 @@ export default function PastRestockPage() {
 
   return (
     <div className="main-content-wrapper">
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        closeButton={false}
+        toastClassName={(context) => {
+          let base = "toastify-container";
+          if (context?.type === "success") return `${base} toast-success`;
+          if (context?.type === "error") return `${base} toast-error`;
+          if (context?.type === "warn") return `${base} toast-warn`;
+          if (context?.type === "info") return `${base} toast-info`;
+          return base;
+        }}
+      />
       <Sidebar
         className={`sidebar ${sidebarOpen ? "open" : ""}`}
         isOpen={sidebarOpen}
@@ -104,10 +130,14 @@ export default function PastRestockPage() {
         </div>
 
         <div className="past-orders-page">
-          {showToast && <div className="toast-notification">{toastMsg}</div>}
+          {/* {showToast && <div className="toast-notification">{toastMsg}</div>} */}
 
-          {orders.length === 0 ? (
-            <p className="no-orders-msg">No restock orders available yet.</p>
+          {loading ? (
+            <div className="spinner-container">
+              <div className="spinner"></div>
+            </div>
+          ) : orders.length === 0 ? (
+            <p className="no-restock-msg">No restock orders available yet.</p>
           ) : (
             <>
               <table className="orders-table">
@@ -127,7 +157,9 @@ export default function PastRestockPage() {
                       className={!order.submitted ? "draft" : ""}
                     >
                       <td>{order.id}</td>
-                      <td>{new Date(order.created_at + "Z").toLocaleString()}</td>
+                      <td>
+                        {new Date(order.created_at + "Z").toLocaleString()}
+                      </td>
                       <td>
                         {order.submitted && order.submitted_at
                           ? new Date(order.submitted_at + "Z").toLocaleString()
@@ -138,7 +170,7 @@ export default function PastRestockPage() {
                           order.created_by?.email ||
                           "Unknown"}
                       </td>
-                      <td>
+                      <td className="actions-cell">
                         {order.submitted ? (
                           <button
                             onClick={() =>
@@ -150,7 +182,7 @@ export default function PastRestockPage() {
                             View
                           </button>
                         ) : (
-                          <div className="action-buttons">
+                          <>
                             {" "}
                             <button
                               onClick={() =>
@@ -162,7 +194,7 @@ export default function PastRestockPage() {
                             <button onClick={() => deleteOrder(order.id)}>
                               Delete
                             </button>
-                          </div>
+                          </>
                         )}
                       </td>
                     </tr>

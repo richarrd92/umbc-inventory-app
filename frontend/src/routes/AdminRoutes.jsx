@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import AdminDashboard from "../pages/AdminDashboard";
 // import EssentialItemsPage from "../pages/admin/EssentialItemsPage";
-import FavoritesPage from "../pages/admin/FavoritesPage";
+// import FavoritesPage from "../pages/admin/FavoritesPage";
 import PastTransactionsPage from "../pages/admin/PastTransactionsPage";
 import AnalyticsPage from "../pages/admin/AnalyticsPage";
 import GenerateRestockPage from "../pages/admin/GenerateRestockPage";
@@ -20,7 +20,7 @@ export default function AdminRoutes() {
     <Routes>
       <Route path="/" element={<AdminDashboard />} />
       {/* <Route path="Essential-Items" element={<EssentialItemsPage />} /> */}
-      <Route path="favorites" element={<FavoritesPage />} />
+      {/* <Route path="favorites" element={<FavoritesPage />} /> */}
       <Route path="transactions" element={<PastTransactionsPage />} />
       <Route path="analytics" element={<AnalyticsPage />} />
       <Route path="restock" element={<GenerateRestockPage />} />
