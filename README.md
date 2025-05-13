@@ -2,7 +2,7 @@
 
 The Retriever Essentials Inventory App is a full-stack inventory management system designed to streamline food distribution for students at the University of Maryland, Baltimore County (UMBC). The app provides a comprehensive solution to manage inventory, process online orders, and log transactions, offering a seamless experience for both students and administrators. Students can securely browse available items, add them to a cart, and place orders with optional notes, while administrators can efficiently manage inventory, monitor orders, and track transactions. Beyond these core features, the app supports real-time restock alerts, detailed order histories, and role-based access control, ensuring that both users and admins can interact with the system in a secure and efficient manner. With its intuitive interface and robust backend, the Retriever Essentials Inventory App enhances the food distribution process, making it easier to manage and scale UMBC’s food assistance efforts, while providing valuable insights and automated features to improve the overall experience.
 
-#### Project Demo
+## Project Demo
 
 Click on the image below to view the live demo:
 
