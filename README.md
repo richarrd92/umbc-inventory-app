@@ -8,6 +8,8 @@ Click on the image below to view the live demo:
 
 [![Project Demo](Demo.png)](https://drive.google.com/file/d/1LW5KvQCOyB9aubXAMAPWhQuGOp0D7zc_/view)
 
+**Note:** The dropdown menu options and CSV report in Excel didn't show up in the live demo video due to the screen recording app being used.
+
 ## Features
 
 #### Student Functionality
